@@ -49,7 +49,7 @@ def test_contract(t):
         ("2086", "mbb:horizon", "mbb:atlantic-10", 2013),  # Butler's one A-10 season
         ("2547", "mbb:wac", "mbb:wcc", 2026),  # Seattle U
         ("2320", "mbb:southland", "mbb:wac", 2022),  # Lamar to the WAC, 2021-22
-        ("2320", "mbb:wac", "mbb:southland", 2024),  # Lamar back to the Southland, 2023-24
+        ("2320", "mbb:wac", "mbb:southland", 2023),  # Lamar back to the Southland after one WAC season (2021-22)
         ("2253", "mbb:wac", "mbb:mountain-west", 2026),  # Grand Canyon
         ("2567", "mbb:american", "mbb:acc", 2025),  # SMU
         ("158", "mbb:big-12", "mbb:big-ten", 2012),  # Nebraska
