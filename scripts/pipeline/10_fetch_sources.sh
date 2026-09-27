@@ -12,7 +12,10 @@ fi
 export UV_CACHE_DIR="${UV_CACHE_DIR:-/mnt/sdv_repos/.uv-cache}"
 leagues=("$@")
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls sdv_reference/leagues | sed -n 's/^\([a-z][a-z_]*\)\.py$/\1/p' | grep -v '^__init__$')
+# every league runs even when one fails, so a cron run doesn't skip the rest; the stage fails at the end
+failed=()
 for l in "${leagues[@]}"; do
   echo "fetch $l"
-  uv run python -c "from sdv_reference.leagues import $l; $l.fetch()"
+  uv run python -c "from sdv_reference.leagues import $l; $l.fetch()" || failed+=("$l")
 done
+[ ${#failed[@]} -eq 0 ] || { echo "fetch failed: ${failed[*]}"; exit 1; }

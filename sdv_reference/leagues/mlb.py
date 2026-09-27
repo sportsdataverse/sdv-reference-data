@@ -9,7 +9,6 @@ Stats API files under sportId 1); divisions 1969+ (200-205).
 
 from __future__ import annotations
 
-import datetime as dt
 import gzip
 import json
 import re
@@ -50,13 +49,16 @@ def read_json_gz(path: Path):
 
 
 def espn_walk(
-    league: str, seasons: list[int], path: Path, refresh_last: int = 2
+    league: str, seasons: list[int], path: Path, roots: tuple[str, ...] = ()
 ) -> list[dict]:
     """Walk ESPN's core group tree per season into `path`, in the research cache's row format (leaves carry
-    `team_ids`). Seasons already in `path` or in the research cache are reused, except the last `refresh_last`
-    seasons, which are walked again. The file is rewritten after every season, so an interrupted walk resumes."""
+    `team_ids`), from the top-level groups or from `roots`. Only refresh.seasons_to_fetch() seasons are walked; the
+    rest of `path` is kept, and a season whose top-level group list is empty (ESPN doesn't have it yet) stays absent.
+    A first fetch (no `path`) takes seasons before the refresh window from the research cache when it has them.
+    The file is rewritten after every season."""
     from sdv_reference.espn import CORE, LEAGUE_PATHS, cached_groups
     from sdv_reference.espn import get_json as _get_json
+    from sdv_reference.refresh import seasons_to_fetch
 
     def get_json(url: str) -> dict:
         # the proxy drops the odd TLS handshake; espn.get_json only retries HTTP status codes
@@ -69,9 +71,10 @@ def espn_walk(
                 time.sleep(5 * (attempt + 1))
 
     rows = read_json_gz(path) if path.exists() else []
-    fresh = set(seasons[-refresh_last:])
-    have = {r["season"] for r in rows} - fresh
-    rows = [r for r in rows if r["season"] in have]
+    todo = seasons_to_fetch(seasons, {r["season"] for r in rows})
+    live = set(todo) if rows else set(seasons_to_fetch(seasons, seasons))
+    old = {s: [r for r in rows if r["season"] == s] for s in todo}
+    rows = [r for r in rows if r["season"] not in todo]
     cache = {}
     for r in cached_groups(league):
         cache.setdefault(r["season"], []).append(r)
@@ -112,22 +115,25 @@ def espn_walk(
         for k in row["children"]:
             walk(season, k, depth + 1)
 
-    for s in seasons:
-        if s in have:
-            continue
+    for s in todo:
+        n = len(rows)
         cached = cache.get(s, [])
         if (
-            s not in fresh
+            s not in live
             and cached
             and all("team_ids" in r for r in cached if not r.get("children"))
         ):
             rows.extend(cached)
         else:
-            for gid in ids(
+            top = ids(
                 get_json(f"{base}/{s}/types/2/groups?limit=100"), r"/groups/(\d+)"
-            ):
+            )
+            for gid in roots if top and roots else top:
                 walk(s, gid, 0)
-        write_json_gz(path, rows)
+        if len(rows) == n:  # ESPN has nothing for the season: keep what raw/ had, if anything
+            rows.extend(old[s])
+        # seasons still to walk keep their old rows, so an interrupted refresh never drops one
+        write_json_gz(path, rows + [r for t in todo if t > s for r in old[t]])
         print(
             f"espn {league} {s}: {sum(r['season'] == s for r in rows)} groups",
             flush=True,
@@ -363,14 +369,21 @@ def _statsapi(path: str, session: requests.Session) -> dict:
 
 
 def fetch(last_season: int | None = None) -> None:
-    """Snapshot raw/mlb/: Stats API teams, divisions and leagues per season, then ESPN's group walk."""
-    last = last_season or dt.datetime.now(dt.UTC).year
+    """Snapshot raw/mlb/: Stats API teams, divisions and leagues per season, then ESPN's group walk. Only the
+    refresh.seasons_to_fetch() seasons are requested; a season the Stats API has no teams for stays absent."""
+    from sdv_reference.refresh import current_season, seasons_to_fetch
+
+    last = last_season or current_season(ending_year=False)
     seasons = list(range(FIRST_SEASON, last + 1))
     s = requests.Session()
-    out = {}
-    for y in seasons:
+    path = RAW / "statsapi_teams.json.gz"
+    out = read_json_gz(path) if path.exists() else {}
+    for y in seasons_to_fetch(seasons, map(int, out)):
+        teams = _statsapi(f"teams?sportId=1&season={y}", s).get("teams", [])
+        if not teams:
+            continue
         out[str(y)] = {
-            "teams": _statsapi(f"teams?sportId=1&season={y}", s).get("teams", []),
+            "teams": teams,
             "leagues": _statsapi(f"league?sportId=1&seasons={y}", s).get("leagues", []),
             "divisions": _statsapi(f"divisions?sportId=1&season={y}", s).get(
                 "divisions", []
@@ -379,7 +392,7 @@ def fetch(last_season: int | None = None) -> None:
             else [],
         }
         print(f"statsapi {y}: {len(out[str(y)]['teams'])} teams", flush=True)
-    write_json_gz(RAW / "statsapi_teams.json.gz", out)
+    write_json_gz(path, out)
     espn_walk(LEAGUE, seasons, RAW / "espn_groups.json.gz")
 
 

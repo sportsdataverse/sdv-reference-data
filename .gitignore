@@ -4,3 +4,5 @@ __pycache__/
 .omc/
 # built release files; published to sportsdataverse-data, not committed
 build/
+# scheduled-run logs (RUNBOOK.md, Cadence)
+logs/
