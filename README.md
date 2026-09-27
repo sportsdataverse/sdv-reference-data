@@ -30,7 +30,8 @@ season key. The ending year is used for NBA, NHL and college basketball.
 ## How it's built
 
 - `sdv_reference/leagues/{league}.py` has a `fetch()` that snapshots the league's sources into `raw/{league}/`.
-  The snapshots are committed for provenance.
+  The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
+  two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.
 - Its `build()` reads only `raw/` and hand-curated, cited rows in `curated/`, so builds are offline and reproducible.
 - Current names are never applied to past seasons. ESPN, stats.ncaa.org and CFBD all show today's labels for every
   season, so historical names come from dated curated rows.
