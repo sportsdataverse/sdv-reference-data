@@ -89,3 +89,46 @@ and the publish step refuses anything that fails it.
   - the NFL's 2002 realignment
   - the NHL's 2014 realignment
   - Maryland → Big Ten 2014-15
+
+# Contract: `mlb_park_dimensions` (tag `mlb_parks`)
+
+One row per MLB venue per season: every venue the MLB Stats API lists under `sportId=1` for the season (regular-season
+parks, spring-training parks, neutral and international sites), with its fences, capacity, turf and roof as of that
+season. Built by `sdv_reference/parks/mlb.py` from `venues?sportId=1&season=YYYY&hydrate=fieldInfo,location,xrefId`;
+`sdv_reference.parks.mlb.validate()` enforces this contract.
+
+| column | type | |
+|---|---|---|
+| league | Utf8 | `mlb` |
+| season | Int32 | the single year |
+| venue_id | Utf8 | MLB Stats API venue id (`venue.id` in MLB game feeds and schedules) |
+| venue_name | Utf8 | **as of that season** (PacBell Park 2001-03, SBC Park 2004-05, AT&T Park 2006-18, Oracle Park 2019-) |
+| retro_park_id | Utf8 | Retrosheet park id (`BOS07`), from the API's xref; null for most spring-training and minor-league parks |
+| left_line_ft, left_ft, left_center_ft, center_ft, right_center_ft, right_ft, right_line_ft | Int32 | feet from home plate to the fence at MLB's seven markers, left-field pole to right-field pole. Each park publishes five to seven; the API gives no angles, and a park may re-label a marker (Oracle Park's `left_center_ft` is 364 through 2019, then the 399 ft deep left-centre) |
+| capacity | Int32 | seats |
+| turf_type | Utf8 | `Grass`, `Artificial Turf` |
+| roof_type | Utf8 | `Open`, `Retractable`, `Dome` |
+| azimuth_deg | Float64 | MLB's `azimuthAngle`: degrees clockwise from north of the line from home plate to centre field (Fenway 45, Progressive Field 0) |
+| elevation_ft | Int32 | feet above sea level |
+| latitude, longitude | Float64 | decimal degrees |
+| notes | Utf8 | null unless a curated correction applies: which columns changed, from what, why, and the citation |
+
+Invariants: no nulls in `league`, `season`, `venue_id`, `venue_name`; no duplicate `(venue_id, season)`; every fence
+distance within 250-500 ft. Venues with no fence distance and no capacity (the API's `TBD`, `AL Stadium` and
+`NL Stadium` placeholders) are left out.
+
+Coverage is **2001 on**. The API answers every season from 1901, but for 1901-2000 it returns one undated record per
+venue: no venue's fieldInfo differs between any two of those seasons (probed 2026-09-27: every season 1985-2026 and
+every fifth season 1901-1980). Yankee Stadium I in 1925 carries its 1988-2008 fences and the Oakland Coliseum in 1970 its
+post-1996 capacity, so those seasons are not fetched. Per-season records begin in 2001 (13 capacities change from
+2000); fence changes appear from 2006. Early fences can still be a configuration MLB recorded later: Comerica Park's 2003
+left-centre move never appears.
+
+The API lags or misses some fence moves. `curated/mlb_park_overrides.csv` corrects them, one cited row per venue,
+season range and column (an empty `valid_to` is open-ended), and the build refuses a correction that no longer changes
+anything. Corrected so far: Camden Yards 2022 (recorded from 2023) and a 2017 key shift; Petco Park 2013-14 (recorded
+from 2015); T-Mobile Park 2019- (reverts to the pre-2013 fences); Comerica Park 2023- (412 ft centre field, missing);
+one-season 2022 errors at Rate Field and Progressive Field. Known and not corrected: Rogers Centre's 2023 walls
+(the API keeps 328-375-400/404-375-328).
+
+Seamheads' ballpark database is not used, even as a cross-check in tests: its licence forbids redistribution.

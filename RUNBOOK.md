@@ -1,13 +1,15 @@
 # Runbook
 
 `scripts/run_pipeline.sh [league ...]` runs every stage in order (all leagues when none are named).
+A "league" here is any name `sdv_reference.build.available()` lists: the ten leagues, plus `mlb_parks`
+(`sdv_reference/parks/mlb.py`, published to its own tag `mlb_parks`, not `{league}_groups`).
 
 | Stage | Script | Frequency | Idempotency | Typical duration |
 |---|---|---|---|---|
 | 10 | `scripts/pipeline/10_fetch_sources.sh [league ...]` | weekly (see [Cadence](#cadence)); any time a season starts | refreshes only the newest seasons in `raw/{league}/` ([Refresh window](#refresh-window)); an unchanged source rewrites the same bytes; commit what changes | ~2 min for NHL + NBA; ~15 min for all leagues (~650 ESPN requests at ~1 req/s) |
 | 20 | `scripts/pipeline/20_build_tables.sh [league ...]` | after every stage 10, and after any `curated/` change | offline, from `raw/` + `curated/` (same tables every run); refuses tables that fail `CONTRACT.md` | ~10 s for all leagues |
 | 25 | `scripts/pipeline/25_commit_raw.sh` | after every stage 20 | exits 3 (clean stop, nothing to publish) when `raw/` is unchanged; otherwise runs `uv run pytest -q`, commits `raw/` to `main`, and writes `build/.changed_leagues` | ~1 min |
-| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after stage 25 lands a change | `--clobber` per asset; creates `{league}_groups` once; with no arguments, only the leagues in `build/.changed_leagues` | ~1 min per league |
+| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after stage 25 lands a change | `--clobber` per asset; creates `{league}_groups` (or `mlb_parks`) once; with no arguments, only the leagues in `build/.changed_leagues` | ~1 min per league |
 
 Stage 10 changes committed data; stage 25 lands it and stage 30 republishes only the leagues it changed. Run stages
 individually when you only need to rebuild or republish.
@@ -55,7 +57,8 @@ The same computation predicted every measured "after" figure exactly.
 | nhl | NHL web standings; NHL stats REST (all seasons, 1 call each x2); ESPN tree | 206: web 109 (every season), REST 2, ESPN 95 (26 + 69 empty re-probes of seasons ESPN lacks) | 31: web 3, REST 2, ESPN 26 |
 | ncaa_baseball | baseballr-data `ncaa_team_lookup.parquet` (local) | 0 | 0 |
 | ncaa_softball | softballR-data `ncaa_team_info.RDS` (local, Rscript) | 0 | 0 |
-| **all** | | **666**, 242 of them ESPN; new seasons need code edits in 5 leagues | **655**, 641 of them ESPN; new seasons arrive by themselves |
+| mlb_parks | MLB Stats API `venues` with fieldInfo, one call per season 2001+ (http, no proxy) | n/a (new) | 2 (2025-26); a first fetch is 26 |
+| **all** | | **666**, 242 of them ESPN; new seasons need code edits in 5 leagues | **657** (mlb_parks 2), 641 of them ESPN; new seasons arrive by themselves |
 
 Verified 2026-09-27:
 - NHL + NBA were fetched twice in a row: 67 requests each run, and `git status raw/` was clean after the second.
@@ -78,6 +81,7 @@ of every season in `raw/` is about 11,300 requests.
   - NBA: October (ESPN has 2026-27 already)
   - MBB/WBB: ESPN's new tree, around October
   - MLB: January (Stats API)
+  - MLB parks: when the Stats API lists the season's venues (January); fence moves land in the two refreshed seasons
   - WNBA: spring
   - NCAA baseball/softball: when baseballr-data / softballR-data refresh their files
 - **Stage 20** after every stage 10, gated by `uv run pytest -q` (the realignment assertions).
