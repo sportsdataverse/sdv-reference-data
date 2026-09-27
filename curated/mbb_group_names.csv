@@ -1,0 +1,44 @@
+group_id,valid_from,valid_to,name,short_name,abbreviation,source
+mbb:d1,,,NCAA Division I,Division I,D-I,ESPN id 50 'NCAA Division I'
+mbb:america-east,,,America East Conference,America East,AEC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:acc,,,Atlantic Coast Conference,ACC,ACC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:atlantic-10,,,Atlantic 10 Conference,Atlantic 10,A-10,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-east,,,Big East Conference,Big East,Big East,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-sky,,,Big Sky Conference,Big Sky,Big Sky,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-south,,,Big South Conference,Big South,Big South,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-ten,,,Big Ten Conference,Big Ten,Big Ten,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-12,,,Big 12 Conference,Big 12,Big 12,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:big-west,,,Big West Conference,Big West,Big West,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:caa,,2023,Colonial Athletic Association,Colonial,CAA,rebranded Coastal Athletic Association July 2023 (conference announcement); ESPN id 10 abbreviation 'col' is the Colonial-era code
+mbb:caa,2024,,Coastal Athletic Association,CAA,CAA,"current name (ESPN id 10, Fox, NCAA.com); from 2023-24"
+mbb:cusa,,,Conference USA,C-USA,CUSA,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:ivy,,,Ivy League,Ivy,Ivy,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:maac,,,Metro Atlantic Athletic Conference,MAAC,MAAC,"KenPom MAAC 2002-2026, NCAA crosswalk MAAC 2009-10..2025-26, Fox 'Metro Atlantic Athletic'; ESPN's 'Metro Conference' label is not used (see groups notes)"
+mbb:mac,,,Mid-American Conference,MAC,MAC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:summit,,2007,Mid-Continent Conference,Mid-Con,Mid-Con,KenPom MCon 2002-2007; ESPN MBB id 15 'Mid Continent Conference'; renamed June 2007
+mbb:summit,2008,,The Summit League,Summit,Summit,KenPom Sum 2008+; NCAA 'Summit League'; ESPN MBB 49 / WBB 47
+mbb:meac,,,Mid-Eastern Athletic Conference,MEAC,MEAC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:mvc,,,Missouri Valley Conference,Missouri Valley,MVC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:nec,,,Northeast Conference,NEC,NEC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:ovc,,,Ohio Valley Conference,Ohio Valley,OVC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:pac-12,,2011,Pacific-10 Conference,Pac-10,Pac-10,KenPom P10 2002-2011; Colorado and Utah joined for 2011-12 and the conference renamed Pac-12 (July 2011)
+mbb:pac-12,2012,,Pac-12 Conference,Pac-12,Pac-12,"KenPom P12 2012-2024; NCAA 'Pac-12' through 2023-24; ESPN id 21 (absent 2025-2026, back 2027)"
+mbb:patriot,,,Patriot League,Patriot,Patriot,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:sec,,,Southeastern Conference,SEC,SEC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:socon,,,Southern Conference,SoCon,SoCon,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:southland,,,Southland Conference,Southland,Southland,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:swac,,,Southwestern Athletic Conference,SWAC,SWAC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:sun-belt,,,Sun Belt Conference,Sun Belt,Sun Belt,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:wcc,,,West Coast Conference,WCC,WCC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:wac,,2026,Western Athletic Conference,WAC,WAC,"KenPom WAC 2002-2026, NCAA crosswalk WAC through 2025-26, Fox 'Western Athletic'; ESPN's 'United Athletic Conference' label is today's name"
+mbb:wac,2027,,United Athletic Conference,UAC,UAC,"WAC renamed United Athletic Conference effective 2026-27 (ESPN id 30, stats.ncaa.org 923 'UAC', NCAA.com slug uac-)"
+mbb:independents,,,Division I Independents,Independents,Ind,ESPN id 43 label; KenPom ind
+mbb:mountain-west,,,Mountain West Conference,Mountain West,MWC,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:horizon,,2001,Midwestern Collegiate Conference,MCC,MCC,renamed Horizon League in 2001; 2000-01 was played as the MCC (WBB only in range)
+mbb:horizon,2002,,Horizon League,Horizon,Horizon,"unchanged over the covered seasons; ESPN core group label, NCAA and KenPom codes agree (notes 01, 02 §2, 04 §7)"
+mbb:asun,,2001,Trans America Athletic Conference,TAAC,TAAC,renamed Atlantic Sun in 2001; 2000-01 was played as the TAAC (WBB only in range)
+mbb:asun,2002,2016,Atlantic Sun Conference,Atlantic Sun,A-Sun,ESPN id 46 name 'Atlantic Sun Conference'; rebranded ASUN Conference in 2016
+mbb:asun,2017,,ASUN Conference,ASUN,ASUN,NCAA 'ASUN' and ESPN abbreviation 'ASUN'; brand since 2016-17
+mbb:great-west,,,Great West Conference,Great West,GWC,ESPN id 57 'Great West'; KenPom/NCAA GWC
+mbb:american,,2025,American Athletic Conference,American,AAC,"KenPom Amer, NCAA AAC; ESPN's 'American Conference' label is the post-July-2025 name"
+mbb:american,2026,,American Conference,American,American,renamed American Conference July 2025 (from 2025-26); ESPN id 62 current label

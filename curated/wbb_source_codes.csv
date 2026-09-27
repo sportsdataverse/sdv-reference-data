@@ -1,0 +1,37 @@
+source,value,source_id,group_id,notes
+ncaa,AAC,823,wbb:american,MBB labels are a backfill before 2017-18 (AAC from 2009-10); only 2017-18+ is used as a cross-check
+ncaa,ACC,821,wbb:acc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,ASUN,920,wbb:asun,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,America East,845,wbb:america-east,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Atlantic 10,820,wbb:atlantic-10,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big 12,25354,wbb:big-12,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big East,30184,wbb:big-east,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big Sky,825,wbb:big-sky,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big South,826,wbb:big-south,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big Ten,827,wbb:big-ten,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big West,904,wbb:big-west,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,C-USA,24312,wbb:cusa,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,CAA,837,wbb:caa,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Horizon,881,wbb:horizon,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Independent,,wbb:independents,sentinel ids 0 / 99000 on stats.ncaa.org
+ncaa,-,,wbb:independents,WBB 2009-10..2014-15 marker for independents / not-yet-D-I; mapped to independents
+ncaa,Ivy League,865,wbb:ivy,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MAAC,871,wbb:maac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MAC,875,wbb:mac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MEAC,876,wbb:meac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MVC,884,wbb:mvc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MWC,5486,wbb:mountain-west,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Mountain West,5486,wbb:mountain-west,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,NEC,846,wbb:nec,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,OVC,902,wbb:ovc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Pac-12,905,wbb:pac-12,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Patriot,838,wbb:patriot,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SEC,911,wbb:sec,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SWAC,916,wbb:swac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SoCon,912,wbb:socon,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Southland,914,wbb:southland,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Summit League,819,wbb:summit,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Sun Belt,818,wbb:sun-belt,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,WAC,923,wbb:wac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,WCC,922,wbb:wcc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,GWC,30062,wbb:great-west,"NCAA conf_id 30062 in 2010-12 and 30156 in 2013 (baseball lookup, notes 02 §2)"

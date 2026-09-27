@@ -1,0 +1,2 @@
+source,season_from,season_to,source_espn_team_id,espn_team_id,notes
+ncaa,2010,2019,112358,2341,"The NCAA crosswalk maps LIU (Brooklyn) to 112358, the id of the LIU formed by the 2019 Brooklyn/Post merger; ESPN's WBB groups carry LIU Brooklyn as 2341 through 2018-19 (MBB uses 112358 throughout)"
