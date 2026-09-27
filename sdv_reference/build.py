@@ -28,7 +28,7 @@ def main(names: list[str]) -> int:
         try:
             tables = importlib.import_module(f"sdv_reference.leagues.{league}").build()
             files = write_league(league, tables, OUT / league)
-        except Exception as e:  # report every league, then fail
+        except Exception as e:  # noqa: BLE001 - report every league, then fail
             failed.append(league)
             print(f"{league}: FAILED: {e}", flush=True)
             continue

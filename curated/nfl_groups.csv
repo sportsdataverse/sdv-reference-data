@@ -1,0 +1,14 @@
+group_id,level,parent_group_id,name,short_name,abbreviation,first_season,last_season,espn_group_id,nflverse_name,anchor_team,source,notes
+nfl:nfl,league,,National Football League,NFL,NFL,1970,2026,9,NFL,,https://en.wikipedia.org/wiki/AFL%E2%80%93NFL_merger,"SDV coverage starts with 1970, the first season of the merged league (two conferences, six divisions)."
+nfl:afc,conference,nfl:nfl,American Football Conference,AFC,AFC,1970,2026,8,AFC,,https://en.wikipedia.org/wiki/American_Football_Conference,
+nfl:nfc,conference,nfl:nfl,National Football Conference,NFC,NFC,1970,2026,7,NFC,,https://en.wikipedia.org/wiki/National_Football_Conference,
+nfl:afc-east,division,nfl:afc,AFC East,AFC East,AFCE,1970,2026,4,AFC East,NE,https://en.wikipedia.org/wiki/AFC_East,"One lineage across the 2002 realignment (same name, same ESPN id 4). ESPN's abbreviation EAST collides with NFC East, so SDV uses AFCE."
+nfl:afc-central,division,nfl:afc,AFC Central,AFC Central,AFCC,1970,2001,5,,PIT,https://en.wikipedia.org/wiki/AFC_Central,"Dissolved in the 2002 realignment; its northern teams formed the AFC North, which ESPN (id 12 vs 5) and the league treat as a new division, so it is a separate lineage."
+nfl:afc-north,division,nfl:afc,AFC North,AFC North,AFCN,2002,2026,12,AFC North,PIT,https://en.wikipedia.org/wiki/AFC_North,"New in 2002 (BAL, CIN, CLE, PIT from the AFC Central); not a rename of the AFC Central."
+nfl:afc-south,division,nfl:afc,AFC South,AFC South,AFCS,2002,2026,13,AFC South,HOU,https://en.wikipedia.org/wiki/AFC_South,"New in 2002: HOU (expansion), IND (from AFC East), JAX and TEN (from AFC Central)."
+nfl:afc-west,division,nfl:afc,AFC West,AFC West,AFCW,1970,2026,6,AFC West,DEN,https://en.wikipedia.org/wiki/AFC_West,"One lineage across 2002 (ESPN id 6); SEA left for the NFC West in 2002."
+nfl:nfc-east,division,nfl:nfc,NFC East,NFC East,NFCE,1970,2026,1,NFC East,DAL,https://en.wikipedia.org/wiki/NFC_East,"One lineage across 2002 (ESPN id 1); ARI left for the NFC West in 2002."
+nfl:nfc-central,division,nfl:nfc,NFC Central,NFC Central,NFCC,1970,2001,2,,CHI,https://en.wikipedia.org/wiki/NFC_Central,"Dissolved in 2002; the NFC North (ESPN id 10 vs 2) is a separate lineage. ESPN's group 10 'NFC North' in 2000-2001 holds only the Pro Bowl teams (98/99, 31/32) and is ignored."
+nfl:nfc-north,division,nfl:nfc,NFC North,NFC North,NFCN,2002,2026,10,NFC North,CHI,https://en.wikipedia.org/wiki/NFC_North,"New in 2002 (CHI, DET, GB, MIN from the NFC Central; TB left for the NFC South)."
+nfl:nfc-south,division,nfl:nfc,NFC South,NFC South,NFCS,2002,2026,11,NFC South,NO,https://en.wikipedia.org/wiki/NFC_South,"New in 2002: ATL, CAR, NO (from the NFC West) and TB (from the NFC Central)."
+nfl:nfc-west,division,nfl:nfc,NFC West,NFC West,NFCW,1970,2026,3,NFC West,SF,https://en.wikipedia.org/wiki/NFC_West,"One lineage across 2002 (ESPN id 3); gained SEA and ARI, lost ATL, CAR, NO."

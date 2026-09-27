@@ -1,0 +1,48 @@
+espn_team_id,team_abbr,team_name,first_season,last_season,source,notes
+1,ATL,Atlanta Falcons,1970,2026,https://en.wikipedia.org/wiki/Atlanta_Falcons,
+2,BUF,Buffalo Bills,1970,2026,https://en.wikipedia.org/wiki/Buffalo_Bills,
+3,CHI,Chicago Bears,1970,2026,https://en.wikipedia.org/wiki/Chicago_Bears,
+4,CIN,Cincinnati Bengals,1970,2026,https://en.wikipedia.org/wiki/Cincinnati_Bengals,
+5,CLE,Cleveland Browns,1970,1995,https://en.wikipedia.org/wiki/Cleveland_Browns_relocation_controversy,"Franchise deactivated 1996-1998; the league kept the 1946-1995 history with Cleveland (ESPN id 5)."
+5,CLE,Cleveland Browns,1999,2026,https://en.wikipedia.org/wiki/Cleveland_Browns_relocation_controversy,Reactivated 1999.
+6,DAL,Dallas Cowboys,1970,2026,https://en.wikipedia.org/wiki/Dallas_Cowboys,
+7,DEN,Denver Broncos,1970,2026,https://en.wikipedia.org/wiki/Denver_Broncos,
+8,DET,Detroit Lions,1970,2026,https://en.wikipedia.org/wiki/Detroit_Lions,
+9,GB,Green Bay Packers,1970,2026,https://en.wikipedia.org/wiki/Green_Bay_Packers,
+10,HOU,Houston Oilers,1970,1996,https://en.wikipedia.org/wiki/Tennessee_Titans,Moved to Tennessee for 1997.
+10,TEN,Tennessee Oilers,1997,1998,https://en.wikipedia.org/wiki/Tennessee_Titans,Played in Memphis (1997) and Nashville (1998) as the Oilers.
+10,TEN,Tennessee Titans,1999,2026,https://en.wikipedia.org/wiki/Tennessee_Titans,Renamed Titans for 1999.
+11,BAL,Baltimore Colts,1970,1983,https://en.wikipedia.org/wiki/Baltimore_Colts_relocation_to_Indianapolis,Moved to Indianapolis in March 1984.
+11,IND,Indianapolis Colts,1984,2026,https://en.wikipedia.org/wiki/Indianapolis_Colts,
+12,KC,Kansas City Chiefs,1970,2026,https://en.wikipedia.org/wiki/Kansas_City_Chiefs,
+13,OAK,Oakland Raiders,1970,1981,https://en.wikipedia.org/wiki/Oakland_Raiders_relocation_to_Los_Angeles,
+13,RAI,Los Angeles Raiders,1982,1994,https://en.wikipedia.org/wiki/Oakland_Raiders_relocation_to_Los_Angeles,SDV abbreviation RAI (Pro-Football-Reference style) so it cannot collide with the Rams' LA.
+13,OAK,Oakland Raiders,1995,2019,https://en.wikipedia.org/wiki/History_of_the_Oakland_Raiders,Returned to Oakland for 1995.
+13,LV,Las Vegas Raiders,2020,2026,https://en.wikipedia.org/wiki/Oakland_Raiders_relocation_to_Las_Vegas,
+14,LA,Los Angeles Rams,1970,1994,https://en.wikipedia.org/wiki/Los_Angeles_Rams_relocation_to_St._Louis,
+14,STL,St. Louis Rams,1995,2015,https://en.wikipedia.org/wiki/St._Louis_Rams_relocation_to_Los_Angeles,nflverse abbreviation STL.
+14,LA,Los Angeles Rams,2016,2026,https://en.wikipedia.org/wiki/St._Louis_Rams_relocation_to_Los_Angeles,nflverse abbreviation LA (never LAR in schedules).
+15,MIA,Miami Dolphins,1970,2026,https://en.wikipedia.org/wiki/Miami_Dolphins,
+16,MIN,Minnesota Vikings,1970,2026,https://en.wikipedia.org/wiki/Minnesota_Vikings,
+17,BOS,Boston Patriots,1970,1970,https://en.wikipedia.org/wiki/New_England_Patriots,Renamed New England Patriots in March 1971.
+17,NE,New England Patriots,1971,2026,https://en.wikipedia.org/wiki/New_England_Patriots,
+18,NO,New Orleans Saints,1970,2026,https://en.wikipedia.org/wiki/New_Orleans_Saints,
+19,NYG,New York Giants,1970,2026,https://en.wikipedia.org/wiki/New_York_Giants,
+20,NYJ,New York Jets,1970,2026,https://en.wikipedia.org/wiki/New_York_Jets,
+21,PHI,Philadelphia Eagles,1970,2026,https://en.wikipedia.org/wiki/Philadelphia_Eagles,
+22,STL,St. Louis Cardinals,1970,1987,https://en.wikipedia.org/wiki/St._Louis_Cardinals_(football),Moved to Phoenix for 1988.
+22,PHO,Phoenix Cardinals,1988,1993,https://en.wikipedia.org/wiki/Arizona_Cardinals,
+22,ARI,Arizona Cardinals,1994,2026,https://en.wikipedia.org/wiki/Arizona_Cardinals,Renamed Arizona Cardinals for 1994.
+23,PIT,Pittsburgh Steelers,1970,2026,https://en.wikipedia.org/wiki/Pittsburgh_Steelers,
+24,SD,San Diego Chargers,1970,2016,https://en.wikipedia.org/wiki/San_Diego_Chargers_relocation_to_Los_Angeles,
+24,LAC,Los Angeles Chargers,2017,2026,https://en.wikipedia.org/wiki/San_Diego_Chargers_relocation_to_Los_Angeles,
+25,SF,San Francisco 49ers,1970,2026,https://en.wikipedia.org/wiki/San_Francisco_49ers,
+26,SEA,Seattle Seahawks,1976,2026,https://en.wikipedia.org/wiki/Seattle_Seahawks,1976 expansion.
+27,TB,Tampa Bay Buccaneers,1976,2026,https://en.wikipedia.org/wiki/Tampa_Bay_Buccaneers,1976 expansion.
+28,WAS,Washington Redskins,1970,2019,https://en.wikipedia.org/wiki/Washington_Redskins_name_controversy,
+28,WAS,Washington Football Team,2020,2021,https://en.wikipedia.org/wiki/Washington_Commanders,Interim name 2020-2021; nflverse abbreviation stays WAS.
+28,WAS,Washington Commanders,2022,2026,https://en.wikipedia.org/wiki/Washington_Commanders,
+29,CAR,Carolina Panthers,1995,2026,https://en.wikipedia.org/wiki/Carolina_Panthers,1995 expansion.
+30,JAX,Jacksonville Jaguars,1995,2026,https://en.wikipedia.org/wiki/Jacksonville_Jaguars,1995 expansion.
+33,BAL,Baltimore Ravens,1996,2026,https://en.wikipedia.org/wiki/Baltimore_Ravens,New franchise in 1996 (the Browns' players and staff moved; the Browns' history stayed in Cleveland).
+34,HOU,Houston Texans,2002,2026,https://en.wikipedia.org/wiki/Houston_Texans,2002 expansion.

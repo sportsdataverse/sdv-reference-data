@@ -1,0 +1,37 @@
+espn_group_id,group_id,level,notes
+50,mbb:d1,subdivision,"ESPN 'NCAA Division I' (id 50, parent 52): the root of the per-season walk. ESPN's sibling 51 'Non-NCAA Division I' is empty and skipped."
+1,mbb:america-east,conference,
+2,mbb:acc,conference,
+3,mbb:atlantic-10,conference,
+4,mbb:big-east,conference,"Lineage follows the name: in the 2013 split the seven departing Catholic schools kept the Big East name, and ESPN (id 4), KenPom (BE), NCAA ('Big East') and Sports Reference all continue it; the remaining members' renamed conference is mbb/wbb:american from 2013-14 (ESPN 62)."
+5,mbb:big-sky,conference,
+6,mbb:big-south,conference,
+7,mbb:big-ten,conference,
+8,mbb:big-12,conference,
+9,mbb:big-west,conference,
+10,mbb:caa,conference,"Colonial Athletic Association renamed Coastal Athletic Association in July 2023 (from 2023-24): same body, ESPN keeps id 10, NCAA/KenPom keep code CAA; one lineage."
+11,mbb:cusa,conference,
+12,mbb:ivy,conference,
+13,mbb:maac,conference,"ESPN id 13 is labelled 'Metro Conference' / 'Metro' in every season: it is the Metro Atlantic Athletic Conference (KenPom MAAC, NCAA conf_id 871, Fox 'Metro Atlantic Athletic'), not the 1975-95 Metro Conference. stats.ncaa.org and NCAA.com also show 'Metro' as of 2026-09; the MAAC name is kept for every season here."
+14,mbb:mac,conference,
+15,mbb:summit,conference,"Mid-Continent Conference renamed The Summit League in June 2007 (from 2007-08): one lineage. ESPN minted a new id for the rename in MBB (15 through the Mid-Con years, 49 after); WBB uses 47 (which is the A-10 East division id in MBB). KenPom MCon 2002-07 then Sum 2008+."
+49,mbb:summit,conference,"Mid-Continent Conference renamed The Summit League in June 2007 (from 2007-08): one lineage. ESPN minted a new id for the rename in MBB (15 through the Mid-Con years, 49 after); WBB uses 47 (which is the A-10 East division id in MBB). KenPom MCon 2002-07 then Sum 2008+."
+16,mbb:meac,conference,
+18,mbb:mvc,conference,
+19,mbb:nec,conference,
+20,mbb:ovc,conference,
+21,mbb:pac-12,conference,"Pacific-10 until 2010-11, Pac-12 from 2011-12 (Colorado, Utah; KenPom P10 2002-11 then P12). No basketball in 2024-25 and 2025-26 (Oregon State and Washington State played as WCC affiliate members), so no group-seasons 2025-2026. The rebuilt Pac-12 plays from 2026-27 as the same conference (the legal body survived; ESPN keeps id 21), so it stays on this lineage."
+22,mbb:patriot,conference,KenPom code changed Pat -> PL in 2025; the name did not change.
+23,mbb:sec,conference,
+24,mbb:socon,conference,
+25,mbb:southland,conference,
+26,mbb:swac,conference,
+27,mbb:sun-belt,conference,
+29,mbb:wcc,conference,
+30,mbb:wac,conference,"ESPN id 30 is labelled 'United Athletic Conference' / 'UAC' in every season: it is the Western Athletic Conference, which renamed itself the United Athletic Conference from 2026-27 (season 2027); same body, one lineage (slug kept as wac, the name it carried for every other season). Not the ASUN-WAC football UAC (CFB ESPN 177)."
+43,mbb:independents,conference,"Pseudo-conference: ESPN 'Division I Independents'. KenPom ind, NCAA 'Independent' (WBB '-' in 2009-10..2014-15)."
+44,mbb:mountain-west,conference,
+45,mbb:horizon,conference,Midwestern Collegiate Conference renamed Horizon League in 2001 (from 2001-02); only WBB 2001 is in range under the old name.
+46,mbb:asun,conference,"Trans America Athletic Conference renamed Atlantic Sun in 2001 (from 2001-02), then rebranded ASUN Conference in 2016 (from 2016-17): one lineage."
+57,mbb:great-west,conference,"Great West Conference: D-I basketball 2009-10..2012-13 (KenPom GWC 2010-13, NCAA GWC 2009-10..2012-13); ESPN group 57 only for 2011-2013."
+62,mbb:american,conference,"New body in 2013-14 (ESPN 62, KenPom Amer from 2014): American Athletic Conference 2013-14..2024-25, renamed American Conference in July 2025 (from 2025-26), same lineage. See big-east for the split."

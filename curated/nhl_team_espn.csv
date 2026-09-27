@@ -1,0 +1,48 @@
+nhl_team_id,espn_team_id,tri_code,name,notes
+1,11,NJD,New Jersey Devils,
+2,12,NYI,New York Islanders,
+3,13,NYR,New York Rangers,
+4,15,PHI,Philadelphia Flyers,
+5,16,PIT,Pittsburgh Penguins,
+6,1,BOS,Boston Bruins,
+7,2,BUF,Buffalo Sabres,
+8,10,MTL,Montréal Canadiens,
+9,14,OTT,Ottawa Senators,the 1992 franchise; the 1917 Senators (36) have no ESPN id
+10,21,TOR,Toronto Maple Leafs,
+11,28,ATL,Atlanta Thrashers,ESPN 28 reads Atlanta Thrashers in 1999
+12,7,CAR,Carolina Hurricanes,
+13,26,FLA,Florida Panthers,
+14,20,TBL,Tampa Bay Lightning,
+15,23,WSH,Washington Capitals,
+16,4,CHI,Chicago Blackhawks,
+17,5,DET,Detroit Red Wings,
+18,27,NSH,Nashville Predators,
+19,19,STL,St. Louis Blues,
+20,3,CGY,Calgary Flames,
+21,17,COL,Colorado Avalanche,
+22,6,EDM,Edmonton Oilers,
+23,22,VAN,Vancouver Canucks,
+24,25,ANA,Anaheim Ducks,
+25,9,DAL,Dallas Stars,
+26,8,LAK,Los Angeles Kings,
+27,24,PHX,Phoenix Coyotes,ESPN 24 reads Phoenix Coyotes in 2014
+28,18,SJS,San Jose Sharks,
+29,29,CBJ,Columbus Blue Jackets,
+30,30,MIN,Minnesota Wild,
+31,9,MNS,Minnesota North Stars,Dallas Stars franchise
+32,17,QUE,Quebec Nordiques,ESPN 17 reads Quebec Nordiques in 1995
+33,24,WIN,Winnipeg Jets (1979),"ESPN 24 reads Winnipeg Jets in 1995; the NHL stats API files this team under franchise 35 (today's Jets), which is wrong: it is the Coyotes franchise (28)"
+34,7,HFD,Hartford Whalers,ESPN 7 reads Hartford Whalers in 1997
+35,11,CLR,Colorado Rockies,New Jersey Devils franchise
+40,5,DCG,Detroit Cougars,Detroit Red Wings franchise
+47,3,AFM,Atlanta Flames,Calgary Flames franchise
+48,11,KCS,Kansas City Scouts,New Jersey Devils franchise
+50,5,DFL,Detroit Falcons,Detroit Red Wings franchise
+52,28,WPG,Winnipeg Jets,the 2011 franchise (ex-Thrashers)
+53,24,ARI,Arizona Coyotes,
+54,37,VGK,Vegas Golden Knights,
+55,124292,SEA,Seattle Kraken,
+57,21,TAN,Toronto Arenas,Toronto Maple Leafs franchise
+58,21,TSP,Toronto St. Patricks,Toronto Maple Leafs franchise
+59,129764,UTA,Utah Hockey Club,"NHL franchise 40, a new franchise, not the Coyotes; ESPN keeps one id across the 2025-26 rename"
+68,129764,UTA,Utah Mammoth,"same franchise (40) and ESPN id as 59; the NHL minted a new team id for the rename"

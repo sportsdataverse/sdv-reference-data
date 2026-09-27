@@ -1,0 +1,56 @@
+team_abbr,team_name,espn_team_id,division_id,first_season,last_season,source,notes
+ATL,Atlanta Hawks,1,nba:central,1971,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),
+BOS,Boston Celtics,2,nba:atlantic,1971,1996,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),
+BUF,Buffalo Braves,12,nba:atlantic,1971,1978,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),Moved to San Diego for 1978-79.
+SDC,San Diego Clippers,12,nba:pacific,1979,1984,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),
+LAC,Los Angeles Clippers,12,nba:pacific,1985,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),Moved to Los Angeles for 1984-85.
+CHI,Chicago Bulls,4,nba:midwest,1971,1980,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),
+CHI,Chicago Bulls,4,nba:central,1981,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to the Central in the 1980-81 realignment (Dallas expansion).
+CIN,Cincinnati Royals,23,nba:central,1971,1972,https://en.wikipedia.org/wiki/Central_Division_(NBA),
+KCO,Kansas City-Omaha Kings,23,nba:midwest,1973,1975,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Moved from Cincinnati for 1972-73.
+KCK,Kansas City Kings,23,nba:midwest,1976,1985,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),
+SAC,Sacramento Kings,23,nba:midwest,1986,1988,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Moved to Sacramento for 1985-86.
+SAC,Sacramento Kings,23,nba:pacific,1989,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),Moved to the Pacific for 1988-89.
+CLE,Cleveland Cavaliers,5,nba:central,1971,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),1970-71 expansion.
+DET,Detroit Pistons,8,nba:midwest,1971,1978,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),
+DET,Detroit Pistons,8,nba:central,1979,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to the Central for 1978-79.
+MIL,Milwaukee Bucks,15,nba:midwest,1971,1980,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),
+MIL,Milwaukee Bucks,15,nba:central,1981,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to the Central for 1980-81.
+PHX,Phoenix Suns,21,nba:midwest,1971,1972,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),
+PHX,Phoenix Suns,21,nba:pacific,1973,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),Moved to the Pacific for 1972-73.
+LAL,Los Angeles Lakers,13,nba:pacific,1971,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),
+POR,Portland Trail Blazers,22,nba:pacific,1971,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),1970-71 expansion.
+SDR,San Diego Rockets,10,nba:pacific,1971,1971,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),Moved to Houston for 1971-72.
+HOU,Houston Rockets,10,nba:pacific,1972,1972,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),
+HOU,Houston Rockets,10,nba:central,1973,1980,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to the Central for 1972-73.
+HOU,Houston Rockets,10,nba:midwest,1981,1996,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Moved to the Midwest for 1980-81.
+SFW,San Francisco Warriors,9,nba:pacific,1971,1971,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),Renamed Golden State Warriors for 1971-72.
+GSW,Golden State Warriors,9,nba:pacific,1972,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),
+SEA,Seattle SuperSonics,25,nba:pacific,1971,1996,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),
+NYK,New York Knicks,18,nba:atlantic,1971,1996,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),
+PHI,Philadelphia 76ers,20,nba:atlantic,1971,1996,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),
+BAL,Baltimore Bullets,27,nba:central,1971,1973,https://en.wikipedia.org/wiki/Central_Division_(NBA),
+CAP,Capital Bullets,27,nba:central,1974,1974,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to Landover for 1973-74.
+WSB,Washington Bullets,27,nba:central,1975,1978,https://en.wikipedia.org/wiki/Central_Division_(NBA),Renamed Washington Bullets for 1974-75.
+WSB,Washington Bullets,27,nba:atlantic,1979,1996,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),Moved to the Atlantic for 1978-79.
+NOJ,New Orleans Jazz,26,nba:central,1975,1979,https://en.wikipedia.org/wiki/Central_Division_(NBA),1974-75 expansion.
+UTA,Utah Jazz,26,nba:midwest,1980,1996,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Moved to Utah for 1979-80.
+DEN,Denver Nuggets,7,nba:midwest,1977,1996,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Joined from the ABA for 1976-77.
+IND,Indiana Pacers,11,nba:midwest,1977,1979,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Joined from the ABA for 1976-77.
+IND,Indiana Pacers,11,nba:central,1980,1996,https://en.wikipedia.org/wiki/Central_Division_(NBA),Moved to the Central for 1979-80.
+NYN,New York Nets,17,nba:atlantic,1977,1977,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),Joined from the ABA for 1976-77.
+NJN,New Jersey Nets,17,nba:atlantic,1978,1996,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),Moved to New Jersey for 1977-78.
+SAS,San Antonio Spurs,24,nba:central,1977,1980,https://en.wikipedia.org/wiki/Central_Division_(NBA),Joined from the ABA for 1976-77.
+SAS,San Antonio Spurs,24,nba:midwest,1981,1996,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Moved to the Midwest for 1980-81.
+DAL,Dallas Mavericks,6,nba:midwest,1981,1996,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),1980-81 expansion.
+CHH,Charlotte Hornets,3,nba:atlantic,1989,1989,https://en.wikipedia.org/wiki/Charlotte_Hornets,"1988-89 expansion. ESPN id 3 (the New Orleans lineage), as ESPN lists the 1988-2002 Hornets; see nba_teams.csv."
+CHH,Charlotte Hornets,3,nba:midwest,1990,1990,https://en.wikipedia.org/wiki/Charlotte_Hornets,
+CHH,Charlotte Hornets,3,nba:central,1991,1996,https://en.wikipedia.org/wiki/Charlotte_Hornets,
+MIA,Miami Heat,14,nba:midwest,1989,1989,https://en.wikipedia.org/wiki/Miami_Heat,1988-89 expansion.
+MIA,Miami Heat,14,nba:atlantic,1990,1996,https://en.wikipedia.org/wiki/Template:1989%E2%80%9390_NBA_Atlantic_standings,"Atlantic from 1989-90. ESPN files Miami and Orlando swapped in 1989-90 (Miami Central, Orlando Atlantic); Wikipedia's 1989-90 division standings agree with this table."
+MIN,Minnesota Timberwolves,16,nba:midwest,1990,1996,https://en.wikipedia.org/wiki/Minnesota_Timberwolves,1989-90 expansion.
+ORL,Orlando Magic,19,nba:central,1990,1990,https://en.wikipedia.org/wiki/Template:1989%E2%80%9390_NBA_Central_standings,"1989-90 expansion, in the Central (ESPN files it in the Atlantic, swapped with Miami)."
+ORL,Orlando Magic,19,nba:midwest,1991,1991,https://en.wikipedia.org/wiki/Orlando_Magic,
+ORL,Orlando Magic,19,nba:atlantic,1992,1996,https://en.wikipedia.org/wiki/Orlando_Magic,
+TOR,Toronto Raptors,28,nba:central,1996,1996,https://en.wikipedia.org/wiki/Toronto_Raptors,1995-96 expansion.
+VAN,Vancouver Grizzlies,29,nba:midwest,1996,1996,https://en.wikipedia.org/wiki/Memphis_Grizzlies,1995-96 expansion.

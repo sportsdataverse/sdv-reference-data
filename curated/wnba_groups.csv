@@ -1,0 +1,4 @@
+group_id,level,parent_group_id,name,short_name,abbreviation,first_season,last_season,espn_group_id,stats_name,source,notes
+wnba:wnba,league,,Women's National Basketball Association,WNBA,WNBA,1997,2026,3,,https://en.wikipedia.org/wiki/1997_WNBA_season,Inaugural season 1997; conferences only (no divisions) in every season.
+wnba:east,conference,wnba:wnba,Eastern Conference,East,EAST,1997,2026,1,East,https://en.wikipedia.org/wiki/Eastern_Conference_(WNBA),"One lineage 1997 onward (ESPN id 1). Conferences have not seeded the playoffs since 2016, but still set the schedule, the Commissioner's Cup (2021+) and older All-Star rosters."
+wnba:west,conference,wnba:wnba,Western Conference,West,WEST,1997,2026,2,West,https://en.wikipedia.org/wiki/Western_Conference_(WNBA),One lineage 1997 onward (ESPN id 2).

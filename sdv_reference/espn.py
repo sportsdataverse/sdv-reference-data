@@ -58,27 +58,26 @@ def cached_groups(league: str) -> list[dict]:
     return [json.loads(line) for line in path.open()]
 
 
-def get_json(
-    url: str, session: requests.Session | None = None, pause: float = 1.0
-) -> dict:
-    """One polite live call (about 1 request/second), through $SDV_API_PROXY when set."""
+def get_json(url: str, session: requests.Session | None = None, pause: float = 1.0) -> dict:
+    """One polite live call (about 1 request/second), through $SDV_API_PROXY when set. Retries rate limits,
+    server errors and dropped connections (the proxy occasionally drops a TLS handshake)."""
     proxy = os.environ.get("SDV_API_PROXY")
     s = session or requests
     for attempt in range(4):
-        r = s.get(
-            url,
-            headers=UA,
-            timeout=60,
-            proxies={"http": proxy, "https": proxy} if proxy else None,
-        )
-        if r.status_code in (429, 500, 502, 503, 504):
+        try:
+            r = s.get(url, headers=UA, timeout=60, proxies={"http": proxy, "https": proxy} if proxy else None)
+        except (requests.ConnectionError, requests.Timeout):
+            if attempt == 3:
+                raise
+            time.sleep(2 ** (attempt + 1))
+            continue
+        if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
             time.sleep(2 ** (attempt + 1))
             continue
         r.raise_for_status()
         time.sleep(pause)
         return r.json()
-    r.raise_for_status()
-    return r.json()
+    raise RuntimeError(f"unreachable: {url}")
 
 
 def group_url(league: str, season: int, group_id: str, suffix: str = "") -> str:

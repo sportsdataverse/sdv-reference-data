@@ -1,0 +1,71 @@
+source,value,source_id,group_id,notes
+kenpom,A10,,mbb:atlantic-10,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,ACC,,mbb:acc,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,AE,,mbb:america-east,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,ASun,,mbb:asun,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Amer,,mbb:american,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,B10,,mbb:big-ten,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,B12,,mbb:big-12,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,BE,,mbb:big-east,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,BSky,,mbb:big-sky,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,BSth,,mbb:big-south,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,BW,,mbb:big-west,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,CAA,,mbb:caa,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,CUSA,,mbb:cusa,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,GWC,,mbb:great-west,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Horz,,mbb:horizon,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Ivy,,mbb:ivy,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MAAC,,mbb:maac,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MAC,,mbb:mac,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MCon,,mbb:summit,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MEAC,,mbb:meac,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MVC,,mbb:mvc,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,MWC,,mbb:mountain-west,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,NEC,,mbb:nec,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,OVC,,mbb:ovc,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,P10,,mbb:pac-12,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,P12,,mbb:pac-12,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,PL,,mbb:patriot,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Pat,,mbb:patriot,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,SB,,mbb:sun-belt,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,SC,,mbb:socon,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,SEC,,mbb:sec,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,SWAC,,mbb:swac,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Slnd,,mbb:southland,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,Sum,,mbb:summit,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,WAC,,mbb:wac,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,WCC,,mbb:wcc,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+kenpom,ind,,mbb:independents,hoopR teams_links / sdv-py kp_team_info.csv Conf code (notes 04 §3)
+ncaa,AAC,823,mbb:american,MBB labels are a backfill before 2017-18 (AAC from 2009-10); only 2017-18+ is used as a cross-check
+ncaa,ACC,821,mbb:acc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,ASUN,920,mbb:asun,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,America East,845,mbb:america-east,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Atlantic 10,820,mbb:atlantic-10,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big 12,25354,mbb:big-12,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big East,30184,mbb:big-east,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big Sky,825,mbb:big-sky,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big South,826,mbb:big-south,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big Ten,827,mbb:big-ten,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Big West,904,mbb:big-west,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,C-USA,24312,mbb:cusa,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,CAA,837,mbb:caa,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Horizon,881,mbb:horizon,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Independent,,mbb:independents,sentinel ids 0 / 99000 on stats.ncaa.org
+ncaa,Ivy League,865,mbb:ivy,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MAAC,871,mbb:maac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MAC,875,mbb:mac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MEAC,876,mbb:meac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MVC,884,mbb:mvc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,MWC,5486,mbb:mountain-west,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,NEC,846,mbb:nec,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,OVC,902,mbb:ovc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Pac-12,905,mbb:pac-12,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Patriot,838,mbb:patriot,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SEC,911,mbb:sec,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SWAC,916,mbb:swac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,SoCon,912,mbb:socon,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Southland,914,mbb:southland,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Summit League,819,mbb:summit,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,Sun Belt,818,mbb:sun-belt,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,WAC,923,mbb:wac,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2
+ncaa,WCC,922,mbb:wcc,sdv-py ncaa_espn_team_crosswalk ncaa_conference label; conf_id from notes 02 §2

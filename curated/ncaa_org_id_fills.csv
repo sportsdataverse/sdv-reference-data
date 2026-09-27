@@ -1,0 +1,18 @@
+team_name,org_id,evidence
+UAH,10,"baseballr lookup lists the school as Alabama Huntsville (org 10, Gulf South) through 2024"
+Illinois Tech,30172,"baseballr lookup lists the school as IIT (org 30172, NACC) through 2024"
+Saint Anselm,593,"baseballr lookup lists the school as St. Anselm (org 593, NE10) through 2024"
+UT Permian Basin,30088,"baseballr lookup lists the school as Tex. Permian Basin (org 30088, Lone Star) through 2024"
+UCCS,9754,"baseballr lookup lists the school as UC-Colo. Springs (org 9754, RMAC) through 2024"
+Gustavus Adolphus,266,"baseballr lookup lists the school as Gust. Adolphus (org 266, MIAC) through 2024"
+Penn St. Brandywine,30189,"softballR-data Penn St Brandywine (org 30189, D-III United East 2025)"
+Middle Georgia,506486,softballR-data Middle Ga. St. (org 506486)
+Lyon,22989,softballR-data team_id for the same name
+Notre Dame (MD),8600,softballR-data team_id for the same name
+Georgian Court,9004,softballR-data team_id for the same name
+Point Park,504175,softballR-data team_id for the same name
+Jamestown,506057,softballR-data team_id for the same name
+SUNY Cobleskill,30083,softballR-data team_id for the same name
+UW-River Falls,801,softballR-data team_id for the same name
+Saint Joseph (CT),8687,softballR-data team_id for the same name
+Holy Family,1126,softballR-data team_id for the same name

@@ -1,0 +1,42 @@
+team_abbr,division_id,first_season,last_season,source,notes
+BAL,nfl:afc-east,1970,1983,https://en.wikipedia.org/wiki/AFC_East,Baltimore Colts.
+IND,nfl:afc-east,1984,1998,https://en.wikipedia.org/wiki/AFC_East,Indianapolis Colts (AFC East until the 2002 realignment).
+BOS,nfl:afc-east,1970,1970,https://en.wikipedia.org/wiki/AFC_East,Boston Patriots.
+NE,nfl:afc-east,1971,1998,https://en.wikipedia.org/wiki/AFC_East,
+BUF,nfl:afc-east,1970,1998,https://en.wikipedia.org/wiki/AFC_East,
+MIA,nfl:afc-east,1970,1998,https://en.wikipedia.org/wiki/AFC_East,
+NYJ,nfl:afc-east,1970,1998,https://en.wikipedia.org/wiki/AFC_East,
+CIN,nfl:afc-central,1970,1998,https://en.wikipedia.org/wiki/AFC_Central,
+CLE,nfl:afc-central,1970,1995,https://en.wikipedia.org/wiki/AFC_Central,Browns inactive 1996-1998.
+HOU,nfl:afc-central,1970,1996,https://en.wikipedia.org/wiki/AFC_Central,Houston Oilers.
+TEN,nfl:afc-central,1997,1998,https://en.wikipedia.org/wiki/AFC_Central,Tennessee Oilers.
+PIT,nfl:afc-central,1970,1998,https://en.wikipedia.org/wiki/AFC_Central,
+JAX,nfl:afc-central,1995,1998,https://en.wikipedia.org/wiki/AFC_Central,1995 expansion.
+BAL,nfl:afc-central,1996,1998,https://en.wikipedia.org/wiki/AFC_Central,Baltimore Ravens.
+DEN,nfl:afc-west,1970,1998,https://en.wikipedia.org/wiki/AFC_West,
+KC,nfl:afc-west,1970,1998,https://en.wikipedia.org/wiki/AFC_West,
+OAK,nfl:afc-west,1970,1981,https://en.wikipedia.org/wiki/AFC_West,
+RAI,nfl:afc-west,1982,1994,https://en.wikipedia.org/wiki/AFC_West,Los Angeles Raiders.
+OAK,nfl:afc-west,1995,1998,https://en.wikipedia.org/wiki/AFC_West,
+SD,nfl:afc-west,1970,1998,https://en.wikipedia.org/wiki/AFC_West,
+SEA,nfl:afc-west,1977,1998,https://en.wikipedia.org/wiki/AFC_West,Moved from the NFC West after its 1976 expansion season.
+TB,nfl:afc-west,1976,1976,https://en.wikipedia.org/wiki/1976_NFL_season,Expansion season only; moved to the NFC Central for 1977.
+DAL,nfl:nfc-east,1970,1998,https://en.wikipedia.org/wiki/NFC_East,
+NYG,nfl:nfc-east,1970,1998,https://en.wikipedia.org/wiki/NFC_East,
+PHI,nfl:nfc-east,1970,1998,https://en.wikipedia.org/wiki/NFC_East,
+WAS,nfl:nfc-east,1970,1998,https://en.wikipedia.org/wiki/NFC_East,
+STL,nfl:nfc-east,1970,1987,https://en.wikipedia.org/wiki/NFC_East,St. Louis Cardinals.
+PHO,nfl:nfc-east,1988,1993,https://en.wikipedia.org/wiki/NFC_East,Phoenix Cardinals.
+ARI,nfl:nfc-east,1994,1998,https://en.wikipedia.org/wiki/NFC_East,Arizona Cardinals (NFC East until 2002).
+CHI,nfl:nfc-central,1970,1998,https://en.wikipedia.org/wiki/NFC_Central,
+DET,nfl:nfc-central,1970,1998,https://en.wikipedia.org/wiki/NFC_Central,
+GB,nfl:nfc-central,1970,1998,https://en.wikipedia.org/wiki/NFC_Central,
+MIN,nfl:nfc-central,1970,1998,https://en.wikipedia.org/wiki/NFC_Central,
+TB,nfl:nfc-central,1977,1998,https://en.wikipedia.org/wiki/NFC_Central,
+ATL,nfl:nfc-west,1970,1998,https://en.wikipedia.org/wiki/NFC_West,
+LA,nfl:nfc-west,1970,1994,https://en.wikipedia.org/wiki/NFC_West,Los Angeles Rams.
+STL,nfl:nfc-west,1995,1998,https://en.wikipedia.org/wiki/NFC_West,St. Louis Rams.
+NO,nfl:nfc-west,1970,1998,https://en.wikipedia.org/wiki/NFC_West,
+SF,nfl:nfc-west,1970,1998,https://en.wikipedia.org/wiki/NFC_West,
+SEA,nfl:nfc-west,1976,1976,https://en.wikipedia.org/wiki/1976_NFL_season,Expansion season only; moved to the AFC West for 1977.
+CAR,nfl:nfc-west,1995,1998,https://en.wikipedia.org/wiki/NFC_West,1995 expansion.

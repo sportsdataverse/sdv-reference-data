@@ -1,0 +1,24 @@
+wnba_stats_team_id,espn_team_id,first_season,last_season,source,notes
+1611661313,9,1997,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,New York Liberty
+1611661314,1,1997,2006,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Charlotte Sting (folded after 2006)
+1611661315,2,1997,2003,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Cleveland Rockers (folded after 2003)
+1611661316,4,1997,2008,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Houston Comets (folded after 2008)
+1611661317,11,1997,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Phoenix Mercury
+1611661318,13,1997,2009,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),"Sacramento Monarchs (folded after 2009). ESPN games use id 13 in every season; ESPN's group lists also carry a duplicate id 2793 (1997-2006), treated as an alias of 13."
+1611661319,15,1997,2002,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Utah Starzz: ESPN keeps the Utah seasons under their own id
+1611661319,17,2003,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,San Antonio Silver Stars (2003) / Stars (2014) / Las Vegas Aces (2018)
+1611661320,6,1997,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Los Angeles Sparks
+1611661321,3,1998,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Detroit Shock (1998) / Tulsa Shock (2010) / Dallas Wings (2016)
+1611661322,16,1998,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Washington Mystics
+1611661323,10,1999,2002,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Orlando Miracle: ESPN keeps the Orlando seasons under their own id
+1611661323,18,2003,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Connecticut Sun
+1611661324,8,1999,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Minnesota Lynx
+1611661325,5,2000,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Indiana Fever
+1611661326,7,2000,2002,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),Miami Sol (folded after 2002)
+1611661327,132052,2000,2002,ESPN core seasons/{s}/teams/{id} and site scoreboard team ids (probed 2026-09-26),"Portland Fire 2000-2002 (folded). Both stats.wnba.com and ESPN reuse this team's id for the unrelated 2026 expansion Portland Fire; team_id + season stays unique."
+1611661327,132052,2026,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Portland Fire (2026 expansion; a different franchise from the 2000-2002 Fire)
+1611661328,14,2000,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Seattle Storm
+1611661329,19,2006,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Chicago Sky
+1611661330,20,2008,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Atlanta Dream
+1611661331,129689,2025,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Golden State Valkyries (2025 expansion)
+1611661332,131935,2026,2026,wehoop-wnba-data wnba_team_crosswalk_2026.parquet,Toronto Tempo (2026 expansion)
