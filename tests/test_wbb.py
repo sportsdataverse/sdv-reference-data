@@ -45,6 +45,8 @@ def test_contract(t):
         ("2086", "wbb:atlantic-10", "wbb:big-east", 2014),  # Butler
         ("2752", "wbb:atlantic-10", "wbb:big-east", 2014),  # Xavier
         ("2547", "wbb:wac", "wbb:wcc", 2026),  # Seattle U
+        ("2320", "wbb:southland", "wbb:wac", 2022),  # Lamar to the WAC, 2021-22
+        ("2320", "wbb:wac", "wbb:southland", 2024),  # Lamar back to the Southland, 2023-24
         ("2253", "wbb:wac", "wbb:mountain-west", 2026),  # Grand Canyon
         ("41", "wbb:big-east", "wbb:american", 2014),  # UConn
         ("41", "wbb:american", "wbb:big-east", 2021),
