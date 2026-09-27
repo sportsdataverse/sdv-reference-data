@@ -1,0 +1,21 @@
+{
+  "fetched_at": "2026-09-27T02:01:28+00:00",
+  "files": {
+    "cfbd_conferences.json.gz": {
+      "source": "https://api.collegefootballdata.com/conferences",
+      "rows": 256
+    },
+    "cfbd_affiliations.json.gz": {
+      "source": "https://api.collegefootballdata.com/conferences/affiliations",
+      "rows": 3604
+    },
+    "espn_groups.json.gz": {
+      "source": "/mnt/sdv_repos/tmp/conf-research-2026-09-26/cfb.jsonl",
+      "rows": 1070
+    },
+    "espn_teams.csv.gz": {
+      "source": "/mnt/sdv_repos/cfbfastR-cfb-data/cfb/cfb_teams/parquet",
+      "rows": 17939
+    }
+  }
+}

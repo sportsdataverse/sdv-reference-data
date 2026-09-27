@@ -1,0 +1,47 @@
+cfbd_conference_id,group_id,source,notes
+201,cfb:big-ten,CFBD /conferences: 201 Western Conference (1896-1952) and 5 Big Ten (1953-),The Western Conference is the Big Ten under its pre-1953 CFBD label: one body.
+5,cfb:big-ten,CFBD /conferences,
+213,cfb:pac-12,CFBD /conferences: 213 AAWU (1959-67); 216 Pac-8 (1968-77); 220 Pac-10 (1978-2010); 9 Pac-12 (2011-); pac-12.com history,"The AAWU (1959) was renamed Pacific-8 (1968), Pacific-10 (1978) and Pac-12 (2011): one lineage. The two-member Pac-12 of 2024-25 (Oregon State, Washington State) and the rebuilt eight-member Pac-12 of 2026 keep CFBD and ESPN id 9, so they stay in it."
+216,cfb:pac-12,CFBD /conferences,
+220,cfb:pac-12,CFBD /conferences,
+9,cfb:pac-12,CFBD /conferences,
+205,cfb:pacific-coast,CFBD /conferences: 205 Pacific Coast Conference (1915-1958),"The PCC dissolved in 1959, and the AAWU that followed is a new body (cfb:pac-12), so the PCC keeps its own lineage."
+207,cfb:big-eight,CFBD /conferences: 207 Big 6 (1928-47); 210 Big 7 (1948-57); 214 Big 8 (1958-95),"The Big Six grew into the Big Seven (1948) and the Big Eight (1958): one body. The 1996 Big 12 is a new body (cfb:big-12)."
+210,cfb:big-eight,CFBD /conferences,
+214,cfb:big-eight,CFBD /conferences,
+4,cfb:big-12,CFBD /conferences,"A new body in 1996 (the Big Eight plus four Southwest Conference schools), not a continuation of cfb:big-eight."
+202,cfb:mviaa,CFBD /conferences: 202 Missouri Valley Intercollegiate Athletic Association (1907-1927),"Kept apart from the Missouri Valley Conference (cfb:missouri-valley) and the Big Six (cfb:big-eight). Both later bodies claim it, and CFBD names it separately."
+151,cfb:american,CFBD /conferences; ESPN group 151,"American Athletic Conference (2013), renamed American Conference (2025): one lineage. It is legally the successor of the original Big East, but CFBD and ESPN both mint new ids, so football's Big East is its own lineage (cfb:big-east, 1991-2012)."
+222,cfb:big-east,CFBD /conferences: 222 Big East (1991-2012); ESPN group 10,The football Big East (1991-2012).
+215,cfb:wac,CFBD /conferences: 215 WAC fbs (1962-2012); 16 WAC fcs (2021-22),"One body. WAC football was FBS through 2012, then dropped football, then returned as FCS in 2021-22 before merging into the UAC. ESPN files group 16 under FCS (81) in every season; the parent here comes from CFBD's classification instead: FBS through 2012, FCS in 2021-22."
+16,cfb:wac,CFBD /conferences,
+175,cfb:asun-wac,CFBD /conferences: 175 AWC (2021); ESPN group 175,The 2021 ASUN-WAC Challenge scheduling alliance. CFBD and ESPN both carry it as a conference.
+176,cfb:asun,CFBD /conferences: 176 Atlantic Sun (2022); ESPN group 176,
+177,cfb:uac,CFBD /conferences: 177 UAC (2023-); ESPN group 177,The United Athletic Conference: the ASUN-WAC football merger. A new body (both sources mint new ids).
+217,cfb:big-west,CFBD /conferences: 217 PCAA (1969-87); 221 Big West (1988-2000),The Pacific Coast Athletic Association was renamed the Big West Conference in 1988.
+221,cfb:big-west,CFBD /conferences,
+298,cfb:mvfc,CFBD /conferences: 298 Gateway Collegiate (1985-91); 299 Gateway Football (1992-2007); 21 MVFC; ESPN group 21,The Gateway was renamed the Missouri Valley Football Conference in 2008. CFBD already files some Gateway-era spells under 21.
+299,cfb:mvfc,CFBD /conferences,
+21,cfb:mvfc,CFBD /conferences,
+48,cfb:caa,CFBD /conferences: 48 CAA (2007-24); 301 Coastal Athletic (2023-); ESPN group 48,"The Colonial Athletic Association was renamed the Coastal Athletic Association in 2023: one body. CFBD leaves Delaware on 48 in 2023-24 after the rest moved to 301; both fold into this lineage."
+301,cfb:caa,CFBD /conferences,
+26,cfb:ovc,CFBD /conferences: 26 OVC; 179 Big South-OVC (2023-24); 351 OVC-Big South (2025); ESPN 26 (2001-22) and 179 (2023-26),"The Big South-OVC Football Association (2023-24, renamed OVC-Big South in 2025) is treated as the OVC renamed. ESPN keeps one id (179, labelled Ohio Valley Conference) for 2023-26, and the 2026 OVC has the same members. CFBD's pre-1978 tier splits (287, 288) fold in too."
+287,cfb:ovc,CFBD /conferences,
+288,cfb:ovc,CFBD /conferences,
+179,cfb:ovc,CFBD /conferences,
+351,cfb:ovc,CFBD /conferences,
+300,cfb:patriot,CFBD /conferences: 300 Colonial League (1986-89); 27 Patriot League (1990-),The Colonial League was renamed the Patriot League in 1990.
+27,cfb:patriot,CFBD /conferences,
+15,cfb:mac,CFBD /conferences,The Mid-American Conference. CFBD's 1948-49 tier split (342) folds in.
+342,cfb:mac,CFBD /conferences,
+12,cfb:cusa,CFBD /conferences,
+23,cfb:maac,CFBD /conferences,
+19,cfb:atlantic-10,CFBD /conferences: 19 Atlantic 10 (1997-2006),"The A-10 took over Yankee Conference football in 1997 and handed it to the CAA in 2007. The sponsoring conference changed each time and both sources mint new ids, so cfb:yankee, cfb:atlantic-10 and cfb:caa are separate lineages."
+112,cfb:d2-independents,CFBD /conferences,
+113,cfb:d3-independents,CFBD /conferences,
+327,cfb:heartland-collegiate,CFBD /conferences: 327 Heartland Collegiate Conference (ii 1978-89),"A different body from the D-III Heartland Collegiate Athletic Conference (111, cfb:heartland), which CFBD gives the same short name."
+276,cfb:sciac,CFBD /conferences: 276 SCIAC (ii/iii 1920-38); 138 So. Cal. (iii 2014-),The Southern California Intercollegiate Athletic Conference under two CFBD labels.
+138,cfb:sciac,CFBD /conferences,
+203,cfb:rocky-mountain,CFBD /conferences: 203 RMC fbs (1909-48); 355 RMAC ii/iii (1923-71); 135 RMAC ii (2014-),The Rocky Mountain Conference and its continuation the Rocky Mountain Athletic Conference: one body that CFBD splits across tiers.
+224,cfb:american-west-conference,CFBD /conferences: 224 American West (fcs 1993-95); 302 (ii 1993),Named apart from cfb:american-west (the American's West division).
+302,cfb:american-west-conference,CFBD /conferences,

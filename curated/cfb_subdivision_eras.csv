@@ -1,0 +1,9 @@
+classification,valid_from,valid_to,subdivision_id,source,notes
+fbs,,,cfb:fbs,CFBD classification fbs; NCAA FBS record book (major-college history back to 1869),"The top tier in every era: major college before 1956, University Division 1956-72, Division I 1973-77, Division I-A 1978-2005, FBS from 2006. CFBD back-applies fbs to 1869. Scope: every CFBD affiliation spell 1869-present is published. D-I membership is complete (CFBD: 1970s on); lower tiers are complete only from 2014."
+fcs,1978,,cfb:fcs,CFBD classification fcs; NCAA created Division I-AA in 1978,Division I-AA 1978-2005 and FCS from 2006. CFBD fcs spells before 1978 (Boise State; four OVC and two Yankee schools) get the College Division for 1956-72 and no tier otherwise.
+fcs,1956,1972,cfb:college-division,NCAA University/College Division split (1956-72),
+ii,1973,,cfb:d2,CFBD classification ii; NCAA three-division structure from 1973,Division II. Before 2014 CFBD holds only D-II programs it tracks for their later D-I history.
+iii,1973,,cfb:d3,CFBD classification iii; NCAA three-division structure from 1973,Division III. Before 2014 CFBD holds only D-III programs it tracks for their later D-I history.
+ii/iii,1956,1972,cfb:college-division,CFBD classification ii/iii (pre-1973 College Division); NCAA University/College Division split (1956-72),"The NCAA College Division, 1956-72. CFBD's ii, iii and fcs spells in these seasons also map here, because CFBD labels them by the conference's later tier. Before 1956 (no NCAA divisions) non-fbs spells get no tier."
+ii,1956,1972,cfb:college-division,NCAA University/College Division split (1956-72),
+iii,1956,1972,cfb:college-division,NCAA University/College Division split (1956-72),

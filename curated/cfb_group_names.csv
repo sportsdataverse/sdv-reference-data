@@ -1,0 +1,33 @@
+group_id,valid_from,valid_to,name,short_name,abbreviation,source,notes
+cfb:fbs,,1955,Major college,Major college,,NCAA FBS record book (major-college history),No NCAA divisions before 1956.
+cfb:fbs,1956,1972,NCAA University Division,University Division,UD,NCAA University/College Division split (1956),
+cfb:fbs,1973,1977,NCAA Division I,Division I,D-I,NCAA three-division structure (1973),
+cfb:fbs,1978,2005,NCAA Division I-A,Division I-A,I-A,NCAA split of Division I into I-A and I-AA (1978),
+cfb:fbs,2006,,NCAA Division I Football Bowl Subdivision,FBS,FBS,NCAA renamed I-A the Football Bowl Subdivision (2006),
+cfb:fcs,1978,2005,NCAA Division I-AA,Division I-AA,I-AA,NCAA split of Division I into I-A and I-AA (1978),
+cfb:fcs,2006,,NCAA Division I Football Championship Subdivision,FCS,FCS,NCAA renamed I-AA the Football Championship Subdivision (2006),
+cfb:college-division,1956,1972,NCAA College Division,College Division,CD,NCAA University/College Division split (1956),
+cfb:d2,1973,,NCAA Division II,Division II,D-II,NCAA three-division structure (1973),
+cfb:d3,1973,,NCAA Division III,Division III,D-III,NCAA three-division structure (1973),
+cfb:pac-12,1959,1967,Athletic Association of Western Universities,AAWU,AAWU,CFBD 213; pac-12.com history,
+cfb:pac-12,1968,1977,Pacific-8 Conference,Pac-8,Pac-8,CFBD 216; pac-12.com history,
+cfb:pac-12,1978,2010,Pacific-10 Conference,Pac-10,Pac-10,CFBD 220; pac-12.com history,CFBD spells it 'Pacific 10'. ESPN labels these seasons 'Pac-12' (today's label).
+cfb:pac-12,2011,,Pac-12 Conference,Pac-12,Pac-12,CFBD 9; ESPN group 9,
+cfb:american,2013,2024,American Athletic Conference,American Athletic,AAC,CFBD 151,
+cfb:american,2025,,American Conference,American,AAC,ESPN group 151 (renamed July 2025),"CFBD still says American Athletic. ESPN abbreviates it 'American', and the conference brands itself 'The American'."
+cfb:wac,1962,2022,Western Athletic Conference,WAC,WAC,CFBD 215 and 16,
+cfb:mvfc,1985,1991,Gateway Collegiate Athletic Conference,Gateway,GCAC,CFBD 298,
+cfb:mvfc,1992,2007,Gateway Football Conference,Gateway,GFC,CFBD 299,
+cfb:mvfc,2008,,Missouri Valley Football Conference,MVFC,MVFC,CFBD 21; ESPN group 21,
+cfb:caa,2007,2022,Colonial Athletic Association,CAA,CAA,CFBD 48,
+cfb:caa,2023,,Coastal Athletic Association,CAA,CAA,CFBD 301; ESPN group 48,
+cfb:ovc,,2022,Ohio Valley Conference,OVC,OVC,CFBD 26,
+cfb:ovc,2023,2024,Big South-OVC Football Association,Big South-OVC,BSOVC,CFBD 179,
+cfb:ovc,2025,2025,OVC-Big South Football Association,OVC-Big South,OVCBS,CFBD 351,
+cfb:ovc,2026,,Ohio Valley Conference,OVC,OVC,CFBD 26 (resumed 2026); ESPN group 179,
+cfb:fbs-independents,,1977,Independents,Independents,Ind,CFBD 18,CFBD back-applies 'FBS Independents' to 1869.
+cfb:fbs-independents,1978,2005,Division I-A Independents,I-A Independents,Ind,CFBD 18,
+cfb:fbs-independents,2006,,FBS Independents,FBS Independents,Ind,CFBD 18; ESPN group 18,
+cfb:fcs-independents,1978,2005,Division I-AA Independents,I-AA Independents,INDAA,CFBD 32,
+cfb:fcs-independents,2006,,FCS Independents,FCS Independents,INDAA,CFBD 32; ESPN group 32,
+cfb:swac,,,Southwestern Athletic Conference,SWAC,SWAC,CFBD 31,CFBD's 1977 id 219 misspells it 'Southwest Athletic Conference'.
