@@ -21,13 +21,13 @@ import json
 import os
 import re
 import time
-from datetime import UTC, datetime
 from pathlib import Path
 
 import polars as pl
 import requests
 
 from sdv_reference.espn import CORE, LEAGUE_PATHS, get_json
+from sdv_reference.refresh import current_season, seasons_to_fetch
 from sdv_reference.schema import conform
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -40,8 +40,8 @@ STATS_RAW = Path(
         "/mnt/sdv_repos/hoopR-nba-stats-raw/nba_stats/json/leaguestandingsv3",
     )
 )
-STATS_SEASONS = range(1997, 2028)  # ending years; directory = season - 1
-ESPN_SEASONS = range(1985, 2028)  # ESPN NBA groups start with 1984-85
+STATS_SEASONS = range(1997, current_season(ending_year=True) + 1)  # ending years; directory = season - 1
+ESPN_SEASONS = range(1985, current_season(ending_year=True) + 1)  # ESPN NBA groups start with 1984-85
 
 
 # ================================================================ shared helpers (nfl, wnba import these)
@@ -81,9 +81,10 @@ def _item_ids(d: dict, pattern: str = r"/(\d+)(?:\?|$)") -> list[str]:
 
 def espn_walk(
     league: str, season: int, session: requests.Session, team_objects: bool = False
-) -> dict:
+) -> dict | None:
     """One season of an ESPN pro league: every group (conference → division) with its leaf team ids, the season's
-    team list, and optionally each team-season object (name / abbreviation as ESPN has it for that season)."""
+    team list, and optionally each team-season object (name / abbreviation as ESPN has it for that season). None
+    when ESPN has no groups for the season (not yet created)."""
     sport, lg = LEAGUE_PATHS[league]
     base = f"{CORE}/{sport}/leagues/{lg}/seasons/{season}"
     groups = []
@@ -113,11 +114,12 @@ def espn_walk(
     top = _get(f"{base}/types/2/groups?limit=100", session)
     for gid in _item_ids(top):
         visit(gid, 0)
+    if not groups:
+        return None
     season_teams = _item_ids(_get(f"{base}/teams?limit=1000", session), r"/teams/(\d+)")
-    out = {
+    out = {  # no fetch timestamp: an unchanged season must rewrite the same bytes (git log dates the snapshot)
         "league": league,
         "season": season,
-        "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "groups": groups,
         "season_team_ids": season_teams,
     }
@@ -135,17 +137,16 @@ def espn_walk(
     return out
 
 
-def fetch_espn(
-    league: str, seasons, team_objects: bool = False, refresh_from: int | None = None
-) -> None:
-    """Walk ESPN for each season into raw/{league}/espn/{season}.json.gz; closed seasons already on disk are kept."""
+def fetch_espn(league: str, seasons, team_objects: bool = False) -> None:
+    """Walk ESPN into raw/{league}/espn/{season}.json.gz for the refresh.seasons_to_fetch() seasons; the other
+    season files are kept, and a season ESPN doesn't have yet gets no file."""
     session = requests.Session()
-    for s in seasons:
-        p = RAW / league / "espn" / f"{s}.json.gz"
-        if p.exists() and (refresh_from is None or s < refresh_from):
-            continue
-        write_gz(p, espn_walk(league, s, session, team_objects))
-        print(f"{league}: espn {s}", flush=True)
+    have = [int(p.name.split(".")[0]) for p in (RAW / league / "espn").glob("*.json.gz")]
+    for s in seasons_to_fetch(seasons, have):
+        d = espn_walk(league, s, session, team_objects)
+        if d is not None:
+            write_gz(RAW / league / "espn" / f"{s}.json.gz", d)
+        print(f"{league}: espn {s}{'' if d else ' absent'}", flush=True)
 
 
 def espn_frames(league: str) -> tuple[pl.DataFrame, pl.DataFrame, pl.DataFrame]:
@@ -215,11 +216,25 @@ def espn_frames(league: str) -> tuple[pl.DataFrame, pl.DataFrame, pl.DataFrame]:
     return groups, members, teams
 
 
+STATS_KEEP = ("SeasonID", "TeamID", "TeamCity", "TeamName", "Conference", "Division")
+
+
 def copy_stats_standings(league: str, src: Path, dirs) -> None:
-    """Snapshot the captured stats `leaguestandingsv3` regular-season JSON into raw/{league}/stats/{start}.json.gz."""
+    """Snapshot the captured stats `leaguestandingsv3` regular-season JSON into raw/{league}/stats/{start}.json.gz,
+    keeping only the identity columns (STATS_KEEP) sorted by TeamID: records and standing order change every game
+    day, membership doesn't. A local copy of every season, so no refresh window; a season not captured yet is
+    skipped."""
     for d in dirs:
         f = src / str(d) / "regular-season.json"
-        write_gz(RAW / league / "stats" / f"{d}.json.gz", f.read_bytes())
+        if not f.exists():
+            continue
+        payload = json.loads(f.read_bytes())
+        rs = payload["resultSets"][0]
+        idx = [rs["headers"].index(h) for h in STATS_KEEP]
+        rs["headers"] = list(STATS_KEEP)
+        rs["rowSet"] = sorted(([r[i] for i in idx] for r in rs["rowSet"]), key=lambda r: r[1])
+        payload["resultSets"] = [rs]
+        write_gz(RAW / league / "stats" / f"{d}.json.gz", payload)
 
 
 # ================================================================ NBA fetch / build
@@ -228,7 +243,7 @@ def copy_stats_standings(league: str, src: Path, dirs) -> None:
 def fetch() -> None:
     """Network + sibling-repo reads: raw/nba/stats/{start}.json.gz and raw/nba/espn/{season}.json.gz."""
     copy_stats_standings(LEAGUE, STATS_RAW, [s - 1 for s in STATS_SEASONS])
-    fetch_espn(LEAGUE, ESPN_SEASONS, refresh_from=max(ESPN_SEASONS) - 1)
+    fetch_espn(LEAGUE, ESPN_SEASONS)
 
 
 def read_curated(name: str) -> pl.DataFrame:

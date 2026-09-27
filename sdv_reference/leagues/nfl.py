@@ -36,20 +36,25 @@ from sdv_reference.leagues.nba import (
     read_curated,
     write_gz,
 )
+from sdv_reference.refresh import current_season
 
 LEAGUE = "nfl"
 # nflreadr::load_schedules() reads nfldata/data/games.rds; games.csv beside it is the same table
 GAMES_URL = "https://github.com/nflverse/nfldata/raw/master/data/games.csv"
-ESPN_SEASONS = range(1986, 2027)  # ESPN NFL groups start with 1986
+ESPN_SEASONS = range(1986, current_season(ending_year=False) + 1)  # ESPN NFL groups start with 1986
+# the schedule columns build() reads, plus game_id: scores and kickoff times change every game day, these don't
+GAMES_KEEP = ["game_id", "season", "away_team", "home_team", "div_game"]
 FIRST_NFLVERSE = 1999
 
 
 def fetch() -> None:
-    """raw/nfl/nflverse_games.csv.gz (schedules, 1999+) and raw/nfl/espn/{season}.json.gz (with team objects)."""
+    """raw/nfl/nflverse_games.csv.gz (schedules, 1999+: one call for every season, GAMES_KEEP columns) and
+    raw/nfl/espn/{season}.json.gz (with team objects, refresh window only)."""
     r = requests.get(GAMES_URL, timeout=120)
     r.raise_for_status()
-    write_gz(RAW / LEAGUE / "nflverse_games.csv.gz", r.content)
-    fetch_espn(LEAGUE, ESPN_SEASONS, team_objects=True, refresh_from=max(ESPN_SEASONS))
+    games = pl.read_csv(io.BytesIO(r.content), columns=GAMES_KEEP, infer_schema=False)
+    write_gz(RAW / LEAGUE / "nflverse_games.csv.gz", games.write_csv().encode())
+    fetch_espn(LEAGUE, ESPN_SEASONS, team_objects=True)
 
 
 def _find(parent: dict[str, str], x: str) -> str:

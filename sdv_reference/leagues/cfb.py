@@ -20,7 +20,6 @@ import gzip
 import json
 import os
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
 
 import polars as pl
@@ -75,14 +74,14 @@ def _read_json_gz(path: Path):
 
 
 def fetch() -> None:
-    """Snapshot the sources into raw/cfb/: two CFBD calls, the cached ESPN group walk, and ESPN's team universe."""
-    from sdv_reference.espn import CACHE, cached_groups
+    """Snapshot the sources into raw/cfb/: two CFBD calls (every season each), ESPN's FBS/FCS group walk for the
+    refresh.seasons_to_fetch() seasons (the rest of raw/ is kept; the 2001-2026 base is the 2026-09-26 research
+    walk), and ESPN's team universe. The manifest carries no fetch timestamp: git log dates the snapshot."""
+    from sdv_reference.espn import CORE
+    from sdv_reference.leagues.mlb import espn_walk
 
     headers = {"Authorization": f"Bearer {_cfbd_key()}", "Accept": "application/json"}
-    manifest = {
-        "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "files": {},
-    }
+    manifest = {"files": {}}
     for name, path in [
         ("cfbd_conferences", "/conferences"),
         ("cfbd_affiliations", "/conferences/affiliations"),
@@ -94,12 +93,17 @@ def fetch() -> None:
             "source": CFBD + path,
             "rows": len(r.json()),
         }
-    espn = cached_groups("cfb")
-    if not espn:
-        raise RuntimeError("ESPN group cache is empty; set SDV_ESPN_GROUP_CACHE")
-    _write_json_gz(RAW / "espn_groups.json.gz", espn)
+    # ESPN seasons stop at build()'s last season: an ESPN list for a season CFBD lacks would be all "missing" teams
+    aff = _read_json_gz(RAW / "cfbd_affiliations.json.gz")
+    last = max(y for r in aff for y in (r["startYear"], r["endYear"]) if y is not None)
+    espn = espn_walk(
+        "cfb",
+        list(range(2001, last + 1)),
+        RAW / "espn_groups.json.gz",
+        roots=tuple(ESPN_SUBDIVISIONS),
+    )
     manifest["files"]["espn_groups.json.gz"] = {
-        "source": str(CACHE / "cfb.jsonl"),
+        "source": f"{CORE}/football/leagues/college-football/seasons/{{season}}/types/2/groups/{{80,81}}",
         "rows": len(espn),
     }
     teams = (

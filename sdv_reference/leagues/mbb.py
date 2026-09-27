@@ -25,20 +25,20 @@ import json
 import re
 import subprocess
 import time
-from datetime import UTC, datetime
 from pathlib import Path
 
 import polars as pl
 import requests
 
-from sdv_reference.espn import LEAGUE_PATHS, cached_groups, get_json, group_url
+from sdv_reference.espn import CORE, LEAGUE_PATHS, cached_groups, get_json, group_url
+from sdv_reference.refresh import current_season, seasons_to_fetch
 from sdv_reference.schema import conform
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW, CURATED = ROOT / "raw", ROOT / "curated"
 # ESPN's WBB 2001 membership is an exact copy of 2002 (TCU already in C-USA, Louisiana Tech in the WAC), so WBB starts
 # in 2002; MBB 2001 has no conferences at all.
-SEASONS = {"mbb": range(2002, 2028), "wbb": range(2002, 2028)}
+SEASONS = {lg: range(2002, current_season(ending_year=True) + 1) for lg in ("mbb", "wbb")}
 D1 = "50"  # ESPN "NCAA Division I" in both leagues
 STANDINGS = "https://site.web.api.espn.com/apis/v2/sports/basketball/{lg}/standings?season={s}&group=50"
 SDV_PY = Path("/mnt/sdv_repos/sdv-py")
@@ -142,11 +142,15 @@ def _standings_season(d: dict) -> int | None:
 
 
 def _trim(x):
-    """Drop the per-team stats, links and logos from a standings payload (95% of its bytes; never read)."""
+    """Drop the per-team stats, links and logos from a standings payload (95% of its bytes; never read), and sort
+    each group's entries by team id: the standing order changes every game day, membership doesn't."""
     if isinstance(x, dict):
-        return {
+        out = {
             k: _trim(v) for k, v in x.items() if k not in ("stats", "links", "logos")
         }
+        if isinstance(out.get("entries"), list):
+            out["entries"].sort(key=lambda e: str((e.get("team") or {}).get("id")))
+        return out
     return [_trim(v) for v in x] if isinstance(x, list) else x
 
 
@@ -159,9 +163,20 @@ def _write_gz(path: Path, text: str) -> None:
     tmp.rename(path)
 
 
+def _seasons(league: str) -> list[int]:
+    """Seasons with an ESPN group tree in raw/{league}/."""
+    return sorted(
+        int(p.name.removeprefix("espn_groups_").split(".")[0])
+        for p in (RAW / league).glob("espn_groups_*.jsonl.gz")
+    )
+
+
 def fetch_league(league: str) -> None:
-    """Snapshot every source into raw/{league}/: skips files already there (closed seasons never change);
-    delete a file to refresh it. Live ESPN calls go through $SDV_API_PROXY at ~1 request/second."""
+    """Snapshot every source into raw/{league}/. ESPN's group tree and standings are fetched only for the
+    refresh.seasons_to_fetch() seasons, and the other season files are kept; a season ESPN has no groups for yet
+    gets no files. A first fetch takes seasons before the refresh window from the research cache when it has them.
+    Live ESPN calls go through $SDV_API_PROXY at ~1 request/second. Provenance carries no fetch timestamps, so an
+    unchanged season rewrites the same bytes (git log dates the snapshot)."""
     out = RAW / league
     out.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
@@ -170,46 +185,51 @@ def fetch_league(league: str) -> None:
         cached.setdefault(r["season"], []).append(r)
     prov_path = out / "provenance.json"
     prov = json.loads(prov_path.read_text()) if prov_path.exists() else {}
-    now = datetime.now(UTC).isoformat(timespec="seconds")
-    for s in SEASONS[league]:
+    have = _seasons(league)
+    todo = seasons_to_fetch(SEASONS[league], have)
+    live = set(todo) if have else set(seasons_to_fetch(SEASONS[league], SEASONS[league]))
+    sport, lg = LEAGUE_PATHS[league]
+    for s in todo:
         p = out / f"espn_groups_{s}.jsonl.gz"
-        if not p.exists():
-            rows = cached.get(s, [])
-            src = "research cache 2026-09-26 walk"
-            if not rows:
-                rows, src = _walk(league, s, session), f"live core walk {now}"
-            elif not any(
-                "team_ids" in r for r in rows
-            ):  # cached tree, no team lists: fetch the leaves' lists
-                for r in rows:
-                    if not r["children"]:
-                        r["team_ids"] = _team_ids(league, s, r["id"], session)
-                src = f"research cache 2026-09-26 tree + live leaf team lists {now}"
-            _write_gz(p, "".join(json.dumps(r) + "\n" for r in rows))
-            prov[p.name] = src
-            print(f"{league} {s}: {len(rows)} groups ({src})", flush=True)
+        rows = [] if s in live else cached.get(s, [])
+        src = "research cache 2026-09-26 walk"
+        if not rows:
+            top = _get(f"{CORE}/{sport}/leagues/{lg}/seasons/{s}/types/2/groups?limit=100", session)
+            if not top.get("items"):  # the D-I group answers for any season; the season list doesn't
+                print(f"{league} {s}: absent (ESPN has no groups yet)", flush=True)
+                continue
+            rows, src = _walk(league, s, session), "live core walk"
+        elif not any(
+            "team_ids" in r for r in rows
+        ):  # cached tree, no team lists: fetch the leaves' lists
+            for r in rows:
+                if not r["children"]:
+                    r["team_ids"] = _team_ids(league, s, r["id"], session)
+            src = "research cache 2026-09-26 tree + live leaf team lists"
+        _write_gz(p, "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
+        prov[p.name] = src
+        print(f"{league} {s}: {len(rows)} groups ({src})", flush=True)
         q = out / f"espn_standings_{s}.json.gz"
-        if not q.exists():
-            d = _get(STANDINGS.format(lg=LEAGUE_PATHS[league][1], s=s), session)
-            _write_gz(q, json.dumps(_trim(d)))
-            prov[q.name] = (
-                f"live site.web standings {now}; echoed season {_standings_season(d)}"
-            )
-            print(f"{league} {s}: standings (echo {_standings_season(d)})", flush=True)
+        d = _get(STANDINGS.format(lg=lg, s=s), session)
+        _write_gz(q, json.dumps(_trim(d), sort_keys=True))
+        prov[q.name] = f"live site.web standings; echoed season {_standings_season(d)}"
+        print(f"{league} {s}: standings (echo {_standings_season(d)})", flush=True)
         prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True))
-    sha = subprocess.run(
-        ["git", "-C", str(SDV_PY), "rev-parse", "origin/main"],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
     for name, path in GIT_FILES[league].items():
+        git = ["git", "-C", str(SDV_PY)]
         text = subprocess.run(
-            ["git", "-C", str(SDV_PY), "show", f"origin/main:{path}"],
+            [*git, "show", f"origin/main:{path}"],
             capture_output=True,
             text=True,
             check=True,
         ).stdout
+        # the commit that last changed the file, not origin/main's head: provenance moves only with the content
+        sha = subprocess.run(
+            [*git, "log", "-1", "--format=%H", "origin/main", "--", path],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
         _write_gz(out / name, text)
         prov[name] = f"sportsdataverse-py origin/main {sha}:{path}"
     prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True))
@@ -335,7 +355,7 @@ def build_league(league: str) -> dict[str, pl.DataFrame]:
             ncaa[(s, espn_id)] = code_of[("ncaa", label)]
 
     tgs, div_label, espn_seen, team_names = [], {}, {}, {}
-    for s in SEASONS[league]:
+    for s in _seasons(league):
         tree, core, stand, labels, names_s = _espn_season(league, s)
         team_names |= names_s
         for gid, r in tree.items():

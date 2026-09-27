@@ -28,6 +28,7 @@ from sdv_reference.leagues.mlb import (
     read_json_gz,
     write_json_gz,
 )
+from sdv_reference.refresh import seasons_to_fetch
 
 LEAGUE = "nhl"
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,8 +46,7 @@ STANDINGS_KEEP = (
     "conferenceName",
     "divisionAbbrev",
     "divisionName",
-    "gamesPlayed",
-)
+)  # no gamesPlayed or standing order: a weekly in-season refresh should diff only when membership changes
 
 
 def _get(url: str, session: requests.Session) -> dict:
@@ -63,7 +63,11 @@ def _get(url: str, session: requests.Session) -> dict:
 
 
 def fetch() -> None:
-    """Snapshot raw/nhl/: season list, season-end standings per season, stats team-season ids, then ESPN's walk."""
+    """Snapshot raw/nhl/: season list, standings per season, stats team-season ids, then ESPN's walk.
+
+    Standings are requested only for refresh.seasons_to_fetch() seasons, as of the season's end or today if it is
+    still running; a season with no standings yet (before opening night) stays absent. The season list and the two
+    stats calls cover every season in one request each, so they stay full."""
     s = requests.Session()
     today = dt.datetime.now(dt.UTC).date().isoformat()
     seasons = [
@@ -71,27 +75,35 @@ def fetch() -> None:
         for x in _get(f"{WEB}/standings-season", s)["seasons"]
         if x["standingsStart"] <= today
     ]
-    standings = {}
+    path = RAW / "standings.json.gz"
+    old = read_json_gz(path)["standings"] if path.exists() else {}
+
+    def keep(rows: list[dict]) -> list[dict]:
+        return sorted(({k: r.get(k) for k in STANDINGS_KEEP} for r in rows), key=lambda r: r["teamAbbrev"]["default"])
+
+    standings = {k: keep(v) for k, v in old.items()}
+    todo = seasons_to_fetch([x["id"] % 10000 for x in seasons], [int(k) % 10000 for k in old])
     for x in seasons:
-        rows = _get(f"{WEB}/standings/{x['standingsEnd']}", s)["standings"]
-        standings[str(x["id"])] = [{k: r.get(k) for k in STANDINGS_KEEP} for r in rows]
+        if x["id"] % 10000 not in todo:
+            continue
+        rows = _get(f"{WEB}/standings/{min(x['standingsEnd'], today)}", s)["standings"]
+        if rows:
+            standings[str(x["id"])] = keep(rows)
         print(f"standings {x['id']}: {len(rows)} teams", flush=True)
-    write_json_gz(
-        RAW / "standings.json.gz", {"seasons": seasons, "standings": standings}
-    )
+    write_json_gz(path, {"seasons": seasons, "standings": standings})
     summary = _get(
         f"{REST}/team/summary?isAggregate=false&isGame=false&limit=-1&start=0&cayenneExp=gameTypeId=2",
         s,
     )
     write_json_gz(
         RAW / "stats_team_seasons.json.gz",
-        [
-            {k: r[k] for k in ("seasonId", "teamId", "teamFullName", "gamesPlayed")}
-            for r in summary["data"]
-        ],
+        sorted(
+            ({k: r[k] for k in ("seasonId", "teamId", "teamFullName")} for r in summary["data"]),
+            key=lambda r: (r["seasonId"], r["teamId"]),
+        ),
     )
-    write_json_gz(RAW / "stats_teams.json.gz", _get(f"{REST}/team", s)["data"])
-    last = max(x["id"] for x in seasons) % 10000
+    write_json_gz(RAW / "stats_teams.json.gz", sorted(_get(f"{REST}/team", s)["data"], key=lambda t: t["id"]))
+    last = max(int(k) for k in standings) % 10000
     espn_walk(LEAGUE, list(range(1918, last + 1)), RAW / "espn_groups.json.gz")
 
 

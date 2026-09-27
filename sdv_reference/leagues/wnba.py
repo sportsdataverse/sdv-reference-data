@@ -26,6 +26,7 @@ from sdv_reference.leagues.nba import (
     read_curated,
     stats_members,
 )
+from sdv_reference.refresh import current_season
 
 LEAGUE = "wnba"
 STATS_RAW = Path(
@@ -34,7 +35,7 @@ STATS_RAW = Path(
         "/mnt/sdv_repos/wehoop-wnba-stats-raw/wnba_stats/json/leaguestandingsv3",
     )
 )
-SEASONS = range(1997, 2027)
+SEASONS = range(1997, current_season(ending_year=False) + 1)
 # ESPN's group lists carry Sacramento twice in 2001-2006 (2793 "SACRA" and 13 "SAC"); its games use 13
 ESPN_TEAM_ALIASES = {"2793": "13"}
 
@@ -42,7 +43,7 @@ ESPN_TEAM_ALIASES = {"2793": "13"}
 def fetch() -> None:
     """raw/wnba/stats/{season}.json.gz (captured standings) and raw/wnba/espn/{season}.json.gz (with team objects)."""
     copy_stats_standings(LEAGUE, STATS_RAW, SEASONS)
-    fetch_espn(LEAGUE, SEASONS, team_objects=True, refresh_from=max(SEASONS))
+    fetch_espn(LEAGUE, SEASONS, team_objects=True)
 
 
 def build() -> dict[str, pl.DataFrame]:
