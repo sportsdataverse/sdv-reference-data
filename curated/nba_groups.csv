@@ -1,0 +1,11 @@
+group_id,level,parent_group_id,name,short_name,abbreviation,first_season,last_season,espn_group_id,stats_name,source,notes
+nba:nba,league,,National Basketball Association,NBA,NBA,1971,2027,7,,https://en.wikipedia.org/wiki/1970%E2%80%9371_NBA_season,"SDV coverage starts with 1970-71 (season 1971), the first season with two conferences and four divisions."
+nba:east,conference,nba:nba,Eastern Conference,East,EAST,1971,2027,5,East,https://en.wikipedia.org/wiki/Eastern_Conference_(NBA),stats.nba.com says East; hoopR's static map says Eastern.
+nba:west,conference,nba:nba,Western Conference,West,WEST,1971,2027,6,West,https://en.wikipedia.org/wiki/Western_Conference_(NBA),stats.nba.com says West; hoopR's static map says Western.
+nba:atlantic,division,nba:east,Atlantic Division,Atlantic,AT,1971,2027,1,Atlantic,https://en.wikipedia.org/wiki/Atlantic_Division_(NBA),One lineage 1970-71 onward (ESPN id 1).
+nba:central,division,nba:east,Central Division,Central,CE,1971,2027,2,Central,https://en.wikipedia.org/wiki/Central_Division_(NBA),One lineage 1970-71 onward (ESPN id 2).
+nba:midwest,division,nba:west,Midwest Division,Midwest,MI,1971,2004,3,Midwest,https://en.wikipedia.org/wiki/Midwest_Division_(NBA),Dissolved in the 2004-05 realignment; the Northwest and Southwest are new lineages (ESPN ids 11 and 10).
+nba:pacific,division,nba:west,Pacific Division,Pacific,PA,1971,2027,4,Pacific,https://en.wikipedia.org/wiki/Pacific_Division_(NBA),One lineage 1970-71 onward (ESPN id 4).
+nba:southeast,division,nba:east,Southeast Division,Southeast,SE,2005,2027,9,Southeast,https://en.wikipedia.org/wiki/Southeast_Division_(NBA),"New in 2004-05. ESPN's 2003-04 'Southeast' holding only Charlotte (30), a year before the Bobcats played, is a ghost and is ignored."
+nba:southwest,division,nba:west,Southwest Division,Southwest,SW,2005,2027,10,Southwest,https://en.wikipedia.org/wiki/Southwest_Division_(NBA),New in 2004-05.
+nba:northwest,division,nba:west,Northwest Division,Northwest,NW,2005,2027,11,Northwest,https://en.wikipedia.org/wiki/Northwest_Division_(NBA),New in 2004-05.

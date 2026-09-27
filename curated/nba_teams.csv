@@ -1,0 +1,32 @@
+nba_stats_team_id,espn_team_id,first_season,last_season,source,notes
+1610612737,1,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Atlanta Hawks
+1610612738,2,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Boston Celtics
+1610612739,5,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Cleveland Cavaliers
+1610612740,3,2003,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,New Orleans Hornets/Pelicans; stats first lists this TeamID in 2002-03
+1610612741,4,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Chicago Bulls
+1610612742,6,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Dallas Mavericks
+1610612743,7,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Denver Nuggets
+1610612744,9,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Golden State Warriors
+1610612745,10,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Houston Rockets
+1610612746,12,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Los Angeles / LA Clippers
+1610612747,13,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Los Angeles Lakers
+1610612748,14,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Miami Heat
+1610612749,15,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Milwaukee Bucks
+1610612750,16,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Minnesota Timberwolves
+1610612751,17,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,New Jersey / Brooklyn Nets
+1610612752,18,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,New York Knicks
+1610612753,19,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Orlando Magic
+1610612754,11,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Indiana Pacers
+1610612755,20,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Philadelphia 76ers
+1610612756,21,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Phoenix Suns
+1610612757,22,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Portland Trail Blazers
+1610612758,23,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Sacramento Kings
+1610612759,24,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,San Antonio Spurs
+1610612760,25,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Seattle SuperSonics / Oklahoma City Thunder
+1610612761,28,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Toronto Raptors
+1610612762,26,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Utah Jazz
+1610612763,29,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Vancouver / Memphis Grizzlies
+1610612764,27,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Washington Bullets / Wizards
+1610612765,8,1997,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Detroit Pistons
+1610612766,3,1997,2002,ESPN core seasons/{1997..2003}/types/2/groups/2/teams (probed 2026-09-26),"Charlotte Hornets 1996-2002: stats.nba.com reassigned this history to TeamID 1610612766 (today's Charlotte franchise), but ESPN lists the team as id 3 (the New Orleans lineage), and ESPN ids are the SDV team_id."
+1610612766,30,2005,2027,hoopR-nba-data nba_team_crosswalk_2027.parquet,Charlotte Bobcats (2004-05) / Hornets (2014-15); no stats rows for 2002-03 or 2003-04
