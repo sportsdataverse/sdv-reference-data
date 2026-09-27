@@ -6,10 +6,11 @@
 |---|---|---|---|---|
 | 10 | `scripts/pipeline/10_fetch_sources.sh [league ...]` | weekly (see [Cadence](#cadence)); any time a season starts | refreshes only the newest seasons in `raw/{league}/` ([Refresh window](#refresh-window)); an unchanged source rewrites the same bytes; commit what changes | ~2 min for NHL + NBA; ~15 min for all leagues (~650 ESPN requests at ~1 req/s) |
 | 20 | `scripts/pipeline/20_build_tables.sh [league ...]` | after every stage 10, and after any `curated/` change | offline, from `raw/` + `curated/` (same tables every run); refuses tables that fail `CONTRACT.md` | ~10 s for all leagues |
-| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after a reviewed build whose `raw/` or `curated/` changed | `--clobber` per asset; creates `{league}_groups` once | ~1 min per league |
+| 25 | `scripts/pipeline/25_commit_raw.sh` | after every stage 20 | exits 3 (clean stop, nothing to publish) when `raw/` is unchanged; otherwise runs `uv run pytest -q`, commits `raw/` to `main`, and writes `build/.changed_leagues` | ~1 min |
+| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after stage 25 lands a change | `--clobber` per asset; creates `{league}_groups` once; with no arguments, only the leagues in `build/.changed_leagues` | ~1 min per league |
 
-Stage 10 changes committed data: review the `raw/` diff and rebuild before publishing. Run stages individually when
-you only need to rebuild or republish.
+Stage 10 changes committed data; stage 25 lands it and stage 30 republishes only the leagues it changed. Run stages
+individually when you only need to rebuild or republish.
 
 ## Refresh window
 
@@ -80,7 +81,9 @@ of every season in `raw/` is about 11,300 requests.
   - WNBA: spring
   - NCAA baseball/softball: when baseballr-data / softballR-data refresh their files
 - **Stage 20** after every stage 10, gated by `uv run pytest -q` (the realignment assertions).
-- **Stage 30** only for leagues whose `raw/` or `curated/` changed, after the diff has been reviewed.
+- **Stage 30** only for leagues whose `raw/` changed (stage 25 records them); `curated/` edits go through a PR and are
+  published by hand with `30_publish_releases.sh <league>`. Republishing every league re-uploads ~1,300 assets, which
+  trips GitHub's per-account upload limit (403 "API rate limit exceeded" even while `gh api rate_limit` shows quota).
   - Don't use build hashes to detect a change. Byte order is not stable across builds: rows that tie on the output sort
     keys (`cfb`/`ncaa_*` group_aliases) and the example list in the `nhl:nhl` notes vary run to run on the same `raw/`.
   - Use `git diff --quiet raw/ curated/` instead.
@@ -94,18 +97,10 @@ the hour:
 
 Watch it with `tail -f /mnt/sdv_repos/sdv-reference-data/logs/pipeline.log`; each stage logs `STAGE=… DURATION=… EXIT=…`.
 
-### Landing `raw/` changes (proposal, not implemented)
+### Landing `raw/` changes
 
-- The README commits snapshots "for provenance", and this runbook asks for review before publishing. So scheduled
-  runs should not publish unreviewed data.
-- Proposed: `run_pipeline.sh` gains a `25_land_raw.sh` stage between build and publish:
-  1. `git diff --quiet raw/`: nothing changed, so print `RAW=unchanged` and stop before stage 30 (nothing to
-     republish).
-  2. Otherwise run `uv run pytest -q`, then commit only `raw/` on a dated branch `raw-refresh/YYYY-MM-DD` as
-     `chore(raw): refresh <leagues> (YYYY-MM-DD)`, one commit per run and no AI trailers. Push that branch, open a PR
-     whose body lists the changed leagues and seasons, and stop before stage 30.
-  3. After the PR merges, run `scripts/pipeline/30_publish_releases.sh <leagues>` from `main`.
-- A deliberate stop before 30 exits with code 3, which `run_pipeline.sh` treats as a clean stop rather than a failure.
-- Alternative, if raw snapshots count as data under the org rule "data repos commit to main":
-  - commit `raw/` straight to `main` and publish in the same run;
-  - `validate()` and the tests are then the only review.
+Raw snapshots are data, so they follow the org rule for data repos and land on `main` directly; code and `curated/`
+changes go through PRs. Stage 25 is the gate: when `raw/` is unchanged it exits 3 and `run_pipeline.sh` stops cleanly
+before publishing. Otherwise it runs `uv run pytest -q` (the realignment assertions), commits only `raw/` as
+`chore(raw): refresh source snapshots YYYY-MM-DD (<leagues>)`, rebases on `origin/main`, pushes, and hands the changed
+leagues to stage 30. Stage 20's `validate()` has already refused any table that breaks `CONTRACT.md`.

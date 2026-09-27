@@ -6,6 +6,10 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 REPO=sportsdataverse/sportsdataverse-data
 leagues=("$@")
+# with no arguments: the leagues stage 25 found changed, else every built league
+if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
+  mapfile -t leagues < build/.changed_leagues
+fi
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls build)
 for l in "${leagues[@]}"; do
   tag="${l}_groups"
