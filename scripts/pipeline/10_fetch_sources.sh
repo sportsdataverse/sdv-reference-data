@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Stage 10: refresh each league's raw source snapshots (network). Usage: 10_fetch_sources.sh [league ...]
+# ESPN's APIs block this droplet after heavy traffic, so ESPN JSON calls go through the decodo proxy,
+# whose credentials are read from ~/.Renviron at run time (never echoed). CFBD reads CFBD_API_KEY the same way.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+if [ -z "${SDV_API_PROXY:-}" ] && [ -f "$HOME/.Renviron" ]; then
+  user=$(sed -n 's/^DECODO_USER_NAME=//p' "$HOME/.Renviron" | tr -d "\"'")
+  pass=$(sed -n 's/^DECODO_PASSWORD=//p' "$HOME/.Renviron" | tr -d "\"'")
+  [ -n "$user" ] && [ -n "$pass" ] && export SDV_API_PROXY="http://${user}:${pass}@gate.decodo.com:7000"
+fi
+export UV_CACHE_DIR="${UV_CACHE_DIR:-/mnt/sdv_repos/.uv-cache}"
+leagues=("$@")
+[ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls sdv_reference/leagues | sed -n 's/^\([a-z][a-z_]*\)\.py$/\1/p' | grep -v '^__init__$')
+for l in "${leagues[@]}"; do
+  echo "fetch $l"
+  uv run python -c "from sdv_reference.leagues import $l; $l.fetch()"
+done
