@@ -23,8 +23,8 @@
  "espn_groups_2023.jsonl.gz": "live core walk 2026-09-27T02:02:37+00:00",
  "espn_groups_2024.jsonl.gz": "research cache 2026-09-26 walk",
  "espn_groups_2025.jsonl.gz": "research cache 2026-09-26 walk",
- "espn_groups_2026.jsonl.gz": "research cache 2026-09-26 walk",
- "espn_groups_2027.jsonl.gz": "research cache 2026-09-26 tree + live leaf team lists 2026-09-27T02:02:37+00:00",
+ "espn_groups_2026.jsonl.gz": "live core walk",
+ "espn_groups_2027.jsonl.gz": "live core walk",
  "espn_standings_2002.json.gz": "live site.web standings 2026-09-27T01:51:00+00:00; echoed season 2002",
  "espn_standings_2003.json.gz": "live site.web standings 2026-09-27T01:54:57+00:00; echoed season 2003",
  "espn_standings_2004.json.gz": "live site.web standings 2026-09-27T01:54:57+00:00; echoed season 2004",
@@ -49,8 +49,8 @@
  "espn_standings_2023.json.gz": "live site.web standings 2026-09-27T02:02:37+00:00; echoed season 2023",
  "espn_standings_2024.json.gz": "live site.web standings 2026-09-27T02:02:37+00:00; echoed season 2024",
  "espn_standings_2025.json.gz": "live site.web standings 2026-09-27T02:02:37+00:00; echoed season 2025",
- "espn_standings_2026.json.gz": "live site.web standings 2026-09-27T02:02:37+00:00; echoed season 2026",
- "espn_standings_2027.json.gz": "live site.web standings 2026-09-27T02:02:37+00:00; echoed season None",
- "kenpom_team_info.csv.gz": "sportsdataverse-py origin/main fb2cdd43632db781585cf85b016e8a327dd3dea8:sportsdataverse/mbb/data/kp_team_info.csv",
- "ncaa_espn_team_crosswalk.csv.gz": "sportsdataverse-py origin/main fb2cdd43632db781585cf85b016e8a327dd3dea8:sportsdataverse/mbb/data/ncaa_espn_team_crosswalk_mbb.csv"
+ "espn_standings_2026.json.gz": "live site.web standings; echoed season 2026",
+ "espn_standings_2027.json.gz": "live site.web standings; echoed season None",
+ "kenpom_team_info.csv.gz": "sportsdataverse-py origin/main 42ecf2790ee1006bd7dc2c80001c7e51b6de6fc2:sportsdataverse/mbb/data/kp_team_info.csv",
+ "ncaa_espn_team_crosswalk.csv.gz": "sportsdataverse-py origin/main 35badd70a3e487051ecb47416c18f5202fd4bdc8:sportsdataverse/mbb/data/ncaa_espn_team_crosswalk_mbb.csv"
 }

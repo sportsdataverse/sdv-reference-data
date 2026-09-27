@@ -1,5 +1,4 @@
 {
-  "fetched_at": "2026-09-27T02:01:28+00:00",
   "files": {
     "cfbd_conferences.json.gz": {
       "source": "https://api.collegefootballdata.com/conferences",
@@ -10,7 +9,7 @@
       "rows": 3604
     },
     "espn_groups.json.gz": {
-      "source": "/mnt/sdv_repos/tmp/conf-research-2026-09-26/cfb.jsonl",
+      "source": "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/{season}/types/2/groups/{80,81}",
       "rows": 1070
     },
     "espn_teams.csv.gz": {
