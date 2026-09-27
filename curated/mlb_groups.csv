@@ -1,0 +1,18 @@
+group_id,level,mlb_id,espn_group_id,name,short_name,abbreviation,source,notes
+mlb:mlb,league,1,,Major League Baseball,MLB,MLB,MLB Stats API sport 1,"the league root; the Stats API files every major league (AL, NL, the 1914-15 Federal League and the seven 1920-48 Negro leagues MLB recognized in 2020) under sportId 1"
+mlb:al,conference,103,7,,,,MLB Stats API league 103 (names per season from /league),"the American League, 1901+; a conference-level group here"
+mlb:nl,conference,104,8,,,,MLB Stats API league 104 (names per season from /league),"the National League, 1901+ (this reference starts at 1901, the AL's first season)"
+mlb:federal-league,conference,106,,,,,MLB Stats API league 106,1914-15; MLB counts it as a major league. No ESPN coverage
+mlb:negro-national-league-i,conference,430,22,,,,MLB Stats API league 430,"Negro National League (I), 1920-31; MLB recognized the 1920-48 Negro leagues as major leagues in 2020. A different body from the NNL (II) of 1933-48: the Stats API gives them different ids. ESPN has the league, but its Negro-league team lists put clubs in several leagues at once and in leagues before they existed, so the cross-check mostly disagrees"
+mlb:eastern-colored-league,conference,427,19,,,,MLB Stats API league 427,1923-28 (see mlb:negro-national-league-i)
+mlb:american-negro-league,conference,426,18,,,,MLB Stats API league 426,1929 only (see mlb:negro-national-league-i)
+mlb:negro-east-west-league,conference,429,21,,,,MLB Stats API league 429,1932 only (see mlb:negro-national-league-i)
+mlb:negro-southern-league,conference,432,24,,,,MLB Stats API league 432,"1932, its one major-league season (see mlb:negro-national-league-i)"
+mlb:negro-national-league-ii,conference,431,23,,,,MLB Stats API league 431,"Negro National League (II), 1933-48 (see mlb:negro-national-league-i)"
+mlb:negro-american-league,conference,428,20,,,,MLB Stats API league 428,1937-48 (see mlb:negro-national-league-i); the Stats API lists two Detroit Stars (1508 and 6149) in 1937
+mlb:al-east,division,201,1,,,,MLB Stats API division 201 (names per season from /divisions),"lineage: one id per MLB division id. 201/200/204/203 are the 1969-93 two-division East and West AND the 1994+ three-division East and West; MLB (200-205) and ESPN (1-6) both keep the id through the 1994 split, so the lineage continues and only the membership changes"
+mlb:al-central,division,202,2,,,,MLB Stats API division 202,new in 1994 (the three-division split)
+mlb:al-west,division,200,3,,,,MLB Stats API division 200,1969+; see mlb:al-east for the 1994 lineage call
+mlb:nl-east,division,204,4,,,,MLB Stats API division 204,1969+; see mlb:al-east for the 1994 lineage call
+mlb:nl-central,division,205,5,,,,MLB Stats API division 205,new in 1994 (the three-division split)
+mlb:nl-west,division,203,6,,,,MLB Stats API division 203,1969+; see mlb:al-east for the 1994 lineage call

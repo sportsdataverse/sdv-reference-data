@@ -1,0 +1,93 @@
+mlb_team_id,espn_team_id,abbreviation,name,notes
+108,3,LAA,Los Angeles Angels,
+109,29,ARI,Arizona Diamondbacks,
+110,1,BAL,Baltimore Orioles,franchise: 1901 Milwaukee Brewers -> 1902 St. Louis Browns -> 1954 Baltimore (ESPN 1 reads Milwaukee Brewers in 1901)
+111,2,BOS,Boston Red Sox,
+112,16,CHC,Chicago Cubs,
+113,17,CIN,Cincinnati Reds,
+114,5,CLE,Cleveland Guardians,
+115,27,COL,Colorado Rockies,
+116,6,DET,Detroit Tigers,
+117,18,HOU,Houston Astros,
+118,7,KC,Kansas City Royals,
+119,19,LAD,Los Angeles Dodgers,
+120,20,WSH,Washington Nationals,franchise: Montreal Expos 1969-2004
+121,21,NYM,New York Mets,
+133,11,ATH,Athletics,franchise: Philadelphia 1901-54 -> Kansas City 1955-67 -> Oakland 1968-2024
+134,23,PIT,Pittsburgh Pirates,
+135,25,SD,San Diego Padres,
+136,12,SEA,Seattle Mariners,
+137,26,SF,San Francisco Giants,
+138,24,STL,St. Louis Cardinals,
+139,30,TB,Tampa Bay Rays,
+140,13,TEX,Texas Rangers,franchise: Washington Senators 1961-71
+141,14,TOR,Toronto Blue Jays,
+142,9,MIN,Minnesota Twins,franchise: Washington Senators 1901-60
+143,22,PHI,Philadelphia Phillies,
+144,15,ATL,Atlanta Braves,franchise: Boston 1901-52 -> Milwaukee 1953-65
+145,4,CWS,Chicago White Sox,
+146,28,MIA,Miami Marlins,
+147,10,NYY,New York Yankees,"franchise: 1901-02 Baltimore Orioles (MLB id 298) -> 1903 New York Highlanders"
+298,10,BLA,Baltimore Orioles,"the 1901-02 AL Baltimore club; MLB gives it its own id, ESPN files it under the Yankees franchise (ESPN 10 is in the 1901 and 1902 AL)"
+158,8,MIL,Milwaukee Brewers,franchise: 1969 Seattle Pilots
+1489,271,ATL,Atlanta Black Crackers,Negro leagues: matched on name and seasons (1932-1944) to ESPN core team 271 'Atlanta Black Crackers'
+1490,273,BBS,Baltimore Black Sox,Negro leagues: matched on name and seasons (1923-1934) to ESPN core team 273 'Baltimore Black Sox'
+1491,274,BEG,Baltimore Elite Giants,Negro leagues: matched on name and seasons (1930-1948) to ESPN core team 274 'Baltimore Elite Giants'
+1492,275,BBB,Birmingham Black Barons,Negro leagues: matched on name and seasons (1923-1948) to ESPN core team 275 'Birmingham Black Barons'
+1493,276,BRG,Brooklyn Royal Giants,Negro leagues: matched on name and seasons (1923-1933) to ESPN core team 276 'Brooklyn Royal Giants'
+1495,277,CAG,Chicago American Giants,Negro leagues: matched on name and seasons (1920-1948) to ESPN core team 277 'Chicago American Giants'
+1496,278,CHG,Chicago Giants,Negro leagues: matched on name and seasons (1920-1921) to ESPN core team 278 'Chicago Giants'
+1498,280,CLB,Cleveland Browns,Negro leagues: matched on name and seasons (1924-1924) to ESPN core team 280 'Cleveland Browns'
+1499,283,CLE,Cleveland Elites,Negro leagues: matched on name and seasons (1926-1926) to ESPN core team 283 'Cleveland Elites'
+1500,284,CLG,Cleveland Giants,Negro leagues: matched on name and seasons (1933-1933) to ESPN core team 284 'Cleveland Giants'
+1501,285,CLH,Cleveland Hornets,Negro leagues: matched on name and seasons (1927-1927) to ESPN core team 285 'Cleveland Hornets'
+1502,286,CRS,Cleveland Red Sox,Negro leagues: matched on name and seasons (1934-1934) to ESPN core team 286 'Cleveland Red Sox'
+1503,287,CLS,Cleveland Stars,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 287 'Cleveland Stars'
+1504,288,CTS,Cleveland Tate Stars,Negro leagues: matched on name and seasons (1922-1922) to ESPN core team 288 'Cleveland Tate Stars'
+1505,291,COL,Columbus Buckeyes,Negro leagues: matched on name and seasons (1921-1921) to ESPN core team 291 'Columbus Buckeyes'
+1506,294,CUB,Cuban Stars West,Negro leagues: matched on name and seasons (1920-1930) to ESPN core team 294 'Cuban Stars West'
+1507,295,DAY,Dayton Marcos,Negro leagues: matched on name and seasons (1920-1926) to ESPN core team 295 'Dayton Marcos'
+1508,297,DTS,Detroit Stars,Negro leagues: matched on name and seasons (1920-1937) to ESPN core team 297 'Detroit Stars'
+1509,298,DTW,Detroit Wolves,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 298 'Detroit Wolves'
+1511,300,HSL,Harrisburgh-St. Loui Stars,Negro leagues: matched on name and seasons (1938-1943) to ESPN core team 300 'Harrisburgh-St. Loui Stars'; ESPN 300 'Harrisburgh-St. Loui Stars' holds the 1938-43 club
+1512,301,HIL,Hilldale Daisies,Negro leagues: matched on name and seasons (1923-1932) to ESPN core team 301 'Hilldale Daisies'
+1513,302,HOM,Homestead Grays,Negro leagues: matched on name and seasons (1929-1948) to ESPN core team 302 'Homestead Grays'
+1514,320,NE,Newark Eagles,Negro leagues: matched on name and seasons (1935-1948) to ESPN core team 320 'Newark Eagles'
+1515,304,ABC,Indianapolis ABC's,Negro leagues: matched on name and seasons (1920-1939) to ESPN core team 304 'Indianapolis ABC's'
+1517,306,IC,Indianapolis Clowns,Negro leagues: matched on name and seasons (1943-1948) to ESPN core team 306 'Indianapolis Clowns'
+1519,307,JRC,Jacksonville Red Caps,Negro leagues: matched on name and seasons (1938-1942) to ESPN core team 307 'Jacksonville Red Caps'
+1520,308,KCM,Kansas City Monarchs,Negro leagues: matched on name and seasons (1920-1948) to ESPN core team 308 'Kansas City Monarchs'
+1522,310,LBC,Louisville Black Caps,Negro leagues: matched on name and seasons (1930-1932) to ESPN core team 310 'Louisville Black Caps'
+1523,281,CLB,Cleveland Buckeyes,Negro leagues: matched on name and seasons (1942-1948) to ESPN core team 281 'Cleveland Buckeyes'
+1524,311,MEM,Memphis Red Sox,Negro leagues: matched on name and seasons (1923-1948) to ESPN core team 311 'Memphis Red Sox'
+1525,312,MIL,Milwaukee Bears,Negro leagues: matched on name and seasons (1923-1923) to ESPN core team 312 'Milwaukee Bears'
+1526,313,MON,Monroe Monarchs,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 313 'Monroe Monarchs'
+1527,314,MNT,Montgomery Grey Sox,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 314 'Montgomery Grey Sox'
+1529,315,NBY,New York Black Yankees,Negro leagues: matched on name and seasons (1936-1948) to ESPN core team 315 'New York Black Yankees'
+1530,316,NYC,New York Cubans,Negro leagues: matched on name and seasons (1935-1948) to ESPN core team 316 'New York Cubans'
+1531,317,NYL,New York Lincoln Giants,Negro leagues: matched on name and seasons (1923-1929) to ESPN core team 317 'New York Lincoln Giants'
+1532,318,NEW,Newark Browns,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 318 'Newark Browns'
+1534,322,PHS,Philadelphia Stars,Negro leagues: matched on name and seasons (1934-1948) to ESPN core team 322 'Philadelphia Stars'
+1536,330,TIC,Toledo-Indianapolis Crawfords,Negro leagues: matched on name and seasons (1933-1940) to ESPN core team 330 'Toledo-Indianapolis Crawfords'
+1537,324,PTK,Pittsburgh Keystones,Negro leagues: matched on name and seasons (1922-1922) to ESPN core team 324 'Pittsburgh Keystones'
+1541,326,SLS,St. Louis Stars,Negro leagues: matched on name and seasons (1920-1931) to ESPN core team 326 'St. Louis Stars'
+1542,327,SLS,St. Louis Stars,"Negro leagues: matched on name and seasons (1937-1937) to ESPN core team 327 'St. Louis Stars'; ESPN lists its St. Louis Stars (327) in 1936 only, a season before the 1937 NAL club; no other candidate"
+1543,328,TOL,Toledo Tigers,Negro leagues: matched on name and seasons (1923-1923) to ESPN core team 328 'Toledo Tigers'; MLB spells it 'Todelo Tigers'
+1544,331,WBS,Washington Black Senators,Negro leagues: matched on name and seasons (1938-1938) to ESPN core team 331 'Washington Black Senators'
+1545,332,WPI,Washington Pilots,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 332 'Washington Pilots'
+6140,303,IND,Indianapolis ABCs,Negro leagues: matched on name and seasons (1931-1933) to ESPN core team 303 'Indianapolis ABCs'; ESPN keeps the 1931-33 ABCs (303) apart from the 1920-39 club (304)
+6141,270,AKR,Akron Grays,Negro leagues: matched on name and seasons (1933-1933) to ESPN core team 270 'Akron Grays'
+6142,272,BG,Atlantic City Bacharach Giants,Negro leagues: matched on name and seasons (1923-1929) to ESPN core team 272 'Atlantic City Bacharach Giants'
+6143,290,CBB,Columbus Blue Birds,Negro leagues: matched on name and seasons (1933-1933) to ESPN core team 290 'Columbus Blue Birds'
+6144,282,CCU,Cleveland Cubs,Negro leagues: matched on name and seasons (1931-1931) to ESPN core team 282 'Cleveland Cubs'; MLB names it 'Cleveland Cubs - Deprecate'
+6145,292,COT,Columbus Turf Club,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 292 'Columbus Turf Club'
+6146,293,CSE,Cuban Stars East,Negro leagues: matched on name and seasons (1923-1929) to ESPN core team 293 'Cuban Stars East'
+6147,289,CTG,Cleveland Tigers,Negro leagues: matched on name and seasons (1928-1928) to ESPN core team 289 'Cleveland Tigers'
+6148,325,CUP,Pollock's Cuban Stars,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 325 'Pollock's Cuban Stars'
+6150,299,HBG,Harrisburg Giants,Negro leagues: matched on name and seasons (1924-1927) to ESPN core team 299 'Harrisburg Giants'
+6151,309,LRG,Little Rock Grays,Negro leagues: matched on name and seasons (1932-1932) to ESPN core team 309 'Little Rock Grays'
+6152,319,ND,Newark Dodgers,Negro leagues: matched on name and seasons (1934-1935) to ESPN core team 319 'Newark Dodgers'
+6153,321,NS,Newark Stars,Negro leagues: matched on name and seasons (1926-1926) to ESPN core team 321 'Newark Stars'
+6155,323,PTG,Philadelphia Tigers,Negro leagues: matched on name and seasons (1928-1928) to ESPN core team 323 'Philadelphia Tigers'
+6156,333,WP,Wilmington Potomacs,Negro leagues: matched on name and seasons (1924-1925) to ESPN core team 333 'Wilmington Potomacs'
+6234,329,TOL,Toledo Crawfords,Negro leagues: matched on name and seasons (1940-1948) to ESPN core team 329 'Toledo Crawfords'
