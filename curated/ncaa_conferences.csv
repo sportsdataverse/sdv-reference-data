@@ -1,0 +1,133 @@
+slug,conf_id,valid_from,valid_to,name,short_name,abbreviation,ncaa_com_slug,citation
+acc,821,,,Atlantic Coast Conference,ACC,ACC,acc,
+america-east,845,,,America East Conference,America East,AE,america-east,
+american,823,,2013,Big East Conference,Big East,BE,american,"NCAA conf_id 823 is the pre-split Big East: after the July 2013 split the NCAA kept 823 for the American (the Big East's legal successor) and gave the new Big East 30184. baseballr lookup members: 2013 Louisville/St. John's/Villanova, 2014 Houston/UCF/UConn. stats.ncaa.org labels these seasons AAC/The American retroactively."
+american,823,2014,2025,American Athletic Conference,American Athletic,AAC,american,
+american,823,2026,,American Conference,American,AMER,american,"renamed American Conference 2025-07-21, first spring season 2026 (https://news.rice.edu/news/2025/american-conference-launches-rebrand-signaling-new-era)"
+asun,920,,2001,Trans America Athletic Conference,TAAC,TAAC,asun,"TAAC renamed Atlantic Sun 2001-06-14 for 2001-02 (https://www.troymessenger.com/news/taac-changes-name-to-atlantic-sun-6507/)"
+asun,920,2002,2016,Atlantic Sun Conference,Atlantic Sun,A-Sun,asun,
+asun,920,2017,2023,ASUN Conference,ASUN,ASUN,asun,"branded ASUN Conference April 2016 to 2023, then Atlantic Sun Conference again (https://en.wikipedia.org/wiki/Atlantic_Sun_Conference)"
+asun,920,2024,,Atlantic Sun Conference,ASUN,ASUN,asun,
+atlantic-10,820,,,Atlantic 10 Conference,Atlantic 10,A-10,atlantic-10,
+big-12,25354,,,Big 12 Conference,Big 12,Big 12,big-12,
+big-east,30184,,,Big East Conference,Big East,BE,big-east,"the new Big East (the Catholic 7 plus Butler, Creighton, Xavier) formed July 2013 under a new conf_id, first spring season 2014: a new body, so a new lineage; the old Big East is ncaa_*:american"
+big-sky,825,,,Big Sky Conference,Big Sky,BSC,big-sky,"softball only (no Big Sky baseball); conf_id from the stats.ncaa.org MBB/MFB menus (ClaudeCowork notes/2026-09-26-conference-reference/02-ncaa.md section 2)"
+big-south,826,,,Big South Conference,Big South,BSC,big-south,
+big-ten,827,,,Big Ten Conference,Big Ten,B1G,big-ten,
+big-west,904,,,Big West Conference,Big West,BW,big-west,
+caa,837,,2023,Colonial Athletic Association,CAA,CAA,caa,
+caa,837,2024,,Coastal Athletic Association,CAA,CAA,caa,"renamed Coastal Athletic Association July 2023 (ESPN 10/48, CFBD 301; notes 01 and 03)"
+cusa,24312,,,Conference USA,C-USA,C-USA,cusa,
+great-west,30062,,2012,Great West Conference,Great West,GWC,,"the NCAA gave the GWC a second conf_id (30156) for its final season, 2013; one lineage"
+great-west,30156,2013,2013,Great West Conference,Great West,GWC,,
+horizon,881,,2001,Midwestern Collegiate Conference,MCC,MCC,horizon,"renamed Horizon League 2001-06-04 (https://en.wikipedia.org/wiki/Horizon_League)"
+horizon,881,2002,,Horizon League,Horizon,HL,horizon,
+ivy-league,865,,,Ivy League,Ivy League,Ivy,ivy-league,
+maac,871,,,Metro Atlantic Athletic Conference,MAAC,MAAC,metro,"stats.ncaa.org and ESPN label 871 Metro retroactively; the baseballr lookup (scrape-vintage) says MAAC through 2026 and Sports Reference has Metro Atlantic Athletic through 2025-26 (note 04)"
+mac,875,,,Mid-American Conference,MAC,MAC,mac,
+meac,876,,,Mid-Eastern Athletic Conference,MEAC,MEAC,meac,
+mountain-west,5486,,,Mountain West Conference,Mountain West,MW,mountain-west,
+mvc,884,,,Missouri Valley Conference,Missouri Valley,MVC,mvc,
+nec,846,,,Northeast Conference,NEC,NEC,nec,
+ovc,902,,,Ohio Valley Conference,OVC,OVC,ovc,
+pac-12,905,,2011,Pacific-10 Conference,Pac-10,Pac-10,pac-12,"Pac-10 became the Pac-12 July 2011, first spring season 2012 (note 01)"
+pac-12,905,2012,,Pac-12 Conference,Pac-12,Pac-12,pac-12,
+patriot,838,,,Patriot League,Patriot,PL,patriot,
+sec,911,,,Southeastern Conference,SEC,SEC,sec,
+socon,912,,,Southern Conference,SoCon,SoCon,socon,
+southland,914,,,Southland Conference,Southland,SLC,southland,
+summit-league,819,,2007,Mid-Continent Conference,Mid-Con,Mid-Con,summit-league,"renamed The Summit League in 2007 (ESPN id 15 to 49, note 01)"
+summit-league,819,2008,,The Summit League,Summit League,Summit,summit-league,
+sun-belt,818,,,Sun Belt Conference,Sun Belt,SBC,sun-belt,
+swac,916,,,Southwestern Athletic Conference,SWAC,SWAC,swac,
+wac,923,,,Western Athletic Conference,WAC,WAC,uac-,"stats.ncaa.org, ESPN and NCAA.com label 923 UAC retroactively; Sports Reference has WAC through 2025-26 and the baseballr lookup says WAC through 2026 (notes 02, 04)"
+wcc,922,,,West Coast Conference,WCC,WCC,wcc,
+pacific-coast,,,,Pacific Coast Softball Conference,Pacific Coast,PCSC,,"softball-only D-I conference; no NCAA conf_id in SDV data"
+ecac,,,,Eastern College Athletic Conference,ECAC,ECAC,,"softball labels ECAC and ECAC-III; no NCAA conf_id in SDV data"
+ccaa,828,,,California Collegiate Athletic Association,CCAA,CCAA,,
+ciaa,832,,,Central Intercollegiate Athletic Association,CIAA,CIAA,,
+gliac,854,,,Great Lakes Intercollegiate Athletic Conference,GLIAC,GLIAC,,
+glvc,855,,,Great Lakes Valley Conference,GLVC,GLVC,,
+gulf-south,858,,,Gulf South Conference,Gulf South,GSC,,
+lone-star,868,,,Lone Star Conference,Lone Star,LSC,,
+miaa-mid-america,883,,,Mid-America Intercollegiate Athletics Association,MIAA,MIAA,,
+ne10,899,,,Northeast-10 Conference,NE10,NE-10,,
+psac,906,,,Pennsylvania State Athletic Conference,PSAC,PSAC,,
+siac,913,,,Southern Intercollegiate Athletic Conference,SIAC,SIAC,,
+sunshine-state,919,,,Sunshine State Conference,Sunshine State,SSC,,
+conference-carolinas,4423,,2007,Carolinas-Virginia Athletics Conference,CVAC,CVAC,,"renamed Conference Carolinas 2007-06-01 (https://www.converse.edu/announcement/2007/01/cvac-to-change-name-to-conference-carolinas/)"
+conference-carolinas,4423,2008,,Conference Carolinas,Conference Carolinas,CC,,
+ecc,11265,,2006,New York Collegiate Athletic Conference,NYCAC,NYCAC,,"renamed East Coast Conference in 2006 (https://en.wikipedia.org/wiki/East_Coast_Conference)"
+ecc,11265,2007,,East Coast Conference,ECC,ECC,,
+sac,12850,,,South Atlantic Conference,SAC,SAC,,
+nsic,12853,,,Northern Sun Intercollegiate Conference,NSIC,NSIC,,
+peach-belt,12923,,,Peach Belt Conference,Peach Belt,PBC,,
+rmac,13128,,,Rocky Mountain Athletic Conference,RMAC,RMAC,,
+pacwest,19591,,,Pacific West Conference,PacWest,PacWest,,
+wviac,21344,,,West Virginia Intercollegiate Athletic Conference,WVIAC,WVIAC,,
+heartland,28723,,,Heartland Conference,Heartland,HC,,
+cacc,28752,,,Central Atlantic Collegiate Conference,CACC,CACC,,
+great-northwest,30012,,,Great Northwest Athletic Conference,Great Northwest,GNAC,,
+gac,30144,,,Great American Conference,GAC,GAC,,
+g-mac,30182,,,Great Midwest Athletic Conference,G-MAC,G-MAC,,
+mec,30183,,,Mountain East Conference,MEC,MEC,,
+ncc,,,,North Central Conference,NCC,NCC,,"softball-only label (D-II, dissolved 2008); no NCAA conf_id in SDV data"
+cunyac,834,,,City University of New York Athletic Conference,CUNYAC,CUNYAC,,
+scac,835,,,Southern Collegiate Athletic Conference,SCAC,SCAC,,
+cciw,836,,,College Conference of Illinois and Wisconsin,CCIW,CCIW,,
+cne,839,,2024,Commonwealth Coast Conference,CCC,CCC,,"renamed Conference of New England 2024-08-01 for 2024-25 (https://www.uscho.com/2024/08/01/entering-its-40th-year-of-competition-commonwealth-coast-conference-takes-new-identity-rebrands-to-conference-of-new-england/)"
+cne,839,2025,,Conference of New England,CNE,CNE,,
+usa-south,842,,2003,Dixie Intercollegiate Athletic Conference,Dixie,DIAC,,"renamed USA South Athletic Conference 2003-06-30 (https://en.wikipedia.org/wiki/USA_South_Athletic_Conference)"
+usa-south,842,2004,,USA South Athletic Conference,USA South,USA South,,
+empire-8,863,,,Empire 8,Empire 8,E8,,
+american-rivers,864,,2018,Iowa Intercollegiate Athletic Conference,Iowa Conference,IIAC,,"renamed American Rivers Conference 2018-08-09 (https://www.thegazette.com/small-college-sports/iowa-conference-changes-name-to-american-rivers-conference/)"
+american-rivers,864,2019,,American Rivers Conference,American Rivers,A-R-C,,
+little-east,867,,,Little East Conference,Little East,LEC,,
+mascac,870,,,Massachusetts State Collegiate Athletic Conference,MASCAC,MASCAC,,
+miaa-michigan,873,,,Michigan Intercollegiate Athletic Association,MIAA,MIAA,,
+miac,882,,,Minnesota Intercollegiate Athletic Conference,MIAC,MIAC,,
+necc,888,,,New England Collegiate Conference,NECC,NECC,,
+newmac,890,,,New England Women's and Men's Athletic Conference,NEWMAC,NEWMAC,,
+njac,891,,,New Jersey Athletic Conference,NJAC,NJAC,,
+ncac,897,,,North Coast Athletic Conference,NCAC,NCAC,,
+oac,901,,,Ohio Athletic Conference,OAC,OAC,,
+odac,903,,,Old Dominion Athletic Conference,ODAC,ODAC,,
+presidents,907,,,Presidents' Athletic Conference,PAC,PAC,,
+sciac,910,,,Southern California Intercollegiate Athletic Conference,SCIAC,SCIAC,,
+sunyac,917,,,State University of New York Athletic Conference,SUNYAC,SUNYAC,,
+uaa,1471,,,University Athletic Association,UAA,UAA,,
+wiac,1473,,,Wisconsin Intercollegiate Athletic Conference,WIAC,WIAC,,
+hcac,9174,,,Heartland Collegiate Athletic Conference,HCAC,HCAC,,
+centennial,9683,,,Centennial Conference,Centennial,CC,,
+nescac,12817,,,New England Small College Athletic Conference,NESCAC,NESCAC,,
+sliac,12974,,,St. Louis Intercollegiate Athletic Conference,SLIAC,SLIAC,,
+skyline,13054,,,Skyline Conference,Skyline,Skyline,,
+asc,14825,,,American Southwest Conference,ASC,ASC,,
+c2c,15810,,2020,Capital Athletic Conference,CAC,CAC,,"renamed Coast to Coast Athletic Conference 2020-11-18 after absorbing the ACAA; first spring season 2021 (https://www.c2csports.com/general/2020-21/releases/20200824lwnkn9)"
+c2c,15810,2021,,Coast to Coast Athletic Conference,C2C,C2C,,
+csac,21062,,2008,Pennsylvania Athletic Conference,PAC,PAC,,"renamed Colonial States Athletic Conference 2008-07-01 (https://en.wikipedia.org/wiki/Colonial_States_Athletic_Conference)"
+csac,21062,2009,,Colonial States Athletic Conference,CSAC,CSAC,,
+midwest,23119,,,Midwest Conference,MWC,MWC,,
+great-northeast,23257,,,Great Northeast Athletic Conference,GNAC,GNAC,,
+liberty-league,24197,,2004,Upstate Collegiate Athletic Association,UCAA,UCAA,,"renamed Liberty League summer 2004 (https://en.wikipedia.org/wiki/Liberty_League)"
+liberty-league,24197,2005,,Liberty League,Liberty League,LL,,
+nwc,25300,,,Northwest Conference,NWC,NWC,,
+mac-commonwealth,28744,,,MAC Commonwealth,MAC Commonwealth,MACC,,
+mac-freedom,28745,,,MAC Freedom,MAC Freedom,MACF,,
+amcc,30022,,,Allegheny Mountain Collegiate Conference,AMCC,AMCC,,
+north-atlantic,30026,,,North Atlantic Conference,North Atlantic,NAC,,
+united-east,30071,,2021,North Eastern Athletic Conference,NEAC,NEAC,,"renamed United East Conference August 2021 for 2021-22 (https://www.pct.edu/news/articles/2021/08/03/neac-rebranded-as-united-east)"
+united-east,30071,2022,,United East Conference,United East,UEC,,
+great-south,30074,,,Great South Athletic Conference,Great South,GSAC,,
+nacc,30097,,2013,Northern Athletics Conference,NAC,NAC,,"formed 2006 from the Lake Michigan Conference and the NIIC (new body, new lineage); renamed Northern Athletics Collegiate Conference 2013-07-01 (https://www.d3sports.com/notables/2013/06/nathc-changes-name)"
+nacc,30097,2014,,Northern Athletics Collegiate Conference,NACC,NACC,,
+landmark,30101,,,Landmark Conference,Landmark,Landmark,,
+umac,30115,,,Upper Midwest Athletic Conference,UMAC,UMAC,,
+saa,30169,,,Southern Athletic Association,SAA,SAA,,
+atlantic-east,30233,,,Atlantic East Conference,Atlantic East,AEC,,
+ccs,30251,,,Collegiate Conference of the South,CCS,CCS,,
+acaa,,,,American Collegiate Athletic Association,ACAA,ACAA,,"softball-only label (D-III 2017-2020); members merged into the Capital Athletic Conference in 2020 (https://en.wikipedia.org/wiki/American_Collegiate_Athletic_Association); no NCAA conf_id in SDV data"
+awcc,,,,Atlantic Women's Colleges Conference,AWCC,AWCC,,"softball-only label (D-III); no NCAA conf_id in SDV data"
+lake-michigan,,,,Lake Michigan Conference,Lake Michigan,LMC,,"softball-only label (D-III, merged into the Northern Athletics Conference 2006); no NCAA conf_id in SDV data"
+niic,,,,Northern Illinois-Iowa Conference,NIIC,NIIC,,"softball-only label (D-III, merged into the Northern Athletics Conference 2006); no NCAA conf_id in SDV data"
+nyswcaa,,,,New York State Women's Collegiate Athletic Association,NYSWCAA,NYSWCAA,,"softball-only label (D-III); no NCAA conf_id in SDV data"
