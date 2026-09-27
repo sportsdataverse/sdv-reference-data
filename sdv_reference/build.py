@@ -20,7 +20,8 @@ OUT = Path(__file__).resolve().parent.parent / "build"
 
 
 def main(names: list[str]) -> int:
-    available = sorted(m.name for m in pkgutil.iter_modules(leagues.__path__))
+    # a leading underscore marks a shared helper module, not a league
+    available = sorted(m.name for m in pkgutil.iter_modules(leagues.__path__) if not m.name.startswith("_"))
     chosen = names or available
     failed = []
     for league in chosen:
