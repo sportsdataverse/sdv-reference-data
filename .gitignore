@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.omc/
+# built release files; published to sportsdataverse-data, not committed
+build/
