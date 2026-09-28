@@ -52,5 +52,5 @@
  "espn_standings_2026.json.gz": "live site.web standings; echoed season 2026",
  "espn_standings_2027.json.gz": "live site.web standings; echoed season None",
  "kenpom_team_info.csv.gz": "sportsdataverse-py origin/main 42ecf2790ee1006bd7dc2c80001c7e51b6de6fc2:sportsdataverse/mbb/data/kp_team_info.csv",
- "ncaa_espn_team_crosswalk.csv.gz": "sportsdataverse-py origin/main 35badd70a3e487051ecb47416c18f5202fd4bdc8:sportsdataverse/mbb/data/ncaa_espn_team_crosswalk_mbb.csv"
+ "ncaa_espn_team_crosswalk.csv.gz": "sportsdataverse-py origin/main bcb096177e1c351d9299ac75cfc8d1b59447ab60:sportsdataverse/mbb/data/ncaa_espn_team_crosswalk_mbb.csv"
 }
