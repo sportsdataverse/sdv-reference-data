@@ -193,3 +193,13 @@ def test_ids_are_utf8_and_espn(t):
         .filter(pl.col("team_id_source") == "espn")["count"][0]
         > 0.95 * tgs.filter(pl.col("season") >= 2001).height
     )
+
+
+def test_robert_morris_2023_in_the_big_south_ovc_association(t):
+    """CFBD keeps Robert Morris in its all-sports Big South for 2023; it played football in the association."""
+    tgs, gs, g = t["team_group_seasons"], t["group_seasons"], t["groups"]
+    rm = {r["season"]: r for r in tgs.filter(pl.col("team_id") == "2523").iter_rows(named=True)}
+    assert (rm[2022]["conference_id"], rm[2023]["conference_id"], rm[2024]["conference_id"]) == ("cfb:big-south", "cfb:ovc", "cfb:nec")
+    assert "Big South-OVC football association" in rm[2023]["notes"]
+    assert g.filter(pl.col("group_id") == "cfb:big-south")["last_season"].item() == 2022
+    assert gs.filter(pl.col("group_id") == "cfb:ovc", pl.col("season") == 2023)["n_teams"].item() == 10
