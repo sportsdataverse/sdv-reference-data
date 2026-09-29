@@ -248,6 +248,38 @@ def _team_seasons(
     )
 
 
+def _apply_membership_overrides(tm: pl.DataFrame, ov: pl.DataFrame) -> pl.DataFrame:
+    """Verified corrections to CFBD's membership (curated/cfb_membership_overrides.csv), each proved from that
+    season's schedule. An overridden row takes its new group's CFBD conference id (the one that group's other
+    members carry that season), so group labels stay the group's own; `_override_note` carries the citation."""
+    ov = ov.select(
+        pl.col("season").cast(pl.Int32),
+        pl.col("team_id").cast(pl.Utf8),
+        pl.col("conference_id").alias("_ov_conf"),
+        pl.col("division_id").alias("_ov_div"),
+        pl.col("notes").alias("_override_note"),
+    )
+    stale = ov.join(tm, on=["season", "team_id"], how="anti")
+    if stale.height:
+        raise ValueError(f"cfb membership overrides match no CFBD team-season: {stale.rows()}")
+    hit = pl.col("_ov_conf").is_not_null()
+    tm = tm.join(ov, on=["season", "team_id"], how="left")
+    peers = (
+        tm.filter(~hit)
+        .group_by("conference_id", "season")
+        .agg(pl.col("cfbd_id").mode().first().alias("_peer_cfbd"))
+        .rename({"conference_id": "_ov_conf"})
+    )
+    tm = tm.join(peers, on=["_ov_conf", "season"], how="left")
+    if tm.filter(hit & pl.col("_peer_cfbd").is_null()).height:
+        raise ValueError("a cfb membership override points at a group with no other members that season")
+    return tm.with_columns(
+        pl.when(hit).then(pl.col("_ov_conf")).otherwise(pl.col("conference_id")).alias("conference_id"),
+        pl.when(hit).then(pl.col("_ov_div")).otherwise(pl.col("division_id")).alias("division_id"),
+        pl.when(hit).then(pl.col("_peer_cfbd")).otherwise(pl.col("cfbd_id")).alias("cfbd_id"),
+    ).drop("_ov_conf", "_ov_div", "_peer_cfbd")
+
+
 def _group_seasons(
     tm: pl.DataFrame, conf: pl.DataFrame, names: pl.DataFrame
 ) -> pl.DataFrame:
@@ -799,6 +831,7 @@ def build() -> dict[str, pl.DataFrame]:
     conf_gid = {cid: curated_gid.get(cid, g) for cid, g in default_gid.iter_rows()}
 
     tm = _team_seasons(aff, conf_gid, eras, last)
+    tm = _apply_membership_overrides(tm, _curated("membership_overrides"))
     gs = _group_seasons(tm, conf, names)
     xw = _espn_crosswalk(tm, gs, conf, conf_gid, walk, overrides)
     fill = _espn_fill(tm, walk, xw)
@@ -807,6 +840,11 @@ def build() -> dict[str, pl.DataFrame]:
         gs = _group_seasons(tm, conf, names)
         xw = _espn_crosswalk(tm, gs, conf, conf_gid, walk, overrides)
     tm = _cross_check(tm, walk, xw, espn_teams)
+    tm = tm.with_columns(
+        pl.concat_str([pl.col("_override_note"), pl.col("notes")], separator="; ", ignore_nulls=True)
+        .replace("", None)
+        .alias("notes")
+    )
     espn_ids = set(espn_teams["team_id"]) | set(
         walk.drop_nulls("team_ids")["team_ids"].explode(empty_as_null=False)
     )
