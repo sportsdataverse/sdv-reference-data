@@ -287,7 +287,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "polars", specifier = ">=1.20,<2" },
+    { name = "polars", specifier = ">=1.20" },
     { name = "requests", specifier = ">=2.31" },
 ]
 
