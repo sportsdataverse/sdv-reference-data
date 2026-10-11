@@ -17,6 +17,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | College baseball | 2010–2026 | `ncaa_baseball_groups` |
 | College softball | 1982–2025 | `ncaa_softball_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
+| NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
 
 Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/sportsdataverse-data). Each
 `{league}_groups` tag holds four tables, in parquet and csv:
@@ -26,6 +27,7 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 - `{league}_team_group_seasons`, plus one file per season
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
+`{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
 
 [CONTRACT.md](CONTRACT.md) defines the columns, the SDV group ids (`{league}:{slug}`, one per lineage) and each league's
 season key. The ending year is used for NBA, NHL and college basketball.
@@ -33,7 +35,8 @@ season key. The ending year is used for NBA, NHL and college basketball.
 ## How it's built
 
 - `sdv_reference/leagues/{league}.py` has a `fetch()` that snapshots the league's sources into `raw/{league}/`
-  (`sdv_reference/parks/{league}.py` into `raw/{league}_parks/`).
+  (`sdv_reference/parks/{league}.py` into `raw/{league}_parks/`, `sdv_reference/crosswalks/{league}.py` into
+  `raw/{league}_crosswalk/`, from the local sdv-py and ncaa-{league}-hoops-raw checkouts).
   The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
   two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.
 - Its `build()` reads only `raw/` and hand-curated, cited rows in `curated/`, so builds are offline and reproducible.

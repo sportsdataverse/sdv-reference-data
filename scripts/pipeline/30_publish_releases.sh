@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Stage 30: upload build/{league}/ to the sportsdataverse-data release {league}_groups (build/{league}_parks/ to
-# {league}_parks), creating the tag if needed.
+# {league}_parks, build/{league}_crosswalk/ to {league}_crosswalk), creating the tag if needed.
 # Idempotent: --clobber replaces same-named assets; a new tag gets a description over 250 characters, which the
 # sportsdataverse-data notes generator keeps (its per-family prose lives in that repo's data-raw/families.py).
 set -euo pipefail
@@ -12,9 +12,16 @@ if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
   mapfile -t leagues < build/.changed_leagues
 fi
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls build)
+# a crosswalk's conference columns come from its league's groups: republish it when the league changed
+for l in "${leagues[@]}"; do
+  [ -d "build/${l}_crosswalk" ] && [[ " ${leagues[*]} " != *" ${l}_crosswalk "* ]] && leagues+=("${l}_crosswalk")
+done
 for l in "${leagues[@]}"; do
   [ -d "build/$l" ] || { echo "no build/$l; run stage 20 first"; exit 1; }
-  if [[ "$l" == *_parks ]]; then
+  if [[ "$l" == *_crosswalk ]]; then
+    tag="$l"
+    notes="NCAA school <-> ESPN team crosswalk for ${l%_crosswalk}, keyed on the NCAA school. ncaa_espn_team_crosswalk: one row per stats.ncaa.org team-season (season YYYY-YY, the season's NCAA team id, the school's NCAA org id) with its ESPN team id and that season's conference, and how it was matched. ncaa_espn_schools: one row per NCAA org id with its ESPN id. ncaa_espn_school_seasons: which seasons each school played men's and women's D-I basketball. Built by sportsdataverse/sdv-reference-data (sdv_reference/crosswalks/) from committed snapshots; see that repo's CONTRACT.md."
+  elif [[ "$l" == *_parks ]]; then
     tag="$l"
     notes="Playing-surface reference for ${l%_parks}, by venue and season. mlb_park_dimensions: each MLB-used venue's outfield fence distances in feet (left line to right line, five to seven markers), capacity, turf, roof, azimuth, elevation and location, with the Retrosheet park id. From the MLB Stats API's per-season venue fieldInfo, 2001 on, with cited curated corrections where the API lags. Built by sportsdataverse/sdv-reference-data (sdv_reference/parks/${l%_parks}.py) from committed source snapshots; see that repo's CONTRACT.md for the schema."
   else

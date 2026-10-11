@@ -181,5 +181,5 @@ def test_validate_catches_problems():
 
 
 def test_pipeline_names():
-    assert builder.available()[-1] == "mlb_parks" and "mlb" in builder.available()
+    assert "mlb_parks" in builder.available() and "mlb" in builder.available()
     assert builder.module("mlb_parks") is parks

@@ -132,3 +132,36 @@ one-season 2022 errors at Rate Field and Progressive Field. Known and not correc
 (the API keeps 328-375-400/404-375-328).
 
 Seamheads' ballpark database is not used, even as a cross-check in tests: its licence forbids redistribution.
+
+# Contract: the NCAA <-> ESPN basketball crosswalk (tags `mbb_crosswalk`, `wbb_crosswalk`)
+
+Keyed on the **NCAA school** (`ncaa_org_id`, stats.ncaa.org's org id). ESPN college team ids are school-level too (one
+id for a school's men's and women's programs, and its football team), so one school key serves every sport; college
+baseball is excluded, because ESPN's baseball team ids are a separate id system. Built by
+`sdv_reference/crosswalks/_ncaa_espn.py` (moved from sdv-py's `tools/crosswalk/`); `validate()` enforces this contract.
+Each tag holds three tables, in parquet and csv; the last two are identical in both tags.
+
+`ncaa_espn_team_crosswalk`: one row per stats.ncaa.org team-season of that league. Its first 13 columns are exactly
+sdv-py's `ncaa_espn_team_crosswalk(league=)`, which reads this asset.
+
+| column | type | |
+|---|---|---|
+| season | Utf8 | `YYYY-YY` (`2025-26`), stats.ncaa.org's label |
+| ncaa_team_id | Int64 | stats.ncaa.org's team id, new every season |
+| ncaa_org_id | Int64 | the school's stats.ncaa.org org id, stable across seasons and sports |
+| ncaa_team, ncaa_conference | Utf8 | stats.ncaa.org's name; the conference's NCAA label that season (from `{league}_groups`), else stats.ncaa.org's |
+| conference_id | Utf8 | SDV group id that season (`mbb:big-ten`) |
+| espn_team_id | Utf8 | null only when unresolved |
+| espn_display_name, espn_location, espn_mascot, espn_abbreviation | Utf8 | ESPN's names (today's) |
+| espn_conference_name, espn_conference_id | Utf8 | that season's, from `{league}_groups` |
+| match_method | Utf8 | `alias`, `exact`, `dict`, `org` (the school's id from its other seasons), `ambiguous`, `unmatched` |
+
+`ncaa_espn_schools`: one row per `ncaa_org_id`: its latest `ncaa_team`, `espn_team_id` and `espn_display_name`.
+`ncaa_espn_school_seasons`: one row per `(ncaa_org_id, sport, season)` the school played D-I basketball (`sport` =
+`mbb`/`wbb`), with that season's `ncaa_team_id` and `espn_team_id`.
+
+Invariants: every row of the NCAA team list is kept (never dropped); no duplicate `(season, ncaa_team_id)`; an ESPN id
+is on at most one team per season; each school resolves to one ESPN id and each ESPN id to one school (the build fails
+otherwise). There is no fuzzy matching: a new name is resolved by `curated/ncaa_espn_aliases.csv` (each row verified by
+hand) or by its school's id from other seasons. Coverage ends where the NCAA team list does
+(`raw/{league}_crosswalk/ncaa_teamids.csv.gz`, from sdv-py's bundled `ncaa_teamids_{league}.csv`): 2009-10 to 2025-26.

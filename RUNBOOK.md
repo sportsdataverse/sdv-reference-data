@@ -2,7 +2,9 @@
 
 `scripts/run_pipeline.sh [league ...]` runs every stage in order (all leagues when none are named).
 A "league" here is any name `sdv_reference.build.available()` lists: the ten leagues, plus `mlb_parks`
-(`sdv_reference/parks/mlb.py`, published to its own tag `mlb_parks`, not `{league}_groups`).
+(`sdv_reference/parks/mlb.py`, published to its own tag `mlb_parks`, not `{league}_groups`) and `mbb_crosswalk` /
+`wbb_crosswalk` (`sdv_reference/crosswalks/`, tags of the same names; stage 30 also republishes one whenever its league
+changed, since its conference columns come from the league's groups).
 
 | Stage | Script | Frequency | Idempotency | Typical duration |
 |---|---|---|---|---|
@@ -84,6 +86,9 @@ of every season in `raw/` is about 11,300 requests.
   - MLB parks: when the Stats API lists the season's venues (January); fence moves land in the two refreshed seasons
   - WNBA: spring
   - NCAA baseball/softball: when baseballr-data / softballR-data refresh their files
+  - MBB/WBB crosswalks: a new season needs its stats.ncaa.org team list in sdv-py's `ncaa_teamids_{league}.csv` and its
+    schedule pages in ncaa-{league}-hoops-raw (the org ids); stage 10 snapshots both from the local checkouts, without
+    a request to stats.ncaa.org. A new ESPN school goes into `curated/ncaa_espn_teams.csv` by hand
 - **Stage 20** after every stage 10, gated by `uv run pytest -q` (the realignment assertions).
 - **Stage 30** only for leagues whose `raw/` changed (stage 25 records them); `curated/` edits go through a PR and are
   published by hand with `30_publish_releases.sh <league>`. Republishing every league re-uploads ~1,300 assets, which
