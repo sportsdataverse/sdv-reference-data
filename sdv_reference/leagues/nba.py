@@ -5,7 +5,8 @@ here rather than in a helper module so this builder stays inside its own files.
 
 Sources (ClaudeCowork notes/2026-09-26-conference-reference/05-pro-leagues.md, 01-espn-groups.md):
 - membership 1996-97 → 2026-27: the captured stats.nba.com `leaguestandingsv3` JSON (hoopR-nba-stats-raw, one
-  directory per START year; `SeasonID = "2" + start year`), `Conference`/`Division` per `TeamID`;
+  directory per ENDING year since its 2026-09-30 re-key; `SeasonID = "2" + start year`), `Conference`/`Division`
+  per `TeamID`, snapshotted to raw/nba/stats/{ending year} keyed by SeasonID, not by the source's directory name;
 - membership 1970-71 → 1995-96: curated/nba_membership_static.csv (cited per row);
 - cross-check: ESPN core groups per season (1984-85+), mapped to SDV ids through curated/nba_groups.csv;
 - team ids: ESPN ids through curated/nba_teams.csv (stats TeamID windows → ESPN id); names from the stats feed
@@ -40,7 +41,7 @@ STATS_RAW = Path(
         "/mnt/sdv_repos/hoopR-nba-stats-raw/nba_stats/json/leaguestandingsv3",
     )
 )
-STATS_SEASONS = range(1997, current_season(ending_year=True) + 1)  # ending years; directory = season - 1
+STATS_SEASONS = range(1997, current_season(ending_year=True) + 1)  # ending years = the source's directories
 ESPN_SEASONS = range(1985, current_season(ending_year=True) + 1)  # ESPN NBA groups start with 1984-85
 
 
@@ -219,11 +220,23 @@ def espn_frames(league: str) -> tuple[pl.DataFrame, pl.DataFrame, pl.DataFrame]:
 STATS_KEEP = ("SeasonID", "TeamID", "TeamCity", "TeamName", "Conference", "Division")
 
 
-def copy_stats_standings(league: str, src: Path, dirs) -> None:
-    """Snapshot the captured stats `leaguestandingsv3` regular-season JSON into raw/{league}/stats/{start}.json.gz,
-    keeping only the identity columns (STATS_KEEP) sorted by TeamID: records and standing order change every game
-    day, membership doesn't. A local copy of every season, so no refresh window; a season not captured yet is
-    skipped."""
+def stats_season(payload: dict, season_offset: int) -> int:
+    """The SDV season key of a `leaguestandingsv3` payload: its SeasonID ("2" + start year) plus season_offset (1 for
+    the NBA's ending-year keys, 0 for the WNBA)."""
+    rs = payload["resultSets"][0]
+    i = rs["headers"].index("SeasonID")
+    (season,) = {int(r[i][1:]) + season_offset for r in rs["rowSet"]}
+    return season
+
+
+def copy_stats_standings(league: str, src: Path, dirs, season_offset: int) -> None:
+    """Snapshot the captured stats `leaguestandingsv3` regular-season JSON in src/{dir} into
+    raw/{league}/stats/{season}.json.gz, keeping only the identity columns (STATS_KEEP) sorted by TeamID: records and
+    standing order change every game day, membership doesn't. The file is keyed by the payload's SeasonID
+    (stats_season), so a re-key of the source's directories can't shift seasons; a snapshot whose key no longer
+    matches its SeasonID (left by such a re-key) is removed. A local copy of every season, so no refresh window; a
+    season not captured yet is skipped."""
+    out = RAW / league / "stats"
     for d in dirs:
         f = src / str(d) / "regular-season.json"
         if not f.exists():
@@ -234,15 +247,18 @@ def copy_stats_standings(league: str, src: Path, dirs) -> None:
         rs["headers"] = list(STATS_KEEP)
         rs["rowSet"] = sorted(([r[i] for i in idx] for r in rs["rowSet"]), key=lambda r: r[1])
         payload["resultSets"] = [rs]
-        write_gz(RAW / league / "stats" / f"{d}.json.gz", payload)
+        write_gz(out / f"{stats_season(payload, season_offset)}.json.gz", payload)
+    for p in out.glob("*.json.gz"):
+        if stats_season(read_gz_json(p), season_offset) != int(p.name.split(".")[0]):
+            p.unlink()
 
 
 # ================================================================ NBA fetch / build
 
 
 def fetch() -> None:
-    """Network + sibling-repo reads: raw/nba/stats/{start}.json.gz and raw/nba/espn/{season}.json.gz."""
-    copy_stats_standings(LEAGUE, STATS_RAW, [s - 1 for s in STATS_SEASONS])
+    """Network + sibling-repo reads: raw/nba/stats/{season}.json.gz and raw/nba/espn/{season}.json.gz."""
+    copy_stats_standings(LEAGUE, STATS_RAW, STATS_SEASONS, season_offset=1)
     fetch_espn(LEAGUE, ESPN_SEASONS)
 
 
@@ -477,17 +493,22 @@ def assemble(
     }
 
 
-def stats_rows(league: str) -> pl.DataFrame:
-    """Every team-season in raw/{league}/stats: dir (start year), team id, name, Conference, Division."""
+def stats_rows(league: str, season_offset: int) -> pl.DataFrame:
+    """Every team-season in raw/{league}/stats: season, team id, name, Conference, Division. Fails on a snapshot
+    whose file key isn't its SeasonID's season."""
     rows = []
     for p in sorted((RAW / league / "stats").glob("*.json.gz")):
-        rs = read_gz_json(p)["resultSets"][0]
+        payload = read_gz_json(p)
+        season = int(p.name.split(".")[0])
+        if (held := stats_season(payload, season_offset)) != season:
+            raise ValueError(f"{p.relative_to(ROOT)} holds season {held}; re-run fetch()")
+        rs = payload["resultSets"][0]
         h = rs["headers"]
         for r in rs["rowSet"]:
             x = dict(zip(h, r, strict=True))
             rows.append(
                 (
-                    int(p.name.split(".")[0]),
+                    season,
                     str(x["TeamID"]),
                     f"{x['TeamCity']} {x['TeamName']}",
                     x["Conference"],
@@ -497,7 +518,7 @@ def stats_rows(league: str) -> pl.DataFrame:
     return pl.DataFrame(
         rows,
         schema={
-            "dir": pl.Int32,
+            "season": pl.Int32,
             "native_id": pl.Utf8,
             "team_name": pl.Utf8,
             "conference": pl.Utf8,
@@ -511,9 +532,7 @@ def stats_members(
     league: str, gdef: pl.DataFrame, xwalk: pl.DataFrame, season_offset: int
 ) -> pl.DataFrame:
     """Stats standings → team-seasons with SDV group ids and ESPN team ids (crosswalk windows), plus the raw labels."""
-    st = stats_rows(league).with_columns(
-        season=(pl.col("dir") + season_offset).cast(pl.Int32)
-    )
+    st = stats_rows(league, season_offset)
     name_map = gdef.filter(pl.col("stats_name").is_not_null()).select(
         "level", "stats_name", "group_id"
     )
@@ -546,9 +565,7 @@ def stats_members(
 
 def build() -> dict[str, pl.DataFrame]:
     gdef = read_curated("nba_groups.csv")
-    stats = stats_members(
-        LEAGUE, gdef, read_curated("nba_teams.csv"), season_offset=1
-    )  # dir = START year
+    stats = stats_members(LEAGUE, gdef, read_curated("nba_teams.csv"), season_offset=1)
     tgs_stats = stats.select(
         "season",
         "team_id",

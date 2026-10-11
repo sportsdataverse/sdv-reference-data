@@ -42,7 +42,7 @@ ESPN_TEAM_ALIASES = {"2793": "13"}
 
 def fetch() -> None:
     """raw/wnba/stats/{season}.json.gz (captured standings) and raw/wnba/espn/{season}.json.gz (with team objects)."""
-    copy_stats_standings(LEAGUE, STATS_RAW, SEASONS)
+    copy_stats_standings(LEAGUE, STATS_RAW, SEASONS, season_offset=0)
     fetch_espn(LEAGUE, SEASONS, team_objects=True)
 
 

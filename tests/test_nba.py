@@ -1,5 +1,6 @@
 """NBA groups: offline (raw/ + curated/), asserting real realignments. Seasons are ENDING years (2005 = 2004-05)."""
 
+import json
 from functools import cache
 
 import polars as pl
@@ -121,7 +122,7 @@ def test_charlotte_and_new_orleans_ids():
 
 
 def test_ending_year_season_key():
-    # stats directory 2007 = 2007-08 = season 2008, Seattle's last; Oklahoma City from 2008-09
+    # stats SeasonID 22007 = 2007-08 = season 2008, Seattle's last; Oklahoma City from 2008-09
     assert row("25", 2008)["team_name"] == "Seattle SuperSonics"
     assert row("25", 2009)["team_name"] == "Oklahoma City Thunder"
     assert (
@@ -164,3 +165,29 @@ def test_espn_cross_check():
     assert sorted(
         tgs.filter(pl.col("sources_agree") == False).select("season", "team_id").rows()
     ) == [(1990, "14"), (1990, "19")]
+
+
+def test_stats_snapshots_keyed_by_season_id(tmp_path, monkeypatch):
+    """hoopR-nba-stats-raw re-keyed its directories START -> END year on 2026-09-30; the snapshot key comes from
+    SeasonID, so either layout lands 2001-02 in raw/nba/stats/2002, and a mis-keyed leftover is dropped."""
+
+    def standings(season_id: str) -> dict:
+        return {
+            "resultSets": [
+                {
+                    "headers": ["SeasonID", "TeamID", "TeamCity", "TeamName", "Conference", "Division"],
+                    "rowSet": [[season_id, 1610612766, "Charlotte", "Hornets", "East", "Central"]],
+                }
+            ]
+        }
+
+    src = tmp_path / "src"
+    (src / "2002").mkdir(parents=True)
+    (src / "2002" / "regular-season.json").write_text(json.dumps(standings("22001")))  # END-year directory
+    monkeypatch.setattr(nba, "RAW", tmp_path / "raw")
+    nba.write_gz(tmp_path / "raw" / "nba" / "stats" / "2001.json.gz", standings("22001"))  # START-keyed leftover
+    nba.copy_stats_standings("nba", src, [2002], season_offset=1)
+    assert sorted(p.name for p in (tmp_path / "raw" / "nba" / "stats").iterdir()) == ["2002.json.gz"]
+    assert nba.stats_rows("nba", season_offset=1).rows() == [
+        (2002, "1610612766", "Charlotte Hornets", "East", "Central")
+    ]

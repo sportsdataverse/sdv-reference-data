@@ -5,12 +5,18 @@ from functools import cache
 import polars as pl
 
 from sdv_reference.leagues import nhl
+from sdv_reference.refresh import current_season
 from sdv_reference.schema import validate
 
 
 @cache
 def tables():
     return nhl.build()
+
+
+def last_season() -> int:
+    """The newest season: the next one once the refresh finds its standings (October), else the one before."""
+    return tables()["team_group_seasons"]["season"].max()
 
 
 def members(season, group_col, group_id):
@@ -36,7 +42,8 @@ def test_contract():
 
 def test_seasons_are_ending_years():
     t = tables()["team_group_seasons"]
-    assert (t["season"].min(), t["season"].max()) == (1918, 2026)  # 1917-18 .. 2025-26
+    assert t["season"].min() == 1918  # 1917-18
+    assert last_season() - current_season(ending_year=True) in (-1, 0)
     assert t.filter(pl.col("season") == 2005).height == 0  # the 2004-05 lockout
     n = dict(t.group_by("season").len().iter_rows())
     assert (n[1918], n[1968], n[2001], n[2018], n[2022]) == (4, 12, 30, 31, 32)
@@ -96,7 +103,7 @@ def test_2013_14_realignment():
         r["group_id"]: (r["first_season"], r["last_season"])
         for r in g.iter_rows(named=True)
     }
-    assert span["nhl:metropolitan"] == (2014, 2026)
+    assert span["nhl:metropolitan"] == (2014, last_season())
     assert span["nhl:patrick-atlantic"] == (
         1975,
         2013,
@@ -222,4 +229,4 @@ def test_espn_cross_check():
     # ESPN applies Quebec's 1995-96 move to Colorado (West) a season early
     assert row("17", 1995)["sources_agree"] is False
     notes = tables()["groups"].filter(pl.col("group_id") == "nhl:nhl")["notes"][0]
-    assert "ESPN cross-check 1993-2026" in notes
+    assert f"ESPN cross-check 1993-{last_season()}" in notes
