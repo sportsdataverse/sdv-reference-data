@@ -9,6 +9,7 @@ import pytest
 from sdv_reference.crosswalks import _ncaa_espn as xw
 
 RAW = Path(__file__).resolve().parents[1] / "raw"
+ALIASES = Path(__file__).resolve().parents[1] / "curated" / "ncaa_espn_aliases.csv"
 
 
 @cache
@@ -83,3 +84,22 @@ def test_unresolved_name_takes_its_schools_espn_id(monkeypatch):
     fdu = xw.build()[0]["mbb"].filter(pl.col("ncaa_org_id") == 222)
     assert set(fdu.filter(pl.col("ncaa_team") == "FDU")["match_method"]) == {"org"}
     assert fdu["espn_team_id"].n_unique() == 1 and fdu["espn_team_id"].null_count() == 0
+
+
+def test_every_alias_is_used():
+    """Every hand-curated alias still resolves some NCAA team-season, in either league."""
+    alias = pl.read_csv(ALIASES, infer_schema=False)
+    used = set()
+    for df in built()[0].values():
+        used |= set(df.filter(pl.col("match_method") == "alias")["ncaa_team"].to_list())
+    unused = sorted(set(alias["ncaa_team"].to_list()) - used)
+    assert not unused, f"alias rows matched nothing: {unused}"
+
+
+def test_alias_table_is_unambiguous_and_justified():
+    alias = pl.read_csv(ALIASES, infer_schema=False)
+    assert alias["ncaa_team"].is_unique().all(), (
+        "an NCAA name may alias only one ESPN id"
+    )
+    assert alias["espn_team_id"].null_count() == 0
+    assert alias["note"].null_count() == 0, "every alias needs a written justification"
