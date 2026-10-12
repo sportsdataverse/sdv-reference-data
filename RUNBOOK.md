@@ -11,7 +11,7 @@ changed, since its conference columns come from the league's groups).
 | 10 | `scripts/pipeline/10_fetch_sources.sh [league ...]` | weekly (see [Cadence](#cadence)); any time a season starts | refreshes only the newest seasons in `raw/{league}/` ([Refresh window](#refresh-window)); an unchanged source rewrites the same bytes; commit what changes | ~2 min for NHL + NBA; ~15 min for all leagues (~650 ESPN requests at ~1 req/s) |
 | 20 | `scripts/pipeline/20_build_tables.sh [league ...]` | after every stage 10, and after any `curated/` change | offline, from `raw/` + `curated/` (same tables every run); refuses tables that fail `CONTRACT.md` | ~10 s for all leagues |
 | 25 | `scripts/pipeline/25_commit_raw.sh` | after every stage 20 | exits 3 (clean stop, nothing to publish) when `raw/` is unchanged; otherwise runs `uv run pytest -q`, commits `raw/` to `main`, and writes `build/.changed_leagues` | ~1 min |
-| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after stage 25 lands a change | `--clobber` per asset; creates `{league}_groups` (or `mlb_parks`) once; with no arguments, only the leagues in `build/.changed_leagues` | ~1 min per league |
+| 30 | `scripts/pipeline/30_publish_releases.sh [league ...]` | after stage 25 lands a change | uploads only the assets whose sha256 differs from the release's digest (`--clobber`); creates `{league}_groups` (or `mlb_parks`) once; with no arguments, only the leagues in `build/.changed_leagues` | ~1 min per league |
 
 Stage 10 changes committed data; stage 25 lands it and stage 30 republishes only the leagues it changed. Run stages
 individually when you only need to rebuild or republish.
@@ -91,8 +91,8 @@ of every season in `raw/` is about 11,300 requests.
     a request to stats.ncaa.org. A new ESPN school goes into `curated/ncaa_espn_teams.csv` by hand
 - **Stage 20** after every stage 10, gated by `uv run pytest -q` (the realignment assertions).
 - **Stage 30** only for leagues whose `raw/` changed (stage 25 records them); `curated/` edits go through a PR and are
-  published by hand with `30_publish_releases.sh <league>`. Republishing every league re-uploads ~1,300 assets, which
-  trips GitHub's per-account upload limit (403 "API rate limit exceeded" even while `gh api rate_limit` shows quota).
+  published by hand with `30_publish_releases.sh <league>`. Before 2026-10-12 republishing every league re-uploaded ~1,300 assets, which
+  tripped GitHub's per-account upload limit (403 "API rate limit exceeded" even while `gh api rate_limit` shows quota).
   - Don't use build hashes to detect a change. Byte order is not stable across builds: rows that tie on the output sort
     keys (`cfb`/`ncaa_*` group_aliases) and the example list in the `nhl:nhl` notes vary run to run on the same `raw/`.
   - Use `git diff --quiet raw/ curated/` instead.

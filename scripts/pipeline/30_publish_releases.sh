@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Stage 30: upload build/{league}/ to the sportsdataverse-data release {league}_groups (build/{league}_parks/ to
 # {league}_parks, build/{league}_crosswalk/ to {league}_crosswalk), creating the tag if needed.
-# Idempotent: --clobber replaces same-named assets; a new tag gets a description over 250 characters, which the
-# sportsdataverse-data notes generator keeps (its per-family prose lives in that repo's data-raw/families.py).
+# Idempotent: only files whose sha256 differs from the release's asset digest upload (--clobber replaces them);
+# a new tag gets a description over 250 characters, which the sportsdataverse-data notes generator keeps (its per-family prose lives in that repo's data-raw/families.py).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 REPO=sportsdataverse/sportsdataverse-data
+errf=$(mktemp); trap 'rm -f "$errf"' EXIT
 leagues=("$@")
 # with no arguments: the leagues stage 25 found changed, else every built league
 if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
@@ -28,9 +29,21 @@ for l in "${leagues[@]}"; do
     tag="${l}_groups"
     notes="Season-by-season conference, division and subdivision reference for ${l}: every group's name, abbreviation and parent as of each season, every source's ids and names for it (group_aliases), and each team's affiliation by season (team_group_seasons, one file per season). Built by sportsdataverse/sdv-reference-data (sdv_reference/leagues/${l}.py) from committed source snapshots; see that repo's CONTRACT.md for the schema and season key."
   fi
-  if ! gh release view "$tag" -R "$REPO" >/dev/null 2>&1; then
+  # ONE REST listing per tag: every asset carries a GitHub-computed sha256 digest, so only files whose bytes
+  # changed upload (the droplet shares one 5,000/h API quota). Only a 404 means "no release yet".
+  if ! listing=$(gh api "repos/$REPO/releases/tags/$tag" --jq '.assets[] | "\(.digest)  \(.name)"' 2>"$errf"); then
+    grep -q "HTTP 404" "$errf" || { echo "cannot list release $tag: $(head -c 300 "$errf")"; exit 1; }
     gh release create "$tag" -R "$REPO" --title "$tag" --notes "$notes"
+    listing=""
   fi
-  gh release upload "$tag" -R "$REPO" build/"$l"/* --clobber
-  echo "published $tag: $(ls build/$l | wc -l) files"
+  todo=()
+  for pass in other parquet; do # parquet last: a matching parquet means the upload before it finished
+    for f in build/"$l"/*; do
+      [[ "$f" == *.parquet ]] && [ "$pass" = other ] && continue
+      [[ "$f" != *.parquet ]] && [ "$pass" = parquet ] && continue
+      grep -qxF "sha256:$(sha256sum "$f" | cut -d' ' -f1)  ${f##*/}" <<<"$listing" || todo+=("$f")
+    done
+  done
+  [ ${#todo[@]} -eq 0 ] || gh release upload "$tag" -R "$REPO" "${todo[@]}" --clobber
+  echo "published $tag: ${#todo[@]} of $(ls build/"$l" | wc -l) files changed"
 done
