@@ -1,4 +1,4 @@
 {
- "ncaa_org_ids.csv.gz": "ncaa-wbb-hoops-raw da2483bf68329cd10f0d7a881a73f7b6b6d33ae9:wbb/schedules/html/<end season>/<team id>.html Team History link",
- "ncaa_teamids.csv.gz": "sportsdataverse-py origin/main d6019a4628d2e49d1df5719a6e62d40315e85513:sportsdataverse/wbb/data/ncaa_teamids_wbb.csv"
+ "ncaa_org_ids.csv.gz": "ncaa-wbb-hoops-raw a318c46312cd512be7b01bad834a86b06979a885:wbb/schedules/html/<end season>/<team id>.html Team History link",
+ "ncaa_teamids.csv.gz": "sportsdataverse-py origin/main cf5d6cfd1fac219634cd53af7e19e5c9814d197e:sportsdataverse/wbb/data/ncaa_teamids_wbb.csv"
 }
