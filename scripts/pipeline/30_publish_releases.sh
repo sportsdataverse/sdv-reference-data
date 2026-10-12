@@ -7,6 +7,20 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 REPO=sportsdataverse/sportsdataverse-data
 errf=$(mktemp); trap 'rm -f "$errf"' EXIT
+# gh with a bounded retry: 3 tries, backoff, and only on a 5xx or a dropped connection -- a 4xx fails the same
+# way every time. `--clobber` deletes before it re-uploads, so a repeat of a half-landed upload is safe.
+gh_retry() {
+  local attempt
+  for attempt in 1 2 3; do
+    gh "$@" 2>"$errf" && return 0
+    cat "$errf" >&2
+    grep -qE 'HTTP 4[0-9][0-9]' "$errf" && return 1
+    grep -qiE 'HTTP 5[0-9][0-9]|connection (reset|refused)|timed? ?out|unexpected EOF|TLS handshake|no such host|temporary failure' "$errf" || return 1
+    [ "$attempt" -lt 3 ] && { echo "gh $1 $2: transient failure (attempt $attempt/3), retrying" >&2; sleep $(( ${GH_RETRY_BACKOFF_S:-5} * attempt )); }
+  done
+  return 1
+}
+list_names() { gh api "repos/$REPO/releases/tags/$1" --jq '.assets[].name' 2>/dev/null; }
 leagues=("$@")
 # with no arguments: the leagues stage 25 found changed, else every built league
 if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
@@ -33,7 +47,11 @@ for l in "${leagues[@]}"; do
   # changed upload (the droplet shares one 5,000/h API quota). Only a 404 means "no release yet".
   if ! listing=$(gh api "repos/$REPO/releases/tags/$tag" --jq '.assets[] | "\(.digest)  \(.name)"' 2>"$errf"); then
     grep -q "HTTP 404" "$errf" || { echo "cannot list release $tag: $(head -c 300 "$errf")"; exit 1; }
-    gh release create "$tag" -R "$REPO" --title "$tag" --notes "$notes"
+    if ! gh_retry release create "$tag" -R "$REPO" --title "$tag" --notes "$notes"; then
+      # a 5xx can land the create and still fail; a repeat then gets 422 already_exists
+      list_names "$tag" >/dev/null || { echo "::error ::cannot create release $tag"; exit 1; }
+      echo "release $tag create failed but the tag exists; continuing"
+    fi
     listing=""
   fi
   todo=()
@@ -44,6 +62,13 @@ for l in "${leagues[@]}"; do
       grep -qxF "sha256:$(sha256sum "$f" | cut -d' ' -f1)  ${f##*/}" <<<"$listing" || todo+=("$f")
     done
   done
-  [ ${#todo[@]} -eq 0 ] || gh release upload "$tag" -R "$REPO" "${todo[@]}" --clobber
+  if [ ${#todo[@]} -gt 0 ] && ! gh_retry release upload "$tag" -R "$REPO" "${todo[@]}" --clobber; then
+    after=$(list_names "$tag") || after=""
+    for f in "${todo[@]}"; do
+      grep -qxF "${f##*/}" <<<"$after" ||
+        echo "::error ::ASSET MISSING: $tag:${f##*/} was deleted by --clobber and not re-uploaded"
+    done
+    echo "::error ::upload to $tag failed"; exit 1
+  fi
   echo "published $tag: ${#todo[@]} of $(ls build/"$l" | wc -l) files changed"
 done
