@@ -18,6 +18,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | College softball | 1982–2025 | `ncaa_softball_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
 | NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
+| NCAA school ↔ ESPN team, D-I college baseball | 2010–2026 | `ncaa_baseball_crosswalk` |
 
 Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/sportsdataverse-data). Each
 `{league}_groups` tag holds four tables, in parquet and csv:
@@ -28,6 +29,7 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
 `{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
+`ncaa_baseball_crosswalk` is the same for college baseball, whose ESPN team ids are a separate id system.
 
 [CONTRACT.md](CONTRACT.md) defines the columns, the SDV group ids (`{league}:{slug}`, one per lineage) and each league's
 season key. The ending year is used for NBA, NHL and college basketball.

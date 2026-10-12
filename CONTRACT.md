@@ -165,3 +165,31 @@ is on at most one team per season; each school resolves to one ESPN id and each 
 otherwise). There is no fuzzy matching: a new name is resolved by `curated/ncaa_espn_aliases.csv` (each row verified by
 hand) or by its school's id from other seasons. Coverage ends where the NCAA team list does
 (`raw/{league}_crosswalk/ncaa_teamids.csv.gz`, from sdv-py's bundled `ncaa_teamids_{league}.csv`): 2009-10 to 2025-26.
+
+# Contract: the NCAA <-> ESPN college-baseball crosswalk (tag `ncaa_baseball_crosswalk`)
+
+Keyed on the **NCAA school** (`ncaa_team_id` = stats.ncaa.org's org id, the `team_id` of `ncaa_baseball_groups`). ESPN's
+college-baseball team ids are a separate id system from its football/basketball school ids (Alabama is 148 in
+baseball, 333 elsewhere), so this is its own map. Built by `sdv_reference/crosswalks/ncaa_baseball.py`; `validate()`
+enforces this contract. D-I only, 2010 on (the `ncaa_baseball` lookup snapshot).
+
+`ncaa_baseball_espn_team_crosswalk`: one row per stats.ncaa.org D-I team-season.
+
+| column | type | |
+|---|---|---|
+| season | Int64 | the spring year (`2026`) |
+| ncaa_team_id | Int64 | the school's stats.ncaa.org org id, stable across seasons (filled by `ncaa_baseball` when the source leaves it blank) |
+| ncaa_season_team_id | Int64 | stats.ncaa.org's per-season team id |
+| ncaa_team, ncaa_conference | Utf8 | stats.ncaa.org's name and conference label that season |
+| conference_id | Utf8 | SDV group id that season (`ncaa_baseball:sec`); null for an independent |
+| espn_team_id | Utf8 | ESPN college-baseball team id; null only when unresolved |
+| espn_display_name, espn_location, espn_mascot, espn_abbreviation | Utf8 | ESPN's names (today's) |
+| match_method | Utf8 | `alias`, `exact`, `school_hint` (the school's ESPN basketball name, from `{mbb,wbb}_crosswalk`, looked up in the baseball list), `org` (the school's id from its other seasons), `ambiguous`, `unmatched` |
+
+`ncaa_baseball_espn_schools`: one row per `ncaa_team_id`: latest `ncaa_team`, `first_season`, `last_season`,
+`espn_team_id`, `espn_display_name`. `ncaa_baseball_espn_unmatched.csv`: the schools with no ESPN id, for triage.
+
+Invariants: as the basketball crosswalk (every D-I team-season kept, unique `(season, ncaa_team_id)`, an ESPN id on at
+most one team per season, one ESPN id per school and one school per ESPN id), plus every ESPN id is in the snapshot of
+ESPN's team list (`raw/ncaa_baseball_crosswalk/espn_teams.csv.gz`, 437 teams on 2026-10-12). No fuzzy matching: a new
+name is resolved by `curated/ncaa_baseball_espn_aliases.csv` (each row verified by hand).
