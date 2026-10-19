@@ -50,6 +50,6 @@
  "espn_standings_2024.json.gz": "live site.web standings 2026-09-27T02:02:41+00:00; echoed season 2024",
  "espn_standings_2025.json.gz": "live site.web standings 2026-09-27T02:02:41+00:00; echoed season 2025",
  "espn_standings_2026.json.gz": "live site.web standings; echoed season 2026",
- "espn_standings_2027.json.gz": "live site.web standings; echoed season None",
+ "espn_standings_2027.json.gz": "live site.web standings; echoed season 2027",
  "ncaa_espn_team_crosswalk.csv.gz": "sportsdataverse-py origin/main cf5d6cfd1fac219634cd53af7e19e5c9814d197e:sportsdataverse/wbb/data/ncaa_espn_team_crosswalk_wbb.csv"
 }
