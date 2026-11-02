@@ -12,9 +12,11 @@ def t():
     return ncaa_baseball.build()
 
 
-def row(t, team_id, season):
+def row(t, team_id, season, source="ncaa_org"):
     r = t["team_group_seasons"].filter(
-        (pl.col("team_id") == team_id) & (pl.col("season") == season)
+        (pl.col("team_id") == team_id)
+        & (pl.col("season") == season)
+        & (pl.col("team_id_source") == source)
     )
     assert r.height == 1, (team_id, season)
     return r.row(0, named=True)
@@ -107,3 +109,26 @@ def test_org_id_fills(t):
     # the lookup has null team_id for 2025+ renames; UAH is Alabama Huntsville (org 10)
     assert row(t, "10", 2025)["team_name"] == "UAH"
     assert row(t, "10", 2024)["team_name"] == "Alabama Huntsville"
+
+
+def test_espn_keyed_rows(t):
+    tgs = t["team_group_seasons"]
+    org, espn = (
+        tgs.filter(pl.col("team_id_source") == s) for s in ("ncaa_org", "espn")
+    )
+    # every D-I school-season has an ESPN twin (ncaa_baseball_crosswalk resolves all of them) with the same groups
+    d1 = org.filter(pl.col("subdivision_id") == f"{L}:d1")
+    twin = d1.with_columns(pl.format("ncaa_org_id={}", "team_id").alias("key")).join(
+        espn.with_columns(
+            pl.col("notes").str.extract(r"^(ncaa_org_id=\d+)").alias("key")
+        ),
+        on=["key", "season"],
+    )
+    assert twin.height == d1.height
+    assert (twin["conference_id"].eq_missing(twin["conference_id_right"])).all()
+    # Alabama is 148 in ESPN baseball (333 elsewhere), NCAA org 8; Texas (ESPN 126) to the SEC in 2025
+    assert row(t, "148", 2026, "espn")["notes"].split("; ")[0] == "ncaa_org_id=8"
+    assert row(t, "126", 2024, "espn")["conference_id"] == f"{L}:big-12"
+    assert row(t, "126", 2025, "espn")["conference_id"] == f"{L}:sec"
+    # the map is per school, so Grand Canyon's D-II seasons carry its ESPN id too
+    assert row(t, "360", 2013, "espn")["subdivision_id"] == f"{L}:d2"

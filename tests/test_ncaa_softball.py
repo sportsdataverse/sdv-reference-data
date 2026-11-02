@@ -79,8 +79,14 @@ def test_agrees_with_baseball():
     """Same org, same season, both sports in a conference: softball's name-mapped lineage matches baseball's
     conf_id lineage almost everywhere; the rest are sport-specific affiliations (Big Sky has no baseball)."""
     sb, bb = ncaa_softball.build(), ncaa_baseball.build()
-    pick = lambda d, c: d["team_group_seasons"].select(
-        "team_id", "season", pl.col("conference_id").str.split(":").list.get(1).alias(c)
+    pick = lambda d, c: (
+        d["team_group_seasons"]
+        .filter(pl.col("team_id_source") == "ncaa_org")
+        .select(
+            "team_id",
+            "season",
+            pl.col("conference_id").str.split(":").list.get(1).alias(c),
+        )
     )
     j = pick(bb, "bb").join(pick(sb, "sb"), on=["team_id", "season"]).drop_nulls()
     assert j.height > 10_000

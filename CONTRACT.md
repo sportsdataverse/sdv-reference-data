@@ -54,12 +54,15 @@ and the publish step refuses anything that fails it.
 | value | Utf8 | |
 | valid_from, valid_to | Int32 | seasons (inclusive); null = unbounded |
 
-`team_group_seasons`: one row per team per season.
+`team_group_seasons`: one row per team per season, per id space. A league keyed on its own ids may repeat a team under
+its ESPN id: `ncaa_baseball` keeps every stats.ncaa.org row (`ncaa_org`) and adds an `espn` copy for each school
+`ncaa_baseball_crosswalk` maps, for every season of that school (its non-D-I seasons too), with `ncaa_org_id=N` first
+in `notes`. Read one `team_id_source` at a time: ESPN college-baseball ids reuse other schools' NCAA org ids.
 
 | column | type | |
 |---|---|---|
 | league, season | Utf8, Int32 | |
-| team_id | Utf8 | the ESPN team id where ESPN covers the team; otherwise the league's own id |
+| team_id | Utf8 | the ESPN team id where ESPN covers the team; otherwise the league's own id (or both, as above) |
 | team_id_source | Utf8 | `espn`, `mlb`, `nhl`, `ncaa_org`, `nba_stats`, … |
 | team_name | Utf8 | as of that season |
 | subdivision_id, conference_id, division_id | Utf8 | SDV group ids; null where the level doesn't apply |
@@ -70,7 +73,8 @@ and the publish step refuses anything that fails it.
 ## Invariants (checked by `validate`)
 
 1. Columns and dtypes as above; no nulls in keys.
-2. `group_seasons` has no duplicate `(group_id, season)`, and `team_group_seasons` has no duplicate `(team_id, season)`.
+2. `group_seasons` has no duplicate `(group_id, season)`, and `team_group_seasons` has no duplicate
+   `(team_id_source, team_id, season)`.
 3. Every referenced group id exists in `groups`, and in `group_seasons` for that season.
 4. Every `group_id` starts with `{league}:`.
 5. Each `groups.first_season` / `last_season` matches `group_seasons`.

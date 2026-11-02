@@ -29,7 +29,8 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
 `{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
-`ncaa_baseball_crosswalk` is the same for college baseball, whose ESPN team ids are a separate id system.
+`ncaa_baseball_crosswalk` is the same for college baseball, whose ESPN team ids are a separate id system;
+`ncaa_baseball_team_group_seasons` repeats each school it maps under the ESPN id (`team_id_source` `espn`).
 
 [CONTRACT.md](CONTRACT.md) defines the columns, the SDV group ids (`{league}:{slug}`, one per lineage) and each league's
 season key. The ending year is used for NBA, NHL and college basketball.

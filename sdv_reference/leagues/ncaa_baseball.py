@@ -5,7 +5,8 @@
 
 NCAA conf_ids are stable across seasons and sports, but stats.ncaa.org labels are retroactive (the MAAC reads "Metro",
 the WAC "UAC", the old Big East "AAC"). So lineage keys on conf_id, and each season's names come from
-curated/ncaa_conferences.csv. team_id is the NCAA org_id. Independents get no conference.
+curated/ncaa_conferences.csv. team_id is the NCAA org_id; each school ncaa_baseball_crosswalk maps to ESPN also gets
+an ESPN-keyed copy of its rows (team_id_source "espn"). Independents get no conference.
 
 The table assembly lives here and ncaa_softball imports it: a `_ncaa.py` helper would be listed as a league by
 build.py's pkgutil discovery.
@@ -318,7 +319,8 @@ def assemble(
 
     conf_notes = {
         p + slug: "; ".join(
-            ["NCAA conf_id " + "/".join(map(str, ids)) if ids else "no NCAA conf_id"] + cites
+            ["NCAA conf_id " + "/".join(map(str, ids)) if ids else "no NCAA conf_id"]
+            + cites
         )
         for slug, ids, cites in conf.group_by("slug", maintain_order=True)
         .agg(
@@ -426,13 +428,43 @@ def assemble(
     }
 
 
+def with_espn_rows(
+    tables: dict[str, pl.DataFrame], crosswalk: pl.DataFrame
+) -> dict[str, pl.DataFrame]:
+    """Add an ESPN-keyed copy (team_id_source "espn") of every ncaa_org row whose school the crosswalk maps, keeping
+    the ncaa_org rows. The map is per school, so it covers the school's non-D-I seasons too. ESPN ids collide with
+    other schools' NCAA org ids, so a team id is only unique within its team_id_source."""
+    tgs = tables["team_group_seasons"]
+    schools = (
+        crosswalk.drop_nulls("espn_team_id")
+        .select(pl.col("ncaa_team_id").cast(pl.Utf8).alias("team_id"), "espn_team_id")
+        .unique()
+    )
+    assert schools["team_id"].is_unique().all(), "a school maps to several ESPN ids"
+    assert tgs.schema["team_id"] == schools.schema["team_id"]
+    espn = tgs.join(schools, on="team_id").with_columns(
+        pl.concat_str([pl.format("ncaa_org_id={}", "team_id"), pl.col("notes")], separator="; ", ignore_nulls=True)
+        .alias("notes"),
+        pl.col("espn_team_id").alias("team_id"),
+        pl.lit("espn").alias("team_id_source"),
+    ).select(tgs.columns)  # fmt: skip
+    return {**tables, "team_group_seasons": pl.concat([tgs, espn])}
+
+
 def build() -> dict[str, pl.DataFrame]:
-    return assemble(
-        LEAGUE,
-        members(),
-        "NCAA Baseball",
-        "stats.ncaa.org team lookup (baseballr-data ncaa_team_lookup, 2010+), D-I/II/III. Labels there are "
-        "scrape-vintage, so names come from curated/ncaa_conferences.csv; independents have no conference.",
+    from sdv_reference.crosswalks import ncaa_baseball as crosswalk
+
+    return with_espn_rows(
+        assemble(
+            LEAGUE,
+            members(),
+            "NCAA Baseball",
+            "stats.ncaa.org team lookup (baseballr-data ncaa_team_lookup, 2010+), D-I/II/III. Labels there are "
+            "scrape-vintage, so names come from curated/ncaa_conferences.csv; independents have no conference. "
+            "team_group_seasons repeats each school ncaa_baseball_crosswalk maps under its ESPN college-baseball "
+            "id (team_id_source espn).",
+        ),
+        crosswalk.build(),
     )
 
 
