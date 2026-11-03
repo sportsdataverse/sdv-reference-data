@@ -27,6 +27,11 @@ if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
   mapfile -t leagues < build/.changed_leagues
 fi
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls build)
+# the baseball/softball crosswalks' school_hint matches come from the basketball crosswalks' school key (raw/mbb_crosswalk,
+# raw/wbb_crosswalk, curated/ncaa_espn_teams.csv): republish them, and so (below) their leagues, when either changed
+for l in ncaa_baseball_crosswalk ncaa_softball_crosswalk; do
+  [ -d "build/$l" ] && [[ ( " ${leagues[*]} " == *" mbb_crosswalk "* || " ${leagues[*]} " == *" wbb_crosswalk "* ) && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
+done
 # these leagues' ESPN-keyed team_group_seasons rows come from their crosswalk: republish them when it changed
 for l in ncaa_baseball ncaa_softball; do
   [ -d "build/$l" ] && [[ " ${leagues[*]} " == *" ${l}_crosswalk "* && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
