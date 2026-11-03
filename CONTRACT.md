@@ -55,12 +55,16 @@ and the publish step refuses anything that fails it.
 | value | Utf8 | |
 | valid_from, valid_to | Int32 | seasons (inclusive); null = unbounded |
 
-`team_group_seasons`: one row per team per season.
+`team_group_seasons`: one row per team per season, per id space. A league keyed on its own ids may repeat a team under
+its ESPN id: `ncaa_baseball` and `ncaa_softball` keep every stats.ncaa.org row (`ncaa_org`) and add an `espn` copy
+for each school their crosswalk (`ncaa_baseball_crosswalk`, `ncaa_softball_crosswalk`) maps, for every season of that
+school (its non-D-I seasons too), with `ncaa_org_id=N` first in `notes`. Read one `team_id_source` at a time: ESPN
+college-baseball and -softball ids reuse other schools' NCAA org ids.
 
 | column | type | |
 |---|---|---|
 | league, season | Utf8, Int32 | |
-| team_id | Utf8 | the ESPN team id where ESPN covers the team; otherwise the league's own id |
+| team_id | Utf8 | the ESPN team id where ESPN covers the team; otherwise the league's own id (or both, as above) |
 | team_id_source | Utf8 | `espn`, `mlb`, `nhl`, `ncaa_org`, `nba_stats`, … |
 | team_name | Utf8 | as of that season |
 | subdivision_id, conference_id, division_id | Utf8 | SDV group ids; null where the level doesn't apply |
@@ -71,7 +75,8 @@ and the publish step refuses anything that fails it.
 ## Invariants (checked by `validate`)
 
 1. Columns and dtypes as above; no nulls in keys.
-2. `group_seasons` has no duplicate `(group_id, season)`, and `team_group_seasons` has no duplicate `(team_id, season)`.
+2. `group_seasons` has no duplicate `(group_id, season)`, and `team_group_seasons` has no duplicate
+   `(team_id_source, team_id, season)`.
 3. Every referenced group id exists in `groups`, and in `group_seasons` for that season.
 4. Every `group_id` starts with `{league}:`.
 5. Each `groups.first_season` / `last_season` matches `group_seasons`.
@@ -203,3 +208,13 @@ Invariants: as the basketball crosswalk (every D-I team-season kept, unique `(se
 most one team per season, one ESPN id per school and one school per ESPN id), plus every ESPN id is in the snapshot of
 ESPN's team list (`raw/ncaa_baseball_crosswalk/espn_teams.csv.gz`, 437 teams on 2026-10-12). No fuzzy matching: a new
 name is resolved by `curated/ncaa_baseball_espn_aliases.csv` (each row verified by hand).
+
+# Contract: the NCAA <-> ESPN college-softball crosswalk (tag `ncaa_softball_crosswalk`)
+
+The baseball crosswalk's build, contract and file layout (`ncaa_softball_espn_team_crosswalk`,
+`ncaa_softball_espn_schools`, `ncaa_softball_espn_unmatched.csv`), over the `ncaa_softball` league's D-I team-seasons
+(1982-2025) and ESPN's college-softball team list (`raw/ncaa_softball_crosswalk/espn_teams.csv.gz`, 446 teams on
+2026-11-02). ESPN's softball ids are a third id system (Alabama: 560 in softball, 148 in baseball, 333 in
+football/basketball). Built by `sdv_reference/crosswalks/ncaa_softball.py`. `ncaa_season_team_id` is null: the
+softball source has no per-season team id. New names are resolved by `curated/ncaa_softball_espn_aliases.csv`, which
+also picks the id with games where ESPN lists a school twice (Clemson, Le Moyne, Wofford).

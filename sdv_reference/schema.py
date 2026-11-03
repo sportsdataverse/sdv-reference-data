@@ -109,10 +109,12 @@ def validate(league: str, tables: dict[str, pl.DataFrame]) -> list[str]:
         problems.append("groups: duplicate group_id")
     if gs.select(["group_id", "season"]).is_duplicated().any():
         problems.append("group_seasons: duplicate (group_id, season)")
-    if tgs.select(["team_id", "season"]).is_duplicated().any():
-        dup = tgs.filter(tgs.select(["team_id", "season"]).is_duplicated()).head(3)
+    # a team id means something only within its id space: ESPN college-baseball ids reuse NCAA org ids
+    key = ["team_id_source", "team_id", "season"]
+    if tgs.select(key).is_duplicated().any():
+        dup = tgs.filter(tgs.select(key).is_duplicated()).head(3)
         problems.append(
-            f"team_group_seasons: duplicate (team_id, season), e.g. {dup.select(['team_id', 'season']).rows()}"
+            f"team_group_seasons: duplicate (team_id_source, team_id, season), e.g. {dup.select(key).rows()}"
         )
 
     known = set(g["group_id"])
