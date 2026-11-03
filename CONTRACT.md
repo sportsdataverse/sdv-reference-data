@@ -9,6 +9,7 @@ and the publish step refuses anything that fails it.
 |---|---|---|
 | `nfl`, `cfb`, `mlb`, `wnba`, `ncaa_baseball`, `ncaa_softball` | the single / starting year | CFB 2025 = fall 2025 |
 | `nba`, `nhl`, `mbb`, `wbb` | the **ending** year | MBB 2025 = 2024-25 |
+| `ncaa_mhockey`, `ncaa_whockey` | the **ending** year | 2026 = 2025-26 |
 
 ## Ids
 
@@ -48,7 +49,7 @@ and the publish step refuses anything that fails it.
 | column | type | |
 |---|---|---|
 | league, group_id | Utf8 | |
-| source | Utf8 | `espn`, `ncaa`, `cfbd`, `kenpom`, `torvik`, `sports_reference`, `fox`, `mlb`, `nhl`, `nflverse`, `nba_stats`, `wnba_stats`, `sdv` |
+| source | Utf8 | `espn`, `ncaa`, `cfbd`, `kenpom`, `torvik`, `sports_reference`, `fox`, `mlb`, `nhl`, `nflverse`, `nba_stats`, `wnba_stats`, `uscho`, `sdv` |
 | source_id | Utf8 | the source's own id (ESPN group id, NCAA conf_id, CFBD id, MLB division id), when it has one |
 | name_kind | Utf8 | `name`, `short_name`, `abbreviation`, `slug`, `code` |
 | value | Utf8 | |
@@ -89,6 +90,15 @@ and the publish step refuses anything that fails it.
   - the NFL's 2002 realignment
   - the NHL's 2014 realignment
   - Maryland → Big Ten 2014-15
+
+## College hockey (`ncaa_mhockey`, `ncaa_whockey`)
+
+D-I only, 1998-99 (season 1999) on, from USCHO's per-season D-I standings. `team_id` is the ESPN team id
+(`team_id_source = "espn"`), mapped from USCHO's team slug by `curated/ncaa_hockey_espn_teams.csv`; it is usually the
+school id, but ESPN gives some newer programs a separate id per gender (LIU: men 110133, women 2341), so the map is
+per league. The root is the subdivision `{league}:d1`; independents have a null `conference_id`. The men's table is
+cross-checked against ESPN's core groups from 2024-25 (ESPN's older trees are frozen); ESPN lists no women's groups,
+so `sources_agree` is null for every women's row.
 
 # Contract: `mlb_park_dimensions` (tag `mlb_parks`)
 
