@@ -89,6 +89,10 @@ of every season in `raw/` is about 11,300 requests.
   - MBB/WBB crosswalks: a new season needs its stats.ncaa.org team list in sdv-py's `ncaa_teamids_{league}.csv` and its
     schedule pages in ncaa-{league}-hoops-raw (the org ids); stage 10 snapshots both from the local checkouts, without
     a request to stats.ncaa.org. A new ESPN school goes into `curated/ncaa_espn_teams.csv` by hand
+  - Team aliases (`raw/team_aliases/{league}/`, run by stage 10 after each league's own fetch): the newest two seasons
+    of each published team crosswalk (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, release downloads, not API calls) and
+    nfl-raw's `origin/main` player crosswalks ($SDV_NFL_RAW_CHECKOUT, default `/mnt/sdv_repos/nfl-raw`). Stage 25 counts
+    a change there as the league's, so stage 30 republishes `{league}_groups`
   - NCAA baseball / softball crosswalks: one ESPN request each (the college-baseball / -softball team list) per
     stage 10; the NCAA side is the league's snapshot, so each rebuilds whenever its league changes, and stage 30
     republishes the league when its crosswalk changes (the league's ESPN-keyed rows come from it). Softball works the

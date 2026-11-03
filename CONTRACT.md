@@ -1,6 +1,6 @@
 # Contract: the `{league}_groups` tables
 
-Every league builder produces the same four tables. `sdv_reference.schema.validate()` enforces this contract,
+Every league builder produces the same four tables (eight leagues add a fifth, `team_aliases`, below). `sdv_reference.schema.validate()` enforces this contract,
 and the publish step refuses anything that fails it.
 
 ## Leagues and season keys
@@ -101,6 +101,52 @@ ESPN's core college-softball groups (ten D-I conferences, `raw/ncaa_softball/esp
   - the NFL's 2002 realignment
   - the NHL's 2014 realignment
   - Maryland → Big Ten 2014-15
+
+## `team_aliases` (the fifth table: nfl, cfb, nba, wnba, mbb, wbb, mlb, nhl)
+
+`{league}_team_aliases`: every id and name another source uses for a team, keyed on the ESPN team id, with the seasons
+it held. Built by `sdv_reference/team_aliases.py`; `validate_team_aliases()` enforces this contract. It consolidates
+legs SDV already has, and asks no provider for anything: the Fox / Yahoo / Torvik columns of the published team
+crosswalks (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, snapshotted into `raw/team_aliases/{league}/` with provenance), nfl-raw's
+Fox / Yahoo / CBS player crosswalks (the team pair on each player row), and curated maps.
+
+| column | type | |
+|---|---|---|
+| league, team_id, team_id_source | Utf8 | the ESPN team id, as in `team_group_seasons` (`team_id_source` = `espn`) |
+| source | Utf8 | `fox`, `yahoo`, `cbs`, `torvik`, `kenpom`, `ncaa`, `nba_stats`, `wnba_stats`, `mlb`, `nhl`, `cfbd` |
+| source_id | Utf8 | the source's own id (`25`, `nba.t.1`, `193`); null for a name-only source (KenPom, Torvik) |
+| id_kind | Utf8 | `team` (the source's id for this sport's team), or `school` (`ncaa`: the stats.ncaa.org org id) |
+| name_kind, value | Utf8 | `name` / `abbreviation` and the source's own spelling, when it gives one; both null otherwise. An id with a name and an abbreviation is two rows |
+| valid_from, valid_to | Int32 | the seasons (inclusive, the league's season key) the source shows this id or name on the team; a gap in the source splits the window. Both null for an undated curated map (CBS college football), checked over every season the team has |
+| match_method | Utf8 | `deterministic` (a formula or shared key: Yahoo NBA / NFL `{lg}.t.{espn id}`, asserted on every row; CFBD ids are ESPN ids), `crosswalk` (carried from a published crosswalk leg), `curated` (a cited map in `curated/`) |
+| evidence | Utf8 | the asset or file the row came from |
+
+Sources by league:
+
+| League | Sources |
+|---|---|
+| nfl | fox, yahoo, cbs (nfl-raw `players_{fox,yahoo,cbs}.json`) |
+| cfb | fox, yahoo (`cfb_teams_crosswalk`, a name join: Yahoo's number is not the ESPN id), cbs (`curated/cfb_cbs_teams.csv`, sdv-py's `_CBS_TEAM_BY_ESPN`, undated), cfbd |
+| nba | fox, yahoo (`nba_team_crosswalk`), nba_stats (`curated/nba_teams.csv`) |
+| wnba | fox, yahoo (`wnba_team_crosswalk`; `wnba.t.N` is **not** the ESPN id), wnba_stats (`curated/wnba_teams.csv`) |
+| mbb | fox, yahoo, torvik (`mbb_team_crosswalk`), kenpom (`curated/mbb_kenpom_teams.csv` over `raw/mbb/kenpom_team_info.csv.gz`), ncaa (this repo's `mbb_crosswalk`) |
+| wbb | fox, yahoo, torvik (`wbb_team_crosswalk`), ncaa (`wbb_crosswalk`) |
+| mlb, nhl | mlb / nhl (`curated/{mlb,nhl}_team_espn.csv`, per season from `team_group_seasons` notes) |
+
+A source id means something only within its source: Fox 25 is Ohio State, ESPN 25 is California.
+
+Invariants (checked by `validate_team_aliases`):
+1. Columns and dtypes as above; no nulls in `league`, `team_id`, `team_id_source`, `source`, `id_kind`, `match_method`,
+   `evidence`; each row has a `source_id` or a `value`; `name_kind` and `value` are both set or both null.
+2. Every team-season a window covers is an ESPN team-season of `team_group_seasons`.
+3. In any season, a `(source, id_kind, source_id)` is on one team, a team has at most one id per `(source, id_kind)`,
+   and a name-only `(source, name_kind, value)` is on one team.
+
+No fuzzy matching and no guessing. A row is dropped, and written to `{league}_team_aliases_unmatched.csv` (published
+with the table) with its seasons and reason, when its source gives no ESPN team, its team-season is not in
+`team_group_seasons` (an ESPN team outside the league that season, the NFL Pro Bowl rosters), or its id breaks
+invariant 3 in any season (the whole id goes, every season). MBB / WBB Yahoo ids exist only for the seasons a
+crosswalk was built after its Yahoo leg landed (2002, and 2003 for WBB), so they are not carried to other seasons.
 
 ## College hockey (`ncaa_mhockey`, `ncaa_whockey`)
 

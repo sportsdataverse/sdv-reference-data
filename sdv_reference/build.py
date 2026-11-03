@@ -4,7 +4,8 @@ build/{league}_parks/, and each {league}_crosswalk into build/{league}_crosswalk
     uv run python -m sdv_reference.build            # every league and parks module
     uv run python -m sdv_reference.build cfb nhl mlb_parks
 
-Each league module in sdv_reference/leagues/ exposes build() -> dict of the four tables (see CONTRACT.md); each
+Each league module in sdv_reference/leagues/ exposes build() -> dict of the four tables (see CONTRACT.md), and
+sdv_reference/team_aliases.py adds the fifth, {league}_team_aliases, for the leagues it covers; each
 module in sdv_reference/parks/ and sdv_reference/crosswalks/ exposes write(out_dir), which builds, validates and
 writes its own tables.
 """
@@ -17,7 +18,7 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-from sdv_reference import crosswalks, leagues, parks
+from sdv_reference import crosswalks, leagues, parks, team_aliases
 from sdv_reference.schema import write_league
 
 OUT = Path(__file__).resolve().parent.parent / "build"
@@ -41,6 +42,13 @@ def module(name: str) -> ModuleType:
     return importlib.import_module(f"sdv_reference.leagues.{name}")
 
 
+def fetch(name: str) -> None:
+    """Stage 10 for one name: the module's own snapshots, then (for a league) its team_aliases snapshots."""
+    module(name).fetch()
+    if name in team_aliases.LEAGUES:
+        team_aliases.fetch(name)
+
+
 def main(names: list[str]) -> int:
     chosen = names or available()
     failed = []
@@ -52,6 +60,11 @@ def main(names: list[str]) -> int:
                 continue
             tables = mod.build()
             files = write_league(league, tables, OUT / league)
+            ta = ""
+            if league in team_aliases.LEAGUES:
+                more, aliases, unmatched = team_aliases.write(league, tables["team_group_seasons"], OUT / league)
+                files += more
+                ta = f", {aliases.height} team aliases ({unmatched.height} unmatched)"
         except Exception as e:  # noqa: BLE001 - report every league, then fail
             failed.append(league)
             print(f"{league}: FAILED: {e}", flush=True)
@@ -59,7 +72,7 @@ def main(names: list[str]) -> int:
         tgs = tables["team_group_seasons"]
         print(f"{league}: {tables['groups'].height} groups, {tables['group_seasons'].height} group-seasons, "
               f"{tables['group_aliases'].height} aliases, {tgs.height} team-seasons "
-              f"({tgs['season'].min()}-{tgs['season'].max()}), {len(files)} files", flush=True)
+              f"({tgs['season'].min()}-{tgs['season'].max()}){ta}, {len(files)} files", flush=True)
     return 1 if failed else 0
 
 

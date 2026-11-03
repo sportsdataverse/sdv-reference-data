@@ -1,0 +1,326 @@
+espn_team_id,cbs_team_id,location,mascot,source
+2,477,Auburn,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+5,456,UAB,Blazers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+6,815,South Alabama,Jaguars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+8,471,Arkansas,Razorbacks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+9,468,Arizona State,Sun Devils,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+12,467,Arizona,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+13,508,Cal Poly,Mustangs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+16,548,Sacramento State,Hornets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+21,793,San Diego State,Aztecs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+23,795,San Jose State,Spartans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+24,836,Stanford,Cardinal,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+25,509,California,Golden Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+26,873,UCLA,Bruins,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+30,877,USC,Trojans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+36,541,Colorado State,Rams,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+38,540,Colorado,Buffaloes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+41,545,Connecticut,Huskies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+43,932,Yale,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+46,597,Georgetown,Hoyas,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+47,621,Howard,Bison,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+48,553,Delaware,Fightin' Blue Hens,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+50,582,Florida A&M,Rattlers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+52,583,Florida State,Seminoles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+55,638,Jacksonville State,Gamecocks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+56,2065949,Stetson,Hatters,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+57,581,Florida,Gators,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+58,818,South Florida,Bulls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+59,600,Georgia Tech,Yellow Jackets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+60,715,Morehouse,Maroon Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+61,599,Georgia,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+62,612,Hawaii,Rainbow Warriors,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+66,635,Iowa State,Cyclones,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+68,492,Boise State,Broncos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+70,624,Idaho,Vandals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+77,751,Northwestern,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+79,821,Southern Illinois,Salukis,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+84,629,Indiana,Hoosiers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+87,753,Notre Dame,Fighting Irish,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+93,720,Murray State,Racers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+96,647,Kentucky,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+97,668,Louisville,Cardinals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+98,909,Western Kentucky,Hilltoppers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+99,669,LSU,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+103,493,Boston College,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+107,618,Holy Cross,Crusaders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+108,611,Harvard,Crimson,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+113,677,Massachusetts,Minutemen,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+119,864,Towson,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+120,675,Maryland,Terrapins,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+127,690,Michigan State,Spartans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+128,749,Northern Michigan,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+130,689,Michigan,Wolverines,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+135,699,Minnesota,Golden Gophers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+142,704,Missouri,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+145,701,Ole Miss,Rebels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+147,711,Montana State,Bobcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+149,710,Montana,Grizzlies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+150,559,Duke,Blue Devils,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+151,565,East Carolina,Pirates,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+152,738,North Carolina State,Wolfpack,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+153,742,North Carolina,Tar Heels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+154,891,Wake Forest,Demon Deacons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+155,743,North Dakota,Fighting Hawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+158,726,Nebraska,Cornhuskers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+159,550,Dartmouth,Big Green,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+160,730,New Hampshire,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+163,772,Princeton,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+164,785,Rutgers,Scarlet Knights,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+166,733,New Mexico State,Aggies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+167,732,New Mexico,Lobos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+171,542,Columbia,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+172,546,Cornell,Big Red,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+183,844,Syracuse,Orange,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+189,496,Bowling Green,Falcons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+193,688,Miami (OH),RedHawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+194,758,Ohio State,Buckeyes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+195,757,Ohio,Bobcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+196,13550,Northeastern State,RiverHawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+197,760,Oklahoma State,Cowboys,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+201,759,Oklahoma,Sooners,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+202,868,Tulsa,Golden Hurricane,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+204,762,Oregon State,Beavers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+213,765,Penn State,Nittany Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+218,847,Temple,Owls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+219,766,Penn,Quakers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+221,767,Pittsburgh,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+222,883,Villanova,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+225,499,Brown,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+227,778,Rhode Island,Rams,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+228,535,Clemson,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+231,593,Furman,Paladins,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+233,817,South Dakota,Coyotes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+235,681,Memphis,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+236,850,Chattanooga,Mocs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+238,882,Vanderbilt,Commodores,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+239,484,Baylor,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+242,780,Rice,Owls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+245,854,Texas A&M,Aggies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+248,620,Houston,Cougars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+249,744,North Texas,Mean Green,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+251,853,Texas,Longhorns,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+252,504,BYU,Cougars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+253,822,Southern Utah,Thunderbirds,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+254,878,Utah,Utes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+256,639,James Madison,Dukes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+257,781,Richmond,Spiders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+258,884,Virginia,Cavaliers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+259,886,Virginia Tech,Hokies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+264,895,Washington,Huskies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+265,896,Washington State,Cougars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+275,928,Wisconsin,Badgers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+276,674,Marshall,Thundering Herd,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+277,907,West Virginia,Mountaineers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+278,587,Fresno State,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+282,631,Indiana State,Sycamores,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+284,838,Stonehill,Skyhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+290,596,Georgia Southern,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+294,13493,Jacksonville,Dolphins,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+295,1678007,Old Dominion,Monarchs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+301,792,San Diego,Toreros,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+302,506,UC Davis,Aggies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+304,625,Idaho State,Bengals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+309,841,Louisiana,Ragin' Cajuns,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+311,670,Maine,Black Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+322,654,Lafayette,Leopards,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+324,431245,Coastal Carolina,Chanticleers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+326,843,Texas State,Bobcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+328,879,Utah State,Aggies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+330,885,Virginia State,Trojans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+331,571,Eastern Washington,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+333,457,Alabama,Crimson Tide,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+338,2169062,Kennesaw State,Owls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+344,703,Mississippi State,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+349,474,Army West Point,Black Knights,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+356,627,Illinois,Fighting Illini,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+389,13599,Upper Iowa,Peacocks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+399,460,UAlbany,Great Danes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+599,2871093,Roosevelt,Lakers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+613,13576,South Dakota Mines,Hardrockers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2000,451,Abilene Christian,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2005,454,Air Force,Falcons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2006,455,Akron,Zips,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2010,458,Alabama A&M,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2011,459,Alabama State,Hornets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2013,461,Albany State,Golden Rams,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2016,462,Alcorn State,Braves,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2019,26672311,Allen,Yellow Jackets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2022,464,American International,Yellow Jackets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2026,466,Appalachian State,Mountaineers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2029,470,Arkansas-Pine Bluff,Golden Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2032,472,Arkansas State,Red Wolves,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2046,481,Austin Peay,Governors,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2050,483,Ball State,Cardinals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2060,485,Bentley,Falcons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2065,488,Bethune-Cookman,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2075,495,Bowie State,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2083,500,Bucknell,Bison,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2084,501,Buffalo,Bulls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2086,503,Butler,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2097,1618606,Campbell,Fighting Camels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2110,516,Central Arkansas,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2115,518,Central Connecticut State,Blue Devils,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2116,519,UCF,Knights,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2117,520,Central Michigan,Chippewas,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2119,569988,Central State,Marauders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2120,522,Central Washington,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2122,524,Central Oklahoma,Bronchos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2123,525,Chadron State,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2127,527,Charleston Southern,Buccaneers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2130,50000125,Chicago State,Cougars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2132,531,Cincinnati,Bearcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2142,537,Colgate,Raiders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2148,543,Concord,Mountain Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2166,551,Davidson,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2168,552,Dayton,Flyers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2169,554,Delaware State,Hornets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2170,556,Delta State,Statesmen,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2181,558,Drake,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2184,560,Duquesne,Dukes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2193,566,ETSU,Buccaneers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2197,568,Eastern Illinois,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2198,569,Eastern Kentucky,Colonels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2199,570,Eastern Michigan,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2206,345138,Edward Waters,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2207,573,Elizabeth City State,Vikings,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2210,574,Elon,Phoenix,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2220,578,Fayetteville State,Broncos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2226,237794,Florida Atlantic,Owls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2229,344993,FIU,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2230,584,Fordham,Rams,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2232,591,Fort Valley State,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2233,585,Franklin,Grizzlies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2241,595,Gardner-Webb,Runnin' Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2245,598,Georgetown (KY),Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2247,1748174,Georgia State,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2249,601,Glenville State,Pioneers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2261,608,Hampton,Pirates,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2262,13484,Hanover,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2277,2065937,Houston Christian,Huskies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2287,628,Illinois State,Redbirds,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2294,634,Iowa,Hawkeyes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2296,637,Jackson State,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2305,644,Kansas,Jayhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2306,645,Kansas State,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2309,646,Kent State,Golden Flashes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2310,648,Kentucky State,Thorobreds,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2320,1748173,Lamar,Cardinals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2324,658,Langston,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2329,660,Lehigh,Mountain Hawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2335,662,Liberty,Flames,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2341,505,LIU,Sharks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2347,435839,Louisiana Christian,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2348,667,Louisiana Tech,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2355,1848383,Virginia-Lynchburg,Dragons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2368,672,Marist,Red Foxes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2377,679,McNeese,Cowboys,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2382,2065936,Mercer,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2385,684,Mercyhurst,Lakers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2390,687,Miami (Fla.),Hurricanes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2393,692,Middle Tennessee,Blue Raiders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2396,694,Miles,Golden Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2400,700,Mississippi Valley State,Delta Devils,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2405,709,Monmouth,Hawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2413,714,Morehead State,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2415,716,Morgan State,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2426,722,Navy,Midshipmen,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2428,723,North Carolina Central,Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2429,2054618,Charlotte,49ers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2433,724,Louisiana-Monroe,Warhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2439,728,UNLV,Rebels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2440,729,Nevada,Wolf Pack,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2441,731,New Haven,Chargers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2447,736,Nicholls,Colonels,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2448,737,North Carolina A&T,Aggies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2449,13548,North Dakota State,Bison,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2450,739,Norfolk State,Spartans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2453,741,North Alabama,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2458,746,Northern Colorado,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2459,747,Northern Illinois,Huskies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2460,748,UNI,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2464,750,Northern Arizona,Lumberjacks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2466,752,Northwestern State,Demons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2477,1678523,Ohio Dominican,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2483,761,Oregon,Ducks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2487,763,Pace,Setters,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2502,769,Portland State,Vikings,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2504,770,Prairie View A&M,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2506,771,Presbyterian,Blue Hose,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2509,774,Purdue,Boilermakers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2523,782,Robert Morris,Colonials,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2529,786,Sacred Heart,Pioneers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2534,790,Sam Houston,Bearkats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2535,791,Samford,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2542,797,Savannah State,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2545,798,Southeastern Louisiana,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2546,799,Southeast Missouri State,Redhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2567,807,SMU,Mustangs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2569,809,South Carolina State,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2571,811,South Dakota State,Jackrabbits,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2572,812,Southern Miss,Golden Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2579,816,South Carolina,Gamecocks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2582,819,Southern University,Jaguars,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2583,820,Southern Connecticut State,Owls,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2595,827,St. Francis (IL),Fighting Saints,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2598,828,Saint Francis U,Red Flash,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2617,837,Stephen F. Austin,Lumberjacks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2619,839,Stony Brook,Seawolves,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2623,842,Missouri State,Bears,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2627,845,Tarleton State,Texans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2628,846,TCU,Horned Frogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2630,848,UT Martin,Skyhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2633,849,Tennessee,Volunteers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2634,851,Tennessee State,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2635,852,Tennessee Tech,Golden Eagles,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2636,1827968,UTSA,Roadrunners,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2638,856,UTEP,Miners,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2640,858,Texas Southern,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2641,859,Texas Tech,Red Raiders,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2643,860,The Citadel,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2646,2871115,Thomas More,Saints,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2649,863,Toledo,Rockets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2653,865,Troy,Trojans,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2654,866,Truman State,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2655,867,Tulane,Green Wave,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2657,870,Tuskegee,Golden Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2673,880,Valdosta State,Blazers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2674,881,Valparaiso,Beacons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2678,888,VMI,Keydets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2681,890,Wagner,Seahawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2683,2065938,Warner,Royals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2691,433800,Webber International,Warriors,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2692,899,Weber State,Wildcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2695,13607,West Alabama,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2698,902,West Georgia,Wolves,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2707,906,West Virginia State,Yellow Jackets,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2710,908,Western Illinois,Leathernecks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2711,910,Western Michigan,Broncos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2717,913,Western Carolina,Catamounts,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2729,918,William & Mary,Tribe,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2736,922,Winston-Salem State,Rams,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2747,930,Wofford,Terriers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2751,931,Wyoming,Cowboys,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2754,933,Youngstown State,Penguins,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2755,602,Grambling State,Tigers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2771,13529,Merrimack,Warriors,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2803,13428,Bryant,Bulldogs,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2805,533,Clark Atlanta,Panthers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2815,13506,Lindenwood,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2816,678,McKendree,Bearcats,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2834,2871111,Sul Ross State,Lobos,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2837,871,East Texas A&M,Lions,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2839,869,Tusculum,Pioneers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2848,13612,Western Oregon,Wolves,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2851,921,Winona State,Warriors,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2900,13585,St. Thomas (MN),Tommies,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2916,1678525,Incarnate Word,Cardinals,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+2986,13471,Fairmont State,Falcons,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+3077,1827966,Kentucky Christian,Knights,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+3101,1123361,Utah Tech,Trailblazers,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+3179,2054619,Point University,Skyhawks,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+101784,3159236,Erskine,Flying Fleet,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+110242,2871132,West Florida,Argonauts,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+111610,2932255,St. Andrews,Knights,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+112334,3115531,Franklin Pierce,Ravens,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN
+124386,29191269,Arkansas Baptist,Buffaloes,sportsdataverse-py dfdf288bc8 sportsdataverse/cfb/cbs_pbp/teams.py _CBS_TEAM_BY_ESPN

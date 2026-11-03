@@ -17,6 +17,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | Men's / women's D-I college hockey | 1999–2027 | `ncaa_mhockey_groups`, `ncaa_whockey_groups` |
 | College baseball | 2010–2026 | `ncaa_baseball_groups` |
 | College softball | 1982–2026 (2026 derived: see CONTRACT.md) | `ncaa_softball_groups` |
+| Provider team ids and names (Fox, Yahoo, CBS, KenPom, Torvik, NCAA, NBA / WNBA Stats, MLB, NHL, CFBD) keyed on the ESPN team id, NFL / CFB / NBA / WNBA / MBB / WBB / MLB / NHL | by source (CONTRACT.md) | `{league}_team_aliases` in `{league}_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
 | NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
 | NCAA school ↔ ESPN team, D-I college baseball | 2010–2026 | `ncaa_baseball_crosswalk` |
@@ -28,6 +29,8 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 - `{league}_group_seasons`
 - `{league}_group_aliases`
 - `{league}_team_group_seasons`, plus one file per season
+- `{league}_team_aliases` (nfl, cfb, nba, wnba, mbb, wbb, mlb, nhl): each provider's id and name for each team, with
+  season windows, plus `{league}_team_aliases_unmatched.csv`
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
 `{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
@@ -42,7 +45,8 @@ season key. The ending year is used for NBA, NHL, college basketball and college
 
 - `sdv_reference/leagues/{league}.py` has a `fetch()` that snapshots the league's sources into `raw/{league}/`
   (`sdv_reference/parks/{league}.py` into `raw/{league}_parks/`, `sdv_reference/crosswalks/{league}.py` into
-  `raw/{league}_crosswalk/`, from the local sdv-py and ncaa-{league}-hoops-raw checkouts).
+  `raw/{league}_crosswalk/`, from the local sdv-py and ncaa-{league}-hoops-raw checkouts; `sdv_reference/team_aliases.py`
+  into `raw/team_aliases/{league}/`, from the published team crosswalks and the local nfl-raw checkout).
   The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
   two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.
 - Its `build()` reads only `raw/` and hand-curated, cited rows in `curated/`, so builds are offline and reproducible.
