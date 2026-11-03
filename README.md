@@ -16,7 +16,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | NHL | 1918–2026 | `nhl_groups` |
 | Men's / women's D-I college hockey | 1999–2027 | `ncaa_mhockey_groups`, `ncaa_whockey_groups` |
 | College baseball | 2010–2026 | `ncaa_baseball_groups` |
-| College softball | 1982–2025 | `ncaa_softball_groups` |
+| College softball | 1982–2026 (2026 derived: see CONTRACT.md) | `ncaa_softball_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
 | NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
 | NCAA school ↔ ESPN team, D-I college baseball | 2010–2026 | `ncaa_baseball_crosswalk` |

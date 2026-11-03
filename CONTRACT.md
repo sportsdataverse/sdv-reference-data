@@ -61,6 +61,12 @@ for each school their crosswalk (`ncaa_baseball_crosswalk`, `ncaa_softball_cross
 school (its non-D-I seasons too), with `ncaa_org_id=N` first in `notes`. Read one `team_id_source` at a time: ESPN
 college-baseball and -softball ids reuse other schools' NCAA org ids.
 
+`ncaa_softball`'s source (a Feb 2025 stats.ncaa.org scrape) ends at 2025, so its 2026 rows are derived: each 2025 school
+takes its stats.ncaa.org baseball 2026 conference and division where its softball and baseball shared both in 2025
+(NCAA conf_ids are cross-sport), else keeps 2025's; `curated/ncaa_softball_rollforward.csv` (cited) corrects the rest.
+Each 2026 row's `notes` says which. Programs new in 2026 are missing. 2026 `sources_agree` compares the rows with
+ESPN's core college-softball groups (ten D-I conferences, `raw/ncaa_softball/espn/`); null outside them.
+
 | column | type | |
 |---|---|---|
 | league, season | Utf8, Int32 | |

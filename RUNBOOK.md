@@ -58,7 +58,7 @@ The same computation predicted every measured "after" figure exactly.
 | mlb | MLB Stats API teams/leagues/divisions; ESPN tree | 344: Stats API 310 (every season 1901-2026), ESPN 34 | 40: Stats API 6, ESPN 34 |
 | nhl | NHL web standings; NHL stats REST (all seasons, 1 call each x2); ESPN tree | 206: web 109 (every season), REST 2, ESPN 95 (26 + 69 empty re-probes of seasons ESPN lacks) | 31: web 3, REST 2, ESPN 26 |
 | ncaa_baseball | baseballr-data `ncaa_team_lookup.parquet` (local) | 0 | 0 |
-| ncaa_softball | softballR-data `ncaa_team_info.RDS` (local, Rscript) | 0 | 0 |
+| ncaa_softball | softballR-data `ncaa_team_info.RDS` (local, Rscript); ESPN core college-softball tree, 2026+ (cross-check only) | 0 | 24 (ESPN, 2026) |
 | mlb_parks | MLB Stats API `venues` with fieldInfo, one call per season 2001+ (http, no proxy) | n/a (new) | 2 (2025-26); a first fetch is 26 |
 | **all** | | **666**, 242 of them ESPN; new seasons need code edits in 5 leagues | **657** (mlb_parks 2), 641 of them ESPN; new seasons arrive by themselves |
 
