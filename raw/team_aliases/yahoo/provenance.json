@@ -1,0 +1,14 @@
+{
+ "mlb.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 30,
+  "url": "https://graphite-secure.sports.yahoo.com/v1/query/shangrila/leagueTeams?league=mlb&lang=en-US&region=US&tz=America/New_York"
+ },
+ "nhl.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 32,
+  "url": "https://graphite-secure.sports.yahoo.com/v1/query/shangrila/leagueTeams?league=nhl&lang=en-US&region=US&tz=America/New_York"
+ }
+}

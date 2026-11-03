@@ -12,7 +12,9 @@ It consolidates legs SDV already has; nothing here asks a provider for anything:
   from the league's team_group_seasons notes, which carry the native id per season), KenPom (curated/mbb_kenpom_teams.csv
   over raw/mbb/kenpom_team_info.csv.gz), CBS college football (curated/cfb_cbs_teams.csv, from sdv-py);
 - deterministic keys: CFBD team ids are ESPN ids; Yahoo NBA / NFL ids are `{lg}.t.{espn id}` (asserted on every row);
-  stats.ncaa.org org ids from this repo's NCAA <-> ESPN basketball crosswalk.
+  stats.ncaa.org org ids from this repo's NCAA <-> ESPN basketball crosswalk;
+- provider team directories (247Sports, On3, Fox / Yahoo / CBS), captured by hand and matched by name in
+  sdv_reference/team_directories.py.
 
 No fuzzy matching and no guessing: a row whose team-season is not in the league's team_group_seasons, or an id two
 teams claim in one season (or a team with two ids of one source in a season), is dropped and written to
@@ -32,6 +34,7 @@ from pathlib import Path
 import polars as pl
 import requests
 
+from sdv_reference import team_directories
 from sdv_reference.refresh import current_season, seasons_to_fetch
 from sdv_reference.schema import (
     ENDING_YEAR_LEAGUES,
@@ -469,6 +472,8 @@ def legs(league: str, tgs: pl.DataFrame) -> pl.DataFrame:
         parts.append(_kenpom())
     if league in ("mbb", "wbb"):
         parts.append(_ncaa(league))
+    if league in team_directories.LEAGUES:
+        parts.append(team_directories.match(league, tgs)[0])
     return pl.concat(parts).unique()
 
 
@@ -523,6 +528,9 @@ def build(league: str, tgs: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
 
     def drop(bad: pl.DataFrame, reason: str) -> None:
         drops.append(bad.with_columns(pl.lit(reason).alias("reason")))
+
+    if league in team_directories.LEAGUES:  # directory rows no alias, name or dict resolved, with their reason
+        drops.append(team_directories.match(league, tgs)[1].select(*LONG, pl.lit(False).alias("_u"), "reason"))
 
     no_team = rows.filter(pl.col("team_id").is_null())
     drop(no_team, "no ESPN team for this id in the source")

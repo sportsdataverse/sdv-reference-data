@@ -108,17 +108,18 @@ ESPN's core college-softball groups (ten D-I conferences, `raw/ncaa_softball/esp
 it held. Built by `sdv_reference/team_aliases.py`; `validate_team_aliases()` enforces this contract. It consolidates
 legs SDV already has, and asks no provider for anything: the Fox / Yahoo / Torvik columns of the published team
 crosswalks (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, snapshotted into `raw/team_aliases/{league}/` with provenance), nfl-raw's
-Fox / Yahoo / CBS player crosswalks (the team pair on each player row), and curated maps.
+Fox / Yahoo / CBS player crosswalks (the team pair on each player row), and curated maps. It also matches provider team
+directories captured by hand (`sdv_reference/team_directories.py`, below).
 
 | column | type | |
 |---|---|---|
 | league, team_id, team_id_source | Utf8 | the ESPN team id, as in `team_group_seasons` (`team_id_source` = `espn`) |
-| source | Utf8 | `fox`, `yahoo`, `cbs`, `torvik`, `kenpom`, `ncaa`, `nba_stats`, `wnba_stats`, `mlb`, `nhl`, `cfbd` |
+| source | Utf8 | `fox`, `yahoo`, `cbs`, `torvik`, `kenpom`, `ncaa`, `nba_stats`, `wnba_stats`, `mlb`, `nhl`, `cfbd`, `sports247`, `on3` |
 | source_id | Utf8 | the source's own id (`25`, `nba.t.1`, `193`); null for a name-only source (KenPom, Torvik) |
-| id_kind | Utf8 | `team` (the source's id for this sport's team), or `school` (`ncaa`: the stats.ncaa.org org id) |
+| id_kind | Utf8 | `team` (the source's id for this sport's team: 247 `teamId`), or `school` (one id for every sport of a school: the stats.ncaa.org org id, 247 `institutionKey`, On3 `orgKey`) |
 | name_kind, value | Utf8 | `name` / `abbreviation` and the source's own spelling, when it gives one; both null otherwise. An id with a name and an abbreviation is two rows |
 | valid_from, valid_to | Int32 | the seasons (inclusive, the league's season key) the source shows this id or name on the team; a gap in the source splits the window. Both null for an undated curated map (CBS college football), checked over every season the team has |
-| match_method | Utf8 | `deterministic` (a formula or shared key: Yahoo NBA / NFL `{lg}.t.{espn id}`, asserted on every row; CFBD ids are ESPN ids), `crosswalk` (carried from a published crosswalk leg), `curated` (a cited map in `curated/`) |
+| match_method | Utf8 | `deterministic` (a formula or shared key: Yahoo NBA / NFL `{lg}.t.{espn id}`, asserted on every row; CFBD ids are ESPN ids), `crosswalk` (carried from a published crosswalk leg), `curated` (a cited map in `curated/`); for a directory row, `alias` (`curated/team_directory_aliases.csv`), `exact_name` (normalized name), `dict` (`curated/team_directory_names.csv`) |
 | evidence | Utf8 | the asset or file the row came from |
 
 Sources by league:
@@ -131,9 +132,22 @@ Sources by league:
 | wnba | fox, yahoo (`wnba_team_crosswalk`; `wnba.t.N` is **not** the ESPN id), wnba_stats (`curated/wnba_teams.csv`) |
 | mbb | fox, yahoo, torvik (`mbb_team_crosswalk`), kenpom (`curated/mbb_kenpom_teams.csv` over `raw/mbb/kenpom_team_info.csv.gz`), ncaa (this repo's `mbb_crosswalk`) |
 | wbb | fox, yahoo, torvik (`wbb_team_crosswalk`), ncaa (`wbb_crosswalk`) |
-| mlb, nhl | mlb / nhl (`curated/{mlb,nhl}_team_espn.csv`, per season from `team_group_seasons` notes) |
+| mlb, nhl | mlb / nhl (`curated/{mlb,nhl}_team_espn.csv`, per season from `team_group_seasons` notes); fox, yahoo, cbs (directories) |
+| cfb, mbb, wbb (directories) | sports247 (`teamId`: cfb from football, mbb from basketball; `institutionKey`: cfb, mbb, wbb), on3 (`orgKey`: cfb from football, mbb and wbb from basketball) |
+| nba (directory) | cbs |
 
 A source id means something only within its source: Fox 25 is Ohio State, ESPN 25 is California.
+
+Directory sources (247Sports, On3; Fox / Yahoo / CBS for MLB and NHL; CBS for the NBA) come from team directories
+captured by hand into `raw/team_aliases/{source}/{file}.csv.gz` (`provenance.json`: URL, capture date, rows), one
+request at a time from a residential machine. They are not part of stage 10: the Fox, CBS and 247 API hosts disallow
+crawling, and the owner approved one-off low-rate snapshots (2026-11-03). A directory lists today's teams, so a
+capture holds for one season of each league, its current season on the capture date (cfb 2026, mbb / wbb / nba / nhl
+2027, mlb 2026 for the 2026-11-03 capture). A row is matched by curated alias, then exact normalized name (accents and
+apostrophes folded) against ESPN's names (the college pool `curated/ncaa_espn_teams.csv` plus the league's
+`team_group_seasons` names that season), then the curated name dictionary; a name that reaches two ESPN teams is not
+matched. Rows left over (all-star teams, schools outside ESPN's D-I) go to the unmatched file with the reason.
+Yahoo's MLB numbers equal the ESPN id on all 30 teams (NHL: 29 of 32), but they are matched by name, not assumed.
 
 Invariants (checked by `validate_team_aliases`):
 1. Columns and dtypes as above; no nulls in `league`, `team_id`, `team_id_source`, `source`, `id_kind`, `match_method`,

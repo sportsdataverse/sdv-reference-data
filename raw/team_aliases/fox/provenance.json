@@ -1,0 +1,14 @@
+{
+ "mlb.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 30,
+  "url": "https://api.foxsports.com/bifrost/v1/mlb/league/teamnav?apikey=jE7yBJVRNAwdDesMgTzTXUUSx1It41Fq&api-version=1.1"
+ },
+ "nhl.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 32,
+  "url": "https://api.foxsports.com/bifrost/v1/nhl/league/teamnav?apikey=jE7yBJVRNAwdDesMgTzTXUUSx1It41Fq&api-version=1.1"
+ }
+}
