@@ -6,7 +6,8 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 export UV_CACHE_DIR="${UV_CACHE_DIR:-/mnt/sdv_repos/.uv-cache}"
 rm -f build/.changed_leagues
-changed=$(git status --porcelain --untracked-files=all -- raw/ | awk '{print $2}' | cut -d/ -f2 | sort -u)
+# raw/{league}/... -> league; raw/team_aliases/{league}/... -> league too (its team_aliases table is in {league}_groups)
+changed=$(git status --porcelain --untracked-files=all -- raw/ | awk '{print $2}' | awk -F/ '{print ($2 == "team_aliases" ? $3 : $2)}' | sort -u)
 if [ -z "$changed" ]; then
   echo "raw/ unchanged"
   exit 3

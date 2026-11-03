@@ -56,6 +56,34 @@ KEYS = {
     "group_aliases": ["league", "group_id", "source", "name_kind", "value"],
     "team_group_seasons": ["league", "season", "team_id", "team_id_source", "source"],
 }
+#: the fifth table of a {league}_groups tag (sdv_reference/team_aliases.py); see CONTRACT.md
+TEAM_ALIASES: dict[str, pl.DataType] = {
+    "league": pl.Utf8,
+    "team_id": pl.Utf8,
+    "team_id_source": pl.Utf8,
+    "source": pl.Utf8,
+    "source_id": pl.Utf8,
+    "id_kind": pl.Utf8,
+    "name_kind": pl.Utf8,
+    "value": pl.Utf8,
+    "valid_from": pl.Int32,
+    "valid_to": pl.Int32,
+    "match_method": pl.Utf8,
+    "evidence": pl.Utf8,
+}
+TEAM_ALIASES_KEYS = [
+    "league",
+    "team_id",
+    "team_id_source",
+    "source",
+    "id_kind",
+    "match_method",
+    "evidence",
+]
+TEAM_ALIAS_SOURCES = {
+    "fox", "yahoo", "cbs", "torvik", "kenpom", "ncaa", "nba_stats", "wnba_stats", "mlb", "nhl", "cfbd",
+}  # fmt: skip
+TEAM_ALIAS_METHODS = {"deterministic", "crosswalk", "curated"}
 LEVELS = {"league", "subdivision", "conference", "division"}
 ENDING_YEAR_LEAGUES = {"nba", "nhl", "mbb", "wbb", "ncaa_mhockey", "ncaa_whockey"}
 
@@ -157,6 +185,92 @@ def validate(league: str, tables: dict[str, pl.DataFrame]) -> list[str]:
     if off.height:
         problems.append(
             f"groups: first/last_season disagree with group_seasons for {off['group_id'].to_list()[:5]}"
+        )
+    return problems
+
+
+def validate_team_aliases(
+    league: str, ta: pl.DataFrame, tgs: pl.DataFrame
+) -> list[str]:
+    """Problems with a league's team_aliases table, checked against its team_group_seasons; empty = meets the
+    contract. A null valid_from / valid_to is an open bound, checked over every season the team has."""
+    if dict(ta.schema) != TEAM_ALIASES:
+        return [f"team_aliases: schema {dict(ta.schema)} != {TEAM_ALIASES}"]
+    problems = []
+    for k in TEAM_ALIASES_KEYS:
+        if n := ta[k].null_count():
+            problems.append(f"team_aliases.{k}: {n} nulls in a key column")
+    if (ta["league"] != league).any():
+        problems.append("team_aliases: rows for another league")
+    if bad := set(ta["source"].unique()) - TEAM_ALIAS_SOURCES:
+        problems.append(f"team_aliases: unknown sources {bad}")
+    if bad := set(ta["match_method"].unique()) - TEAM_ALIAS_METHODS:
+        problems.append(f"team_aliases: unknown match_method {bad}")
+    if ta.filter(pl.col("source_id").is_null() & pl.col("value").is_null()).height:
+        problems.append("team_aliases: rows with neither a source_id nor a value")
+    if ta.filter(pl.col("name_kind").is_null() != pl.col("value").is_null()).height:
+        problems.append(
+            "team_aliases: name_kind and value must be both set or both null"
+        )
+    if ta.filter(pl.col("valid_from") > pl.col("valid_to")).height:
+        problems.append("team_aliases: valid_from after valid_to")
+    if problems:
+        return problems
+    hub = (
+        tgs.filter(pl.col("team_id_source") == "espn")
+        .select("season", "team_id")
+        .unique()
+    )
+    span = hub.group_by("team_id").agg(
+        pl.col("season").min().alias("lo"), pl.col("season").max().alias("hi")
+    )
+    rows = (
+        ta.with_row_index("_r")
+        .join(span, on="team_id", how="left")
+        .with_columns(
+            pl.int_ranges(
+                pl.coalesce("valid_from", "lo"), pl.coalesce("valid_to", "hi") + 1
+            ).alias("season")
+        )
+        .explode("season")
+        .with_columns(pl.col("season").cast(pl.Int32))
+    )
+    bounded = rows.filter(
+        pl.col("valid_from").is_not_null() | pl.col("valid_to").is_not_null()
+    )
+    miss = bounded.join(hub, on=["season", "team_id"], how="anti")
+    if miss.height:
+        problems.append(
+            f"team_aliases: {miss.height} team-seasons not in team_group_seasons, e.g. {miss.select('team_id', 'source', 'season').head(3).rows()}"
+        )
+    rows = rows.join(hub, on=["season", "team_id"], how="semi")
+    ids = rows.filter(pl.col("source_id").is_not_null())
+    for by, other, what in [
+        (["source", "id_kind", "source_id"], "team_id", "an id on two teams"),
+        (
+            ["source", "id_kind", "team_id"],
+            "source_id",
+            "a team with two ids of one source",
+        ),
+    ]:
+        dup = (
+            ids.group_by("season", *by)
+            .agg(pl.col(other).n_unique().alias("n"))
+            .filter(pl.col("n") > 1)
+        )
+        if dup.height:
+            problems.append(
+                f"team_aliases: {what} in a season, e.g. {dup.head(3).rows()}"
+            )
+    dup = (
+        rows.filter(pl.col("source_id").is_null())
+        .group_by("season", "source", "name_kind", "value")
+        .agg(pl.col("team_id").n_unique().alias("n"))
+        .filter(pl.col("n") > 1)
+    )
+    if dup.height:
+        problems.append(
+            f"team_aliases: a name on two teams in a season, e.g. {dup.head(3).rows()}"
         )
     return problems
 

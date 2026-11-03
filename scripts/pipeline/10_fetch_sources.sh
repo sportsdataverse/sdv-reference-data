@@ -17,6 +17,6 @@ leagues=("$@")
 failed=()
 for l in "${leagues[@]}"; do
   echo "fetch $l"
-  uv run python -c "from sdv_reference.build import module; module('$l').fetch()" || failed+=("$l")
+  uv run python -c "from sdv_reference.build import fetch; fetch('$l')" || failed+=("$l")
 done
 [ ${#failed[@]} -eq 0 ] || { echo "fetch failed: ${failed[*]}"; exit 1; }

@@ -32,8 +32,9 @@ fi
 for l in ncaa_baseball_crosswalk ncaa_softball_crosswalk; do
   [ -d "build/$l" ] && [[ ( " ${leagues[*]} " == *" mbb_crosswalk "* || " ${leagues[*]} " == *" wbb_crosswalk "* ) && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
 done
-# these leagues' ESPN-keyed team_group_seasons rows come from their crosswalk: republish them when it changed
-for l in ncaa_baseball ncaa_softball; do
+# these leagues' ESPN-keyed team_group_seasons rows (baseball, softball) or team_aliases ncaa ids (mbb, wbb) come from
+# their crosswalk: republish them when it changed
+for l in ncaa_baseball ncaa_softball mbb wbb; do
   [ -d "build/$l" ] && [[ " ${leagues[*]} " == *" ${l}_crosswalk "* && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
 done
 # a crosswalk's conference columns come from its league's groups: republish it when the league changed
@@ -54,7 +55,7 @@ for l in "${leagues[@]}"; do
     notes="Playing-surface reference for ${l%_parks}, by venue and season. mlb_park_dimensions: each MLB-used venue's outfield fence distances in feet (left line to right line, five to seven markers), capacity, turf, roof, azimuth, elevation and location, with the Retrosheet park id. From the MLB Stats API's per-season venue fieldInfo, 2001 on, with cited curated corrections where the API lags. Built by sportsdataverse/sdv-reference-data (sdv_reference/parks/${l%_parks}.py) from committed source snapshots; see that repo's CONTRACT.md for the schema."
   else
     tag="${l}_groups"
-    notes="Season-by-season conference, division and subdivision reference for ${l}: every group's name, abbreviation and parent as of each season, every source's ids and names for it (group_aliases), and each team's affiliation by season (team_group_seasons, one file per season). Built by sportsdataverse/sdv-reference-data (sdv_reference/leagues/${l}.py) from committed source snapshots; see that repo's CONTRACT.md for the schema and season key."
+    notes="Season-by-season conference, division and subdivision reference for ${l}: every group's name, abbreviation and parent as of each season, every source's ids and names for it (group_aliases), and each team's affiliation by season (team_group_seasons, one file per season), and for the leagues that have it, every provider's id and name for each team with season windows (team_aliases, keyed on the ESPN team id; team_aliases_unmatched lists what was dropped and why). Built by sportsdataverse/sdv-reference-data (sdv_reference/leagues/${l}.py) from committed source snapshots; see that repo's CONTRACT.md for the schema and season key."
   fi
   # ONE REST listing per tag: every asset carries a GitHub-computed sha256 digest, so only files whose bytes
   # changed upload (the droplet shares one 5,000/h API quota). Only a 404 means "no release yet".
