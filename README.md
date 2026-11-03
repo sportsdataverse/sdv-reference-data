@@ -17,7 +17,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | Men's / women's D-I college hockey | 1999–2027 | `ncaa_mhockey_groups`, `ncaa_whockey_groups` |
 | College baseball | 2010–2026 | `ncaa_baseball_groups` |
 | College softball | 1982–2026 (2026 derived: see CONTRACT.md) | `ncaa_softball_groups` |
-| Provider team ids and names (Fox, Yahoo, CBS, KenPom, Torvik, NCAA, NBA / WNBA Stats, MLB, NHL, CFBD) keyed on the ESPN team id, NFL / CFB / NBA / WNBA / MBB / WBB / MLB / NHL | by source (CONTRACT.md) | `{league}_team_aliases` in `{league}_groups` |
+| Provider team ids and names (Fox, Yahoo, CBS, 247Sports, On3, KenPom, Torvik, NCAA, NBA / WNBA Stats, MLB, NHL, CFBD) keyed on the ESPN team id, NFL / CFB / NBA / WNBA / MBB / WBB / MLB / NHL | by source (CONTRACT.md) | `{league}_team_aliases` in `{league}_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
 | NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
 | NCAA school ↔ ESPN team, D-I college baseball | 2010–2026 | `ncaa_baseball_crosswalk` |
@@ -50,7 +50,9 @@ season key. The ending year is used for NBA, NHL, college basketball and college
   (`sdv_reference/parks/{league}.py` into `raw/{league}_parks/`, `sdv_reference/crosswalks/{league}.py` into
   `raw/{league}_crosswalk/`, from the local sdv-py and ncaa-{league}-hoops-raw checkouts; `sdv_reference/team_aliases.py`
   into `raw/team_aliases/{league}/`, from the published team crosswalks and the local nfl-raw checkout;
-  `sdv_reference/player_aliases.py` into `raw/player_aliases/{league}/`, from the published player crosswalks and the
+  `sdv_reference/team_directories.py`, run by hand and not by stage 10, into `raw/team_aliases/{source}/`, from the
+  247Sports, On3, Fox, Yahoo and CBS team directories;
+  and `sdv_reference/player_aliases.py` into `raw/player_aliases/{league}/`, from the published player crosswalks and the
   local nfl-raw and ncaa-{mbb,wbb}-hoops-raw / ncaa-mfb-football-raw checkouts).
   The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
   two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.

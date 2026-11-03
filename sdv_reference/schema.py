@@ -82,8 +82,16 @@ TEAM_ALIASES_KEYS = [
 ]
 TEAM_ALIAS_SOURCES = {
     "fox", "yahoo", "cbs", "torvik", "kenpom", "ncaa", "nba_stats", "wnba_stats", "mlb", "nhl", "cfbd",
+    "sports247", "on3",
 }  # fmt: skip
-TEAM_ALIAS_METHODS = {"deterministic", "crosswalk", "curated"}
+TEAM_ALIAS_METHODS = {
+    "deterministic",
+    "crosswalk",
+    "curated",
+    "alias",
+    "exact_name",
+    "dict",
+}
 #: a table of a {league}_groups tag beside team_aliases (sdv_reference/player_aliases.py); see CONTRACT.md
 PLAYER_ALIASES: dict[str, pl.DataType] = {
     "league": pl.Utf8,

@@ -93,6 +93,12 @@ of every season in `raw/` is about 11,300 requests.
     of each published team crosswalk (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, release downloads, not API calls) and
     nfl-raw's `origin/main` player crosswalks ($SDV_NFL_RAW_CHECKOUT, default `/mnt/sdv_repos/nfl-raw`). Stage 25 counts
     a change there as the league's, so stage 30 republishes `{league}_groups`
+  - Team directories (`raw/team_aliases/{sports247,on3,fox,yahoo,cbs}/`): **not stage 10**. A one-off capture, at most
+    once a season, by hand from a residential machine (owner decision 2026-11-03: the Fox, CBS and 247 API hosts
+    disallow crawling): `uv run --frozen --with curl_cffi python -m sdv_reference.team_directories [source ...]`. It
+    makes 11 requests, one at a time, `$SDV_REF_DIRECTORY_DELAY` seconds apart (default 2, never under 1), and appends
+    the capture with its date. Then stage 20; resolve new misses in `curated/team_directory_names.csv` (a spelling ->
+    ESPN id) or `curated/team_directory_aliases.csv` (an id; a blank ESPN id marks a non-ESPN school)
   - Player aliases (`raw/player_aliases/{league}/`, run by stage 10 after team aliases): the newest two seasons of each
     published player crosswalk (`{nba,wnba,mbb,wbb}_player_crosswalk`, `cfb_{players,rosters}_crosswalk`), nfl-raw's
     `players_*.json`, and every `{lg}/xwalk/espn_athlete_id/*.json` on `origin/main` of the NCAA raw repos

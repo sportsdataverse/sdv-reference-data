@@ -6,8 +6,11 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 export UV_CACHE_DIR="${UV_CACHE_DIR:-/mnt/sdv_repos/.uv-cache}"
 rm -f build/.changed_leagues
-# raw/{league}/... -> league; raw/{team,player}_aliases/{league}/... -> league too (both tables are in {league}_groups)
-changed=$(git status --porcelain --untracked-files=all -- raw/ | awk '{print $2}' | awk -F/ '{print ($2 ~ /^(team|player)_aliases$/ ? $3 : $2)}' | sort -u)
+# raw/{league}/... -> league; raw/{team,player}_aliases/{league}/... -> league too (both tables are in {league}_groups);
+# raw/team_aliases/{source}/ (a hand-captured team directory, sdv_reference/team_directories.py) -> the leagues it feeds
+changed=$(git status --porcelain --untracked-files=all -- raw/ | awk '{print $2}' | awk -F/ '{print ($2 ~ /^(team|player)_aliases$/ ? $3 : $2)}' \
+  | sed -e 's/^sports247$/cfb mbb wbb/' -e 's/^on3$/cfb mbb wbb/' -e 's/^fox$/mlb nhl/' -e 's/^yahoo$/mlb nhl/' -e 's/^cbs$/mlb nhl nba/' \
+  | tr ' ' '\n' | sort -u)
 if [ -z "$changed" ]; then
   echo "raw/ unchanged"
   exit 3
