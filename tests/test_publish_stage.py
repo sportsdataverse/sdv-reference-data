@@ -26,7 +26,10 @@ exit 0
 """
 
 
-def _run(tmp_path: Path, listing: str | None, rc: int = 0, **fake: str) -> tuple[list[str], str]:
+def _run(
+    tmp_path: Path, listing: str | None, rc: int = 0, args: tuple[str, ...] = ("nba",),
+    builds: tuple[str, ...] = (), **fake: str,
+) -> tuple[list[str], str]:
     root = tmp_path / "repo"
     (root / "scripts/pipeline").mkdir(parents=True)
     shutil.copy(STAGE, root / "scripts/pipeline/30_publish_releases.sh")
@@ -38,14 +41,17 @@ def _run(tmp_path: Path, listing: str | None, rc: int = 0, **fake: str) -> tuple
         ("nba_x.csv", "b\n2\n"),
     ]:
         (build / name).write_text(body)
+    for b in builds:
+        (root / "build" / b).mkdir()
+        (root / "build" / b / f"{b}.csv").write_text("a\n")
     bin_ = tmp_path / "bin"
     bin_.mkdir()
-    (bin_ / "gh").write_text(FAKE_GH)
+    (bin_ / "gh").write_text(FAKE_GH, newline="\n")  # LF even on Windows: bash runs it
     (bin_ / "gh").chmod(0o755)
     log = tmp_path / "gh.log"
     env = {
         **os.environ,
-        "PATH": f"{bin_}:{os.environ['PATH']}",
+        "PATH": f"{bin_}{os.pathsep}{os.environ['PATH']}",
         "FAKE_LOG": str(log),
         "FAKE_LISTING": str(tmp_path / "listing"),
         "GH_RETRY_BACKOFF_S": "0",
@@ -60,7 +66,8 @@ def _run(tmp_path: Path, listing: str | None, rc: int = 0, **fake: str) -> tuple
         }
         (tmp_path / "listing").write_text(listing.format(**digests))
     proc = subprocess.run(
-        ["bash", str(root / "scripts/pipeline/30_publish_releases.sh"), "nba"],
+        # the PATH bash, not System32's WSL one (Windows looks there first), and a POSIX path
+        [shutil.which("bash"), (root / "scripts/pipeline/30_publish_releases.sh").as_posix(), *args],
         env=env,
         capture_output=True,
         text=True,
@@ -115,3 +122,13 @@ def test_final_failure_names_the_asset_clobber_deleted(tmp_path):
     calls, out = _run(tmp_path, CHANGED, rc=1, FAKE_FAIL="HTTP 503: Service Unavailable")
     assert len(calls) == 3
     assert "ASSET MISSING: nba_groups:nba_groups.parquet" in out
+
+
+def test_basketball_crosswalk_change_republishes_baseball_and_softball(tmp_path):
+    # their school_hint matches come from the mbb/wbb crosswalks' school key
+    cw = ("mbb_crosswalk", "ncaa_baseball_crosswalk", "ncaa_softball_crosswalk")
+    calls, _ = _run(
+        tmp_path, None, args=("mbb_crosswalk",), builds=(*cw, "ncaa_baseball", "ncaa_softball")
+    )
+    created = [c.split()[2] for c in calls if c.startswith("release create")]
+    assert created == [*cw, "ncaa_baseball_groups", "ncaa_softball_groups"]

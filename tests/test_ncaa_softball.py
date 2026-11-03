@@ -28,7 +28,7 @@ def test_contract(t):
 
 def test_season_cleaning(t):
     seasons = set(t["team_group_seasons"]["season"])
-    assert min(seasons) == 1982 and max(seasons) == 2025
+    assert min(seasons) == 1982 and max(seasons) == 2026  # 2026 rolled forward (roll_forward)
     assert 2000 in seasons  # repaired from the "1900" misparse
     # Alabama's 2000 season (66-14) was stored as 1900
     assert conf(t, "8", 2000) == f"{L}:sec"
@@ -49,12 +49,14 @@ def test_season_cleaning(t):
         ),  # BYU softball: WAC 2012, Pacific Coast 2013, WCC 2014
         ("77", 2014, "pacific-coast", "wcc"),
         ("732", 2025, "pac-12", "big-12"),  # Utah
-        (
-            "1356",
-            2013,
-            "pacific-coast",
-            "wac",
-        ),  # Seattle U (WCC move is 2026, after this data ends)
+        ("1356", 2013, "pacific-coast", "wac"),  # Seattle U
+        # 2026, rolled forward from stats.ncaa.org baseball 2026 (July 2025 realignment)
+        ("1356", 2026, "wac", "wcc"),  # Seattle U
+        ("180", 2026, "caa", "cusa"),  # Delaware
+        ("669", 2026, "mvc", "cusa"),  # Missouri State
+        ("1104", 2026, "wac", "mountain-west"),  # Grand Canyon
+        ("400", 2026, "atlantic-10", "mac"),  # UMass
+        ("470", 2026, "ne10", "nec"),  # New Haven, D-II to D-I
         ("1104", 2014, "pacwest", "wac"),  # Grand Canyon, D-II to D-I
         ("367", 2015, "american", "acc"),  # Louisville
         ("164", 2021, "american", "big-east"),  # UConn
@@ -107,3 +109,24 @@ def test_espn_keyed_rows(t):
     # Texas is 538 in ESPN softball (126 in baseball, 251 elsewhere): to the SEC for 2025
     assert conf(t, "538", 2024, "espn") == f"{L}:big-12"
     assert conf(t, "538", 2025, "espn") == f"{L}:sec"
+
+
+def test_2026_rolled_forward(t):
+    tgs = t["team_group_seasons"].filter(pl.col("season") == 2026)
+    org = tgs.filter(pl.col("team_id_source") == "ncaa_org")
+    assert org.height > 950 and org["notes"].str.contains("2026 not in source").all()
+    # curated: SFA has been in the Southland since July 2024 (the softball source says WAC in 2025)
+    assert conf(t, "676", 2026) == f"{L}:southland"
+    # Saint Francis (PA) plays its last NEC season in 2025-26, then goes to D-III
+    assert conf(t, "600", 2026) == f"{L}:nec"
+    assert tgs.filter(pl.col("team_id_source") == "espn").height > 300
+
+
+def test_2026_agrees_with_espn(t):
+    """ESPN's core groups (ten D-I conferences) list every team the rolled-forward rows put in them, and no other."""
+    org = t["team_group_seasons"].filter((pl.col("season") == 2026) & (pl.col("team_id_source") == "ncaa_org"))
+    checked = org.filter(pl.col("sources_agree").is_not_null())
+    assert checked.height > 110 and checked["sources_agree"].all()
+    assert t["team_group_seasons"].filter(pl.col("season") < 2026)["sources_agree"].null_count() == (
+        t["team_group_seasons"].filter(pl.col("season") < 2026).height
+    )
