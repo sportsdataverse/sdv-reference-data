@@ -44,3 +44,13 @@ def test_contract_violations_are_caught():
     t = tiny()
     t["team_group_seasons"] = t["team_group_seasons"].with_columns(pl.lit("cfb:pac-12").alias("conference_id"))
     assert any("not in group_seasons" in p for p in validate("cfb", t))
+
+
+def test_team_id_unique_within_its_id_space():
+    t = tiny()
+    tgs = t["team_group_seasons"]
+    # ESPN college-baseball ids reuse NCAA org ids: the same id in another id space is not a duplicate
+    t["team_group_seasons"] = pl.concat([tgs, tgs.with_columns(pl.lit("ncaa_org").alias("team_id_source"))])
+    assert validate("cfb", t) == []
+    t["team_group_seasons"] = pl.concat([tgs, tgs.head(1)])
+    assert any("duplicate (team_id_source, team_id, season)" in p for p in validate("cfb", t))

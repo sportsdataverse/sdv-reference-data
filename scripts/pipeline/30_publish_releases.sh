@@ -27,6 +27,10 @@ if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
   mapfile -t leagues < build/.changed_leagues
 fi
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls build)
+# these leagues' ESPN-keyed team_group_seasons rows come from their crosswalk: republish them when it changed
+for l in ncaa_baseball; do
+  [ -d "build/$l" ] && [[ " ${leagues[*]} " == *" ${l}_crosswalk "* && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
+done
 # a crosswalk's conference columns come from its league's groups: republish it when the league changed
 for l in "${leagues[@]}"; do
   [ -d "build/${l}_crosswalk" ] && [[ " ${leagues[*]} " != *" ${l}_crosswalk "* ]] && leagues+=("${l}_crosswalk")
