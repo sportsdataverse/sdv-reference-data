@@ -1,0 +1,6 @@
+ncaa_team,espn_team_id,note
+Clemson,1140,"ESPN lists two Clemson Tigers (529, 1140); only 1140 has 2025 games (59, at Ole Miss first), checked 2026-11-02"
+Le Moyne,1283,"ESPN lists two Le Moyne Dolphins (583, 1283); only 1283 has 2025 games (at Syracuse), checked 2026-11-02"
+Wofford,1285,"ESPN lists two Wofford Terriers (620, 1285); only 1285 has 2025 games (at South Carolina), checked 2026-11-02"
+Saint Francis (PA),790,"ESPN's Saint Francis Red Flash (SFPA, 2025 games at South Carolina); the PA suffix and St Francis BK (789) keep the name match from resolving, checked 2026-11-02"
+Birmingham-So.,468,"ESPN's only Birmingham Southern Panthers (BSC); no games since the school closed in 2024, checked 2026-11-02"

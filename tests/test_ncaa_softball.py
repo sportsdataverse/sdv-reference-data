@@ -12,9 +12,11 @@ def t():
     return ncaa_softball.build()
 
 
-def conf(t, team_id, season):
+def conf(t, team_id, season, source="ncaa_org"):
     r = t["team_group_seasons"].filter(
-        (pl.col("team_id") == team_id) & (pl.col("season") == season)
+        (pl.col("team_id") == team_id)
+        & (pl.col("season") == season)
+        & (pl.col("team_id_source") == source)
     )
     assert r.height == 1, (team_id, season)
     return r["conference_id"][0]
@@ -91,3 +93,17 @@ def test_agrees_with_baseball():
     j = pick(bb, "bb").join(pick(sb, "sb"), on=["team_id", "season"]).drop_nulls()
     assert j.height > 10_000
     assert (j["bb"] == j["sb"]).mean() > 0.97
+
+
+def test_espn_keyed_rows(t):
+    tgs = t["team_group_seasons"]
+    org, espn = (tgs.filter(pl.col("team_id_source") == s) for s in ("ncaa_org", "espn"))
+    # each ESPN row is a copy of its school's ncaa_org row, same season and groups
+    twin = espn.with_columns(pl.col("notes").str.extract(r"^ncaa_org_id=(\d+)").alias("team_id")).join(
+        org, on=["team_id", "season"], suffix="_org"
+    )
+    assert twin.height == espn.height > 10_000
+    assert twin["conference_id"].eq_missing(twin["conference_id_org"]).all()
+    # Texas is 538 in ESPN softball (126 in baseball, 251 elsewhere): to the SEC for 2025
+    assert conf(t, "538", 2024, "espn") == f"{L}:big-12"
+    assert conf(t, "538", 2025, "espn") == f"{L}:sec"

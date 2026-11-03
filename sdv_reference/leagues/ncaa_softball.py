@@ -32,6 +32,7 @@ from sdv_reference.leagues.ncaa_baseball import (
     assemble,
     label_slugs,
     resolve_duplicates,
+    with_espn_rows,
 )
 
 LEAGUE = "ncaa_softball"
@@ -133,14 +134,21 @@ def members() -> pl.DataFrame:
 
 
 def build() -> dict[str, pl.DataFrame]:
-    return assemble(
-        LEAGUE,
-        members(),
-        "NCAA Softball",
-        "stats.ncaa.org team history pages (softballR-data ncaa_team_info.RDS, Feb 2025 scrape), 1982+, D-I/II/III. "
-        "Conference labels there are retroactive and carry no conf_id: mapped through the baseball lookup's "
-        "label/conf_id pairs plus curated/ncaa_softball_labels.csv; names come from curated/ncaa_conferences.csv. "
-        "Conference labels are sparse before about 1997 (D-I) and 2002 (D-II/III).",
+    from sdv_reference.crosswalks import ncaa_softball as crosswalk
+
+    return with_espn_rows(
+        assemble(
+            LEAGUE,
+            members(),
+            "NCAA Softball",
+            "stats.ncaa.org team history pages (softballR-data ncaa_team_info.RDS, Feb 2025 scrape), 1982+, "
+            "D-I/II/III. Conference labels there are retroactive and carry no conf_id: mapped through the baseball "
+            "lookup's label/conf_id pairs plus curated/ncaa_softball_labels.csv; names come from "
+            "curated/ncaa_conferences.csv. Conference labels are sparse before about 1997 (D-I) and 2002 (D-II/III). "
+            "team_group_seasons repeats each school ncaa_softball_crosswalk maps under its ESPN college-softball id "
+            "(team_id_source espn).",
+        ),
+        crosswalk.build(),
     )
 
 
