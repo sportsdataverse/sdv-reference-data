@@ -28,7 +28,7 @@ if [ ${#leagues[@]} -eq 0 ] && [ -f build/.changed_leagues ]; then
 fi
 [ ${#leagues[@]} -gt 0 ] || mapfile -t leagues < <(ls build)
 # these leagues' ESPN-keyed team_group_seasons rows come from their crosswalk: republish them when it changed
-for l in ncaa_baseball; do
+for l in ncaa_baseball ncaa_softball; do
   [ -d "build/$l" ] && [[ " ${leagues[*]} " == *" ${l}_crosswalk "* && " ${leagues[*]} " != *" $l "* ]] && leagues+=("$l")
 done
 # a crosswalk's conference columns come from its league's groups: republish it when the league changed
@@ -37,9 +37,10 @@ for l in "${leagues[@]}"; do
 done
 for l in "${leagues[@]}"; do
   [ -d "build/$l" ] || { echo "no build/$l; run stage 20 first"; exit 1; }
-  if [ "$l" = ncaa_baseball_crosswalk ]; then
+  if [[ "$l" == ncaa_baseball_crosswalk || "$l" == ncaa_softball_crosswalk ]]; then
     tag="$l"
-    notes="NCAA <-> ESPN team crosswalk for D-I college baseball, keyed on the NCAA school. ESPN's college-baseball team ids are their own id system, not the football/basketball school ids. ncaa_baseball_espn_team_crosswalk: one row per stats.ncaa.org D-I team-season (season YYYY, the school's NCAA org id and that season's team id) with its ESPN baseball team id, that season's conference, and how it was matched. ncaa_baseball_espn_schools: one row per NCAA org id with its ESPN id. ncaa_baseball_espn_unmatched: schools left without one. Built by sportsdataverse/sdv-reference-data (sdv_reference/crosswalks/ncaa_baseball.py) from committed snapshots; see that repo's CONTRACT.md."
+    s="${l#ncaa_}"; s="${s%_crosswalk}"; lg="${l%_crosswalk}"
+    notes="NCAA <-> ESPN team crosswalk for D-I college ${s}, keyed on the NCAA school. ESPN's college-${s} team ids are their own id system, not the football/basketball school ids. ${lg}_espn_team_crosswalk: one row per stats.ncaa.org D-I team-season (season YYYY, the school's NCAA org id and, for baseball, that season's team id) with its ESPN ${s} team id, that season's conference, and how it was matched. ${lg}_espn_schools: one row per NCAA org id with its ESPN id. ${lg}_espn_unmatched: schools left without one. Built by sportsdataverse/sdv-reference-data (sdv_reference/crosswalks/${lg}.py) from committed snapshots; see that repo's CONTRACT.md."
   elif [[ "$l" == *_crosswalk ]]; then
     tag="$l"
     notes="NCAA school <-> ESPN team crosswalk for ${l%_crosswalk}, keyed on the NCAA school. ncaa_espn_team_crosswalk: one row per stats.ncaa.org team-season (season YYYY-YY, the season's NCAA team id, the school's NCAA org id) with its ESPN team id and that season's conference, and how it was matched. ncaa_espn_schools: one row per NCAA org id with its ESPN id. ncaa_espn_school_seasons: which seasons each school played men's and women's D-I basketball. Built by sportsdataverse/sdv-reference-data (sdv_reference/crosswalks/) from committed snapshots; see that repo's CONTRACT.md."

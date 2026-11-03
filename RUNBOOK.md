@@ -89,8 +89,10 @@ of every season in `raw/` is about 11,300 requests.
   - MBB/WBB crosswalks: a new season needs its stats.ncaa.org team list in sdv-py's `ncaa_teamids_{league}.csv` and its
     schedule pages in ncaa-{league}-hoops-raw (the org ids); stage 10 snapshots both from the local checkouts, without
     a request to stats.ncaa.org. A new ESPN school goes into `curated/ncaa_espn_teams.csv` by hand
-  - NCAA baseball crosswalk: one ESPN request (the college-baseball team list) per stage 10; the NCAA side is the
-    `ncaa_baseball` snapshot, so it rebuilds whenever that league changes. A new unmatched school lands in
+  - NCAA baseball / softball crosswalks: one ESPN request each (the college-baseball / -softball team list) per
+    stage 10; the NCAA side is the league's snapshot, so each rebuilds whenever its league changes, and stage 30
+    republishes the league when its crosswalk changes (the league's ESPN-keyed rows come from it). Softball works the
+    same way with `ncaa_softball` in the paths below. A new unmatched school lands in
     `build/ncaa_baseball_crosswalk/ncaa_baseball_espn_unmatched.csv`; resolve it in `curated/ncaa_baseball_espn_aliases.csv`
 - **Stage 20** after every stage 10, gated by `uv run pytest -q` (the realignment assertions).
 - **Stage 30** only for leagues whose `raw/` changed (stage 25 records them); `curated/` edits go through a PR and are
