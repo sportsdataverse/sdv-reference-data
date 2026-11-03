@@ -157,3 +157,11 @@ def test_windows_split_on_gaps():
     )
     w = team_aliases._windows(df, ["k"]).sort("valid_from")
     assert w.select("valid_from", "valid_to").rows() == [(2014, 2015), (2017, 2017)]
+
+
+def test_undated_rows_without_a_hub_team_are_reported():
+    _, unmatched = team_aliases.build("cfb", tgs("cfb"))
+    stray = unmatched.filter((pl.col("source") == "cbs") & pl.col("reason").str.contains("undated map"))
+    cbs = pl.read_csv(team_aliases.CURATED / "cfb_cbs_teams.csv", infer_schema=False)
+    assert stray.height + aliases("cfb").filter(pl.col("source") == "cbs").height == cbs.height
+    assert stray.height > 0 and stray["season_from"].null_count() == stray.height

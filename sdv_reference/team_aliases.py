@@ -84,7 +84,18 @@ LONG = {
     "evidence": pl.Utf8,
 }
 #: the output order: every column, so the bytes are the same for the same rows
-SORT = ["team_id", "source", "id_kind", "source_id", "name_kind", "value", "valid_from", "valid_to", "match_method", "evidence"]
+SORT = [
+    "team_id",
+    "source",
+    "id_kind",
+    "source_id",
+    "name_kind",
+    "value",
+    "valid_from",
+    "valid_to",
+    "match_method",
+    "evidence",
+]
 UNMATCHED = {
     "league": pl.Utf8,
     "source": pl.Utf8,
@@ -478,10 +489,14 @@ def _windows(df: pl.DataFrame, keys: list[str]) -> pl.DataFrame:
         )
         .drop("_run")
     )
-    undated = df.filter(pl.col("_u")).unique(keys).select(
-        *keys,
-        pl.lit(None, pl.Int32).alias("valid_from"),
-        pl.lit(None, pl.Int32).alias("valid_to"),
+    undated = (
+        df.filter(pl.col("_u"))
+        .unique(keys)
+        .select(
+            *keys,
+            pl.lit(None, pl.Int32).alias("valid_from"),
+            pl.lit(None, pl.Int32).alias("valid_to"),
+        )
     )
     return pl.concat([runs, undated])
 
@@ -515,6 +530,14 @@ def build(league: str, tgs: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
     orphan = rows.join(hub, on=["season", "team_id"], how="anti")
     drop(orphan, f"team-season not in {league}_team_group_seasons (ESPN)")
     rows = rows.join(hub, on=["season", "team_id"], how="semi")
+    # an undated row whose team has no hub season never reached `rows`: report it too
+    stray = undated.join(
+        hub.select("team_id").unique(), on="team_id", how="anti"
+    ).with_columns(pl.lit(True).alias("_u"))
+    drop(
+        stray,
+        f"no ESPN team, or the team is in no season of {league}_team_group_seasons (undated map)",
+    )
 
     # Yahoo is the ESPN id in these leagues: fail rather than publish a row that breaks the rule
     if league in YAHOO_IS_ESPN:
