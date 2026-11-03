@@ -92,6 +92,34 @@ TEAM_ALIAS_METHODS = {
     "exact_name",
     "dict",
 }
+#: a table of a {league}_groups tag beside team_aliases (sdv_reference/player_aliases.py); see CONTRACT.md
+PLAYER_ALIASES: dict[str, pl.DataType] = {
+    "league": pl.Utf8,
+    "athlete_id": pl.Utf8,
+    "athlete_id_source": pl.Utf8,
+    "source": pl.Utf8,
+    "source_player_id": pl.Utf8,
+    "team_id": pl.Utf8,
+    "source_team_id": pl.Utf8,
+    "valid_from": pl.Int32,
+    "valid_to": pl.Int32,
+    "match_method": pl.Utf8,
+    "match_confidence": pl.Float64,
+    "evidence": pl.Utf8,
+}
+PLAYER_ALIASES_KEYS = [
+    "league", "athlete_id", "athlete_id_source", "source", "source_player_id", "team_id", "valid_from", "valid_to",
+    "match_method", "evidence",
+]  # fmt: skip
+PLAYER_ALIAS_SOURCES = {
+    "fox",
+    "yahoo",
+    "cbs",
+    "kenpom",
+    "ncaa",
+    "nba_stats",
+    "wnba_stats",
+}
 LEVELS = {"league", "subdivision", "conference", "division"}
 ENDING_YEAR_LEAGUES = {"nba", "nhl", "mbb", "wbb", "ncaa_mhockey", "ncaa_whockey"}
 
@@ -280,6 +308,51 @@ def validate_team_aliases(
         problems.append(
             f"team_aliases: a name on two teams in a season, e.g. {dup.head(3).rows()}"
         )
+    return problems
+
+
+def validate_player_aliases(
+    league: str, pa: pl.DataFrame, tgs: pl.DataFrame
+) -> list[str]:
+    """Problems with a league's player_aliases table; empty = meets the contract."""
+    if dict(pa.schema) != PLAYER_ALIASES:
+        return [f"player_aliases: schema {dict(pa.schema)} != {PLAYER_ALIASES}"]
+    problems = [
+        f"player_aliases.{k}: {n} nulls in a key column"
+        for k in PLAYER_ALIASES_KEYS
+        if (n := pa[k].null_count())
+    ]
+    if (pa["league"] != league).any():
+        problems.append("player_aliases: rows for another league")
+    if bad := set(pa["source"].unique()) - PLAYER_ALIAS_SOURCES:
+        problems.append(f"player_aliases: unknown sources {bad}")
+    if pa.filter(pl.col("valid_from") > pl.col("valid_to")).height:
+        problems.append("player_aliases: valid_from after valid_to")
+    if problems:
+        return problems
+    seasons = pa.with_columns(
+        pl.int_ranges("valid_from", pl.col("valid_to") + 1).alias("season")
+    ).explode("season")
+    seasons = seasons.with_columns(pl.col("season").cast(pl.Int32))
+    hub = (
+        tgs.filter(pl.col("team_id_source") == "espn")
+        .select("season", "team_id")
+        .unique()
+    )
+    if (miss := seasons.join(hub, on=["season", "team_id"], how="anti")).height:
+        problems.append(f"player_aliases: {miss.height} team-seasons not in team_group_seasons, e.g. "
+                        f"{miss.select('team_id', 'season').head(3).rows()}")  # fmt: skip
+    for by, other, what in [
+        (["source", "source_player_id"], "athlete_id", "a provider id on two athletes"),
+        (["season", "team_id", "source", "athlete_id"], "source_player_id", "an athlete with two ids of one source on a team in a season"),
+    ]:  # fmt: skip
+        dup = (
+            seasons.group_by(by)
+            .agg(pl.col(other).n_unique().alias("n"))
+            .filter(pl.col("n") > 1)
+        )
+        if dup.height:
+            problems.append(f"player_aliases: {what}, e.g. {dup.head(3).rows()}")
     return problems
 
 

@@ -99,6 +99,14 @@ of every season in `raw/` is about 11,300 requests.
     makes 11 requests, one at a time, `$SDV_REF_DIRECTORY_DELAY` seconds apart (default 2, never under 1), and appends
     the capture with its date. Then stage 20; resolve new misses in `curated/team_directory_names.csv` (a spelling ->
     ESPN id) or `curated/team_directory_aliases.csv` (an id; a blank ESPN id marks a non-ESPN school)
+  - Player aliases (`raw/player_aliases/{league}/`, run by stage 10 after team aliases): the newest two seasons of each
+    published player crosswalk (`{nba,wnba,mbb,wbb}_player_crosswalk`, `cfb_{players,rosters}_crosswalk`), nfl-raw's
+    `players_*.json`, and every `{lg}/xwalk/espn_athlete_id/*.json` on `origin/main` of the NCAA raw repos
+    ($SDV_NCAA_MBB_HOOPS_RAW, $SDV_NCAA_WBB_HOOPS_RAW, $SDV_NCAA_MFB_FOOTBALL_RAW; defaults `/mnt/sdv_repos/<repo>`).
+    No stats.ncaa.org request. A build that fails the match-rate gate names the (league, source, season): find what
+    the source lost (`{league}_player_aliases_rates.csv`, the unmatched CSV's reasons) and fix the leg; never lower a
+    floor. When a season completes, add its floor row (one point under its measured rate) to
+    `curated/player_match_floors.csv` in a PR
   - NCAA baseball / softball crosswalks: one ESPN request each (the college-baseball / -softball team list) per
     stage 10; the NCAA side is the league's snapshot, so each rebuilds whenever its league changes, and stage 30
     republishes the league when its crosswalk changes (the league's ESPN-keyed rows come from it). Softball works the

@@ -1,0 +1,5 @@
+{
+ "players_cbs.csv.gz": "nfl-raw origin/main 3b9fd6b7ce6d9dccedb903296a21707112401a3d:nfl/espn/crosswalk/players_cbs.json",
+ "players_fox.csv.gz": "nfl-raw origin/main c5bc873c45b3b0b02bdcecce88ac00c3ab2129a5:nfl/espn/crosswalk/players_fox.json",
+ "players_yahoo.csv.gz": "nfl-raw origin/main 3b9fd6b7ce6d9dccedb903296a21707112401a3d:nfl/espn/crosswalk/players_yahoo.json"
+}

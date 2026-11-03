@@ -1,0 +1,21 @@
+{
+ "mbb_player_crosswalk_2025.csv.gz": "sportsdataverse-data release mbb_crosswalk: mbb_player_crosswalk_2025.parquet",
+ "mbb_player_crosswalk_2026.csv.gz": "sportsdataverse-data release mbb_crosswalk: mbb_player_crosswalk_2026.parquet",
+ "ncaa_2010.csv.gz": "ncaa-mbb-hoops-raw origin/main 4a5723d864e07c8b8d964b4ffeb954b14a5e1d80:mbb/xwalk/espn_athlete_id/2010.json",
+ "ncaa_2011.csv.gz": "ncaa-mbb-hoops-raw origin/main 0eb68a1b346f1c87dbbb23d8d4c6c453839f8b6f:mbb/xwalk/espn_athlete_id/2011.json",
+ "ncaa_2012.csv.gz": "ncaa-mbb-hoops-raw origin/main 0525d26589ba5454519c092c0405dffd4c286dfe:mbb/xwalk/espn_athlete_id/2012.json",
+ "ncaa_2013.csv.gz": "ncaa-mbb-hoops-raw origin/main e1405067cac31f27618bf3408395028b41b5fd36:mbb/xwalk/espn_athlete_id/2013.json",
+ "ncaa_2014.csv.gz": "ncaa-mbb-hoops-raw origin/main cd367ad3008c0a4189ca8911338c7df32132c7f2:mbb/xwalk/espn_athlete_id/2014.json",
+ "ncaa_2015.csv.gz": "ncaa-mbb-hoops-raw origin/main 589843e21335e1de81623696f7a48b451fb71bb1:mbb/xwalk/espn_athlete_id/2015.json",
+ "ncaa_2016.csv.gz": "ncaa-mbb-hoops-raw origin/main ca8947471d45fdc4a825e0bda4435c823910f151:mbb/xwalk/espn_athlete_id/2016.json",
+ "ncaa_2017.csv.gz": "ncaa-mbb-hoops-raw origin/main d9b8eacfba7d758f223db930392ef8cd5587e2f5:mbb/xwalk/espn_athlete_id/2017.json",
+ "ncaa_2018.csv.gz": "ncaa-mbb-hoops-raw origin/main a6ca6a71dc5309a8b08456833b7476f23145950b:mbb/xwalk/espn_athlete_id/2018.json",
+ "ncaa_2019.csv.gz": "ncaa-mbb-hoops-raw origin/main e23e2add060b30e0c60999a1f9b1c776bd5d1f32:mbb/xwalk/espn_athlete_id/2019.json",
+ "ncaa_2020.csv.gz": "ncaa-mbb-hoops-raw origin/main 4965cc2db45519001009004f3a9ca59bc39a7454:mbb/xwalk/espn_athlete_id/2020.json",
+ "ncaa_2021.csv.gz": "ncaa-mbb-hoops-raw origin/main eeb575fc9f8005a924b4f11b1628b6986da380ed:mbb/xwalk/espn_athlete_id/2021.json",
+ "ncaa_2022.csv.gz": "ncaa-mbb-hoops-raw origin/main 17106a240c9cf616ae02cdcd0b7d4b4219d4a5bd:mbb/xwalk/espn_athlete_id/2022.json",
+ "ncaa_2023.csv.gz": "ncaa-mbb-hoops-raw origin/main a1a9f8146922edd0f4b97b119b8a52760c265dac:mbb/xwalk/espn_athlete_id/2023.json",
+ "ncaa_2024.csv.gz": "ncaa-mbb-hoops-raw origin/main d2a73dd6d12d73b4b7bda095f7b9f6b3932218bb:mbb/xwalk/espn_athlete_id/2024.json",
+ "ncaa_2025.csv.gz": "ncaa-mbb-hoops-raw origin/main 75faae2fb8866fadd815f47034a4fce9f02ec5d4:mbb/xwalk/espn_athlete_id/2025.json",
+ "ncaa_2026.csv.gz": "ncaa-mbb-hoops-raw origin/main 6c894a4dd43d65bd2d0ee28de80c3af31609a0b4:mbb/xwalk/espn_athlete_id/2026.json"
+}
