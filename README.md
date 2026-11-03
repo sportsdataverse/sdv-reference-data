@@ -31,6 +31,9 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 - `{league}_team_group_seasons`, plus one file per season
 - `{league}_team_aliases` (nfl, cfb, nba, wnba, mbb, wbb, mlb, nhl): each provider's id and name for each team, with
   season windows, plus `{league}_team_aliases_unmatched.csv`
+- `{league}_player_aliases` (nfl, cfb, nba, wnba, mbb, wbb): each provider's player id (Fox, Yahoo, CBS, KenPom,
+  stats.ncaa.org, NBA / WNBA Stats) for each ESPN athlete, with the ESPN team and season window, plus
+  `{league}_player_aliases_unmatched.csv` and the per-season match rates `{league}_player_aliases_rates.csv`
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
 `{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
@@ -46,7 +49,9 @@ season key. The ending year is used for NBA, NHL, college basketball and college
 - `sdv_reference/leagues/{league}.py` has a `fetch()` that snapshots the league's sources into `raw/{league}/`
   (`sdv_reference/parks/{league}.py` into `raw/{league}_parks/`, `sdv_reference/crosswalks/{league}.py` into
   `raw/{league}_crosswalk/`, from the local sdv-py and ncaa-{league}-hoops-raw checkouts; `sdv_reference/team_aliases.py`
-  into `raw/team_aliases/{league}/`, from the published team crosswalks and the local nfl-raw checkout).
+  into `raw/team_aliases/{league}/`, from the published team crosswalks and the local nfl-raw checkout;
+  `sdv_reference/player_aliases.py` into `raw/player_aliases/{league}/`, from the published player crosswalks and the
+  local nfl-raw and ncaa-{mbb,wbb}-hoops-raw / ncaa-mfb-football-raw checkouts).
   The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
   two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.
 - Its `build()` reads only `raw/` and hand-curated, cited rows in `curated/`, so builds are offline and reproducible.

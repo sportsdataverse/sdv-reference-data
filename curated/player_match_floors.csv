@@ -1,0 +1,32 @@
+league,source,season_from,season_to,floor_pct,note
+nfl,cbs,2016,2026,98.0,measured min 99.94 on 2026-11-03
+nfl,fox,2018,2026,99.0,measured min 100.0 on 2026-11-03
+nfl,yahoo,2013,2025,94.0,measured min 95.97 on 2026-11-03
+cfb,cbs,2016,2026,94.0,measured min 95.72 on 2026-11-03
+cfb,fox,2026,2026,55.0,measured min 56.09 on 2026-11-03; cfb_rosters_crosswalk only; Fox players 0 elsewhere (sportsdataverse-py#1019)
+cfb,yahoo,2017,2019,27.0,measured min 28.51 on 2026-11-03; cfb_players_crosswalk; #1019
+cfb,yahoo,2020,2020,43.0,measured min 44.91 on 2026-11-03; #1019
+cfb,yahoo,2026,2026,48.0,measured min 49.17 on 2026-11-03; cfb_rosters_crosswalk
+cfb,ncaa,2013,2013,33.0,measured min 34.02 on 2026-11-03; stats.ncaa.org 2013-14 rosters: ESPN game rosters thin
+cfb,ncaa,2014,2019,75.0,measured min 76.86 on 2026-11-03
+cfb,ncaa,2020,2020,55.0,measured min 56.3 on 2026-11-03; COVID season
+cfb,ncaa,2021,2021,81.0,measured min 82.96 on 2026-11-03
+cfb,ncaa,2022,2023,73.0,measured min 74.01 on 2026-11-03
+cfb,ncaa,2024,2026,79.0,measured min 80.59 on 2026-11-03
+nba,fox,2002,2026,92.0,measured min 93.41 on 2026-11-03
+nba,nba_stats,2002,2026,93.0,measured min 94.14 on 2026-11-03
+nba,yahoo,2014,2026,94.0,measured min 95.79 on 2026-11-03; Yahoo history starts 2013-14
+wnba,fox,2019,2026,80.0,measured min 81.04 on 2026-11-03
+wnba,wnba_stats,2002,2026,84.0,measured min 85.44 on 2026-11-03
+wnba,yahoo,2026,2026,99.0,measured min 100.0 on 2026-11-03
+mbb,fox,2025,2025,11.0,measured min 12.08 on 2026-11-03; relabeled-roster issue (plan gap 2)
+mbb,fox,2026,2026,97.0,measured min 98.77 on 2026-11-03
+mbb,kenpom,2025,2026,71.0,measured min 72.33 on 2026-11-03
+mbb,ncaa,2010,2013,87.0,measured min 88.91 on 2026-11-03; ESPN box thin before 2013-14
+mbb,ncaa,2014,2021,94.0,measured min 95.6 on 2026-11-03
+mbb,ncaa,2022,2026,98.0,measured min 99.52 on 2026-11-03
+wbb,fox,2025,2025,37.0,measured min 38.03 on 2026-11-03
+wbb,fox,2026,2026,97.0,measured min 98.51 on 2026-11-03
+wbb,ncaa,2010,2013,38.0,measured min 39.68 on 2026-11-03; ESPN WBB box thin before 2013-14
+wbb,ncaa,2014,2021,90.0,measured min 91.44 on 2026-11-03
+wbb,ncaa,2022,2026,98.0,measured min 99.27 on 2026-11-03

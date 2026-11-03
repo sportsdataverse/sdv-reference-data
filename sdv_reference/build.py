@@ -5,7 +5,8 @@ build/{league}_parks/, and each {league}_crosswalk into build/{league}_crosswalk
     uv run python -m sdv_reference.build cfb nhl mlb_parks
 
 Each league module in sdv_reference/leagues/ exposes build() -> dict of the four tables (see CONTRACT.md), and
-sdv_reference/team_aliases.py adds the fifth, {league}_team_aliases, for the leagues it covers; each
+sdv_reference/team_aliases.py adds the fifth, {league}_team_aliases, for the leagues it covers (and
+sdv_reference/player_aliases.py {league}_player_aliases beside it); each
 module in sdv_reference/parks/ and sdv_reference/crosswalks/ exposes write(out_dir), which builds, validates and
 writes its own tables.
 """
@@ -18,7 +19,7 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-from sdv_reference import crosswalks, leagues, parks, team_aliases
+from sdv_reference import crosswalks, leagues, parks, player_aliases, team_aliases
 from sdv_reference.schema import write_league
 
 OUT = Path(__file__).resolve().parent.parent / "build"
@@ -47,6 +48,8 @@ def fetch(name: str) -> None:
     module(name).fetch()
     if name in team_aliases.LEAGUES:
         team_aliases.fetch(name)
+    if name in player_aliases.LEAGUES:
+        player_aliases.fetch(name)
 
 
 def main(names: list[str]) -> int:
@@ -65,6 +68,10 @@ def main(names: list[str]) -> int:
                 more, aliases, unmatched = team_aliases.write(league, tables["team_group_seasons"], OUT / league)
                 files += more
                 ta = f", {aliases.height} team aliases ({unmatched.height} unmatched)"
+                if league in player_aliases.LEAGUES:
+                    more, players, _ = player_aliases.write(league, tables["team_group_seasons"], aliases, OUT / league)
+                    files += more
+                    ta += f", {players.height} player aliases"
         except Exception as e:  # noqa: BLE001 - report every league, then fail
             failed.append(league)
             print(f"{league}: FAILED: {e}", flush=True)

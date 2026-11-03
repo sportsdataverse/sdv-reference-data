@@ -148,6 +148,70 @@ with the table) with its seasons and reason, when its source gives no ESPN team,
 invariant 3 in any season (the whole id goes, every season). MBB / WBB Yahoo ids exist only for the seasons a
 crosswalk was built after its Yahoo leg landed (2002, and 2003 for WBB), so they are not carried to other seasons.
 
+## `player_aliases` (beside `team_aliases`: nfl, cfb, nba, wnba, mbb, wbb)
+
+`{league}_player_aliases`: every player id another source uses for an ESPN athlete, with the ESPN team (the block the
+match was made in) and the seasons it held. Built by `sdv_reference/player_aliases.py`; `validate_player_aliases()` and
+the match-rate gate enforce this contract. Like `team_aliases`, it consolidates legs SDV has already matched and asks no
+provider for anything; it re-matches no names. The legs are snapshotted into `raw/player_aliases/{league}/`, one file per
+season, with provenance.
+
+| column | type | |
+|---|---|---|
+| league, athlete_id, athlete_id_source | Utf8 | the ESPN athlete id (`athlete_id_source` = `espn`) |
+| source | Utf8 | `fox`, `yahoo`, `cbs`, `kenpom`, `ncaa`, `nba_stats`, `wnba_stats` |
+| source_player_id | Utf8 | the source's own player id (`nba.p.5637`, `76284`); stats.ncaa.org roster ids are new every season |
+| team_id | Utf8 | the ESPN team the athlete was on (an ESPN team-season of `team_group_seasons`) |
+| source_team_id | Utf8 | the source's own team id when the leg gives one (the season's stats.ncaa.org team id; Fox / Yahoo / CBS NFL), else null |
+| valid_from, valid_to | Int32 | the seasons (inclusive, the league's season key) the id is on that team; a gap or a method change splits the window |
+| match_method | Utf8 | the leg's own method (`exact_name`, `fuzzy_jw`, NCAA `name_jersey` / `name` / `last_jersey` / `jaro_winkler`, CFB rosters `name`), `crosswalk` (a leg that names none), `propagated` (step 3 below), `override` |
+| match_confidence | Float64 | the leg's own confidence where it gives one (the lowest in the window); the NCAA tiers' ordinal scores 1.0 / 0.95 / 0.9 / 0.85; else null |
+| evidence | Utf8 | the asset or file the row came from |
+
+Sources by league:
+
+| League | Sources (leg) |
+|---|---|
+| nfl | fox, yahoo, cbs (nfl-raw `players_{fox,yahoo,cbs}.json`, matched rows only) |
+| cfb | cbs, yahoo (`cfb_players_crosswalk`, 2016-26; Fox and most Yahoo are null there: sportsdataverse-py#1019), fox, yahoo (`cfb_rosters_crosswalk`, 2026), ncaa (ncaa-mfb-football-raw; its academic-year key is shifted to the fall season) |
+| nba, wnba | nba_stats / wnba_stats, fox, yahoo (`{lg}_player_crosswalk`; `match_method` describes the Stats leg) |
+| mbb | fox, yahoo, kenpom (`mbb_player_crosswalk`, 2025-26; `match_method` describes the Fox leg), ncaa (ncaa-mbb-hoops-raw, 2010-26) |
+| wbb | fox, yahoo (`wbb_player_crosswalk`, 2014-22, 2025-26), ncaa (ncaa-wbb-hoops-raw, 2010-27) |
+
+The NCAA leg is the raw repos' stage-07 map (sdv-py `scrape/ncaa/espn_player_xwalk.py`): each stats.ncaa.org roster
+row is compared only with the ESPN athletes of its (season, ESPN team) block, the NCAA team resolved through the NCAA
+team crosswalk (football: the raw repo's stage-06 team map); then normalized full name (ASCII-folded, lower-cased,
+apostrophes and punctuation dropped, Jr./Sr./II-IV dropped) + jersey, the name alone, last name + jersey, and last a
+guarded Jaro-Winkler step: the one ESPN athlete left in the block scoring >= 0.92, which no other NCAA player also
+reaches. Each tier joins only on a key unique on both sides, so a tie stays unmatched (`ambiguous`). The 0.92 floor was
+checked on a labelled sample (2026-11-03: 35,682 NCAA players matched at a deterministic tier in MBB 2025-26 and WBB
+2020-22 / 2025-26; ClaudeCowork `notes/2026-11-03-player-aliases-jw-threshold.md`): with each player's true athlete
+removed from its block, the guarded step wrongly accepts a remaining unmatched athlete for 0.076% of players at 0.92
+(0.098% at 0.88, 0.196% at 0.80), and any other athlete of the block for 0.27% (0.81% at 0.88, 4.9% at 0.80).
+
+On top of the legs, the build, in order:
+1. **Team block.** A row is kept only when its (season, ESPN team) is an ESPN team-season of `team_group_seasons`; an
+   NCAA basketball row only when its ESPN team is the one `ncaa_espn_team_crosswalk` gives its stats.ncaa.org team that
+   season; an NFL row only when its provider team is that ESPN team in `nfl_team_aliases` that season.
+2. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)
+   sets a provider id's athlete, or (blank `athlete_id`) leaves it unmatched. Each row is verified by hand, and the build
+   fails on a row that no longer changes anything.
+3. **Cross-season stability.** A provider id is on one athlete in every season, and an athlete has at most one id of a
+   source on a team in a season. An id that breaks either is dropped, every season (ESPN duplicate athletes and
+   provider ids reassigned to another player both occur). A pair kept in one season is carried to the same provider
+   id's unmatched rows in other seasons (`propagated`), on whatever ESPN team they show, which links a player across
+   transfers; the athlete links the NCAA leg's per-season ids the same way.
+4. **Match-rate gate.** `{league}_player_aliases_rates.csv` (published) gives, per source and season, the leg's rows
+   and how many reached the table (an ESPN-anchored leg counts every ESPN athlete row, so a missing provider id is a
+   miss). The build fails when a season falls below its floor in `curated/player_match_floors.csv`, set era by era one
+   point (rounded down) under the rate measured when the floor was added. Floors are never lowered. A season with no
+   row is not gated: the ending-year 2027 seasons (NBA, MBB, WBB) just began, so their rates are still filling.
+
+Invariants (checked by `validate_player_aliases`): columns and dtypes as above; no nulls except `source_team_id` and
+`match_confidence`; every season a window covers is an ESPN team-season of `team_group_seasons`; step 3's two rules.
+No guessing: everything not published, including the legs' own misses (`no_espn_team`, `no_espn_players`,
+`ambiguous`, `no_candidate` for NCAA), goes to `{league}_player_aliases_unmatched.csv` with its seasons and reason.
+
 ## College hockey (`ncaa_mhockey`, `ncaa_whockey`)
 
 D-I only, 1998-99 (season 1999) on, from USCHO's per-season D-I standings. `team_id` is the ESPN team id
