@@ -69,7 +69,7 @@ def test_rules_on_a_synthetic_league(monkeypatch, tmp_path):
     rows = [
         _row(2024, "1", "a1", "f1"), _row(2025, "2", None, "f1"),  # f1 carried to 2025 (a transfer to team 2)
         _row(2024, "1", "a2", "f2"), _row(2025, "1", "a3", "f2"),  # f2 on two athletes: dropped every season
-        _row(2025, "1", "a4", "f4"),
+        _row(2025, "1", "a4", "f4"), _row(2025, "1", None, "f5"),  # f5: a miss with no pair anywhere
     ]  # fmt: skip
     monkeypatch.setattr(
         player_aliases,
@@ -119,3 +119,22 @@ def test_rules_on_a_synthetic_league(monkeypatch, tmp_path):
         pl.col("source_player_id") == "f4"
     )
     assert a.select("athlete_id", "match_method").rows() == [("a9", "override")]
+
+    # a blank athlete forces the id unmatched; on an id that is already unmatched it changes nothing
+    (tmp_path / "player_overrides.csv").write_text("league,source,source_player_id,athlete_id,verified_by,note\nmbb,fox,f4,,x,y\n")
+    a, u, _ = player_aliases.build("mbb", hub, pl.DataFrame())
+    assert a.filter(pl.col("source_player_id") == "f4").height == 0
+    assert u.filter(pl.col("source_player_id") == "f4")["reason"].to_list() == ["curated override: no ESPN athlete"]
+    (tmp_path / "player_overrides.csv").write_text("league,source,source_player_id,athlete_id,verified_by,note\nmbb,fox,f5,,x,y\n")
+    with pytest.raises(AssertionError, match="change nothing"):
+        player_aliases.build("mbb", hub, pl.DataFrame())
+    # an override can set the athlete of a leg's miss (team-block checks still apply)
+    (tmp_path / "player_overrides.csv").write_text("league,source,source_player_id,athlete_id,verified_by,note\nmbb,fox,f5,a5,x,y\n")
+    a = player_aliases.build("mbb", hub, pl.DataFrame())[0].filter(pl.col("source_player_id") == "f5")
+    assert a.select("athlete_id", "team_id", "match_method").rows() == [("a5", "1", "override")]
+
+
+@pytest.mark.parametrize("league", ["nba", "cfb"])
+def test_windows_span_seasons(league):
+    a = built(league)[0].filter(pl.col("source") != "ncaa")
+    assert a.filter(pl.col("valid_to") > pl.col("valid_from")).height > 1000

@@ -17,10 +17,10 @@ re-matches names:
   by no other player). Its unmatched rows carry their reason.
 
 On top of the legs, the build:
-1. keeps a row only when its (season, ESPN team) is an ESPN team-season of team_group_seasons, and (NCAA) the leg's
+1. applies curated/player_overrides.csv (hand-verified; it can set a leg's miss; one that changes nothing fails);
+2. keeps a row only when its (season, ESPN team) is an ESPN team-season of team_group_seasons, and (NCAA) the leg's
    ESPN team is the one the NCAA team crosswalk gives that NCAA team; (NFL) the provider team maps to that ESPN team
    in team_aliases that season;
-2. applies curated/player_overrides.csv (hand-verified; an override that changes nothing fails the build);
 3. holds each provider id to one athlete across every season (a conflict drops the id, every season) and each athlete
    to one id per source and team per season; a pair seen in one season is carried to the same provider id's unmatched
    rows in other seasons (`propagated`), which links a player across teams;
@@ -305,10 +305,13 @@ def _crosswalk_legs(league: str) -> list[pl.DataFrame]:
             for source, (id_col, _name) in legs.items():
                 if id_col not in df.columns:
                     continue
-                ev = f"{tag}/{stem}_{season}.parquet ({id_col})"
+                ev = f"{tag}/{stem}_{{season}}.parquet ({id_col})"
                 own = METHOD_LEG.get(league) == source and "match_method" in df.columns
                 # every row: one with no id of this source still counts in its match rate
-                rows = df.filter(_clean(id_col).is_not_null() | _clean("espn_athlete_id").is_not_null())
+                rows = df.filter(
+                    _clean(id_col).is_not_null()
+                    | _clean("espn_athlete_id").is_not_null()
+                )
                 if (
                     stem == "cfb_rosters_crosswalk"
                 ):  # name-joined roster rows: an id with no ESPN athlete is a miss
@@ -353,7 +356,7 @@ def _ncaa_legs(league: str) -> list[pl.DataFrame]:
     out = []
     for season, path in _season_files(league, "ncaa"):
         df = _read(path)
-        ev = f"{Path(NCAA[league][1]).name} {lg}/xwalk/espn_athlete_id/{season + (lg == 'mfb')}.json"
+        ev = f"{Path(NCAA[league][1]).name} {lg}/xwalk/espn_athlete_id/" + ("{season + 1}.json" if lg == "mfb" else "{season}.json")
         out.append(_rows(
             df, season=pl.lit(season), team_id=_clean("espn_team_id"), athlete_id=_clean("espn_athlete_id"),
             source=pl.lit("ncaa"), source_player_id=_clean("ncaa_player_id"), source_team_id=_clean("ncaa_team_id"),
@@ -413,23 +416,45 @@ def build(
     # but is no unmatched provider id)
     total = rows
     rows = rows.filter(pl.col("source_player_id").is_not_null())
+    pid = ["source", "source_player_id"]
+
+    # 1. curated overrides, first: they can set the athlete of a leg's miss, and the team-block checks still apply
+    ov = _overrides(league)
+    if ov.height:
+        assert ov.select(pid).is_duplicated().sum() == 0, f"{league}: a provider id twice in player_overrides.csv"
+        have = ov.join(rows.group_by(pid).agg(pl.col("athlete_id").drop_nulls().unique().alias("_a")), on=pid, how="left")
+        noop = have.filter(
+            pl.col("_a").is_null()  # the id is in no leg
+            | (pl.col("athlete_id").is_null() & (pl.col("_a").list.len() == 0))  # already unmatched
+            | ((pl.col("_a").list.len() == 1) & (pl.col("_a").list.first() == pl.col("athlete_id"))))  # fmt: skip
+        assert noop.height == 0, f"{league}: player overrides that change nothing: {noop.select(pid).rows()}"
+        rows = rows.join(ov.select(*pid, pl.col("athlete_id").alias("_ov"), pl.lit(True).alias("_o")), on=pid, how="left")
+        o = pl.col("_o").fill_null(False)
+        rows = rows.with_columns(
+            pl.when(o).then(pl.col("_ov")).otherwise("athlete_id").alias("athlete_id"),
+            pl.when(o).then(pl.lit("override")).otherwise("match_method").alias("match_method"),
+            pl.when(o).then(pl.lit(None, pl.Float64)).otherwise("match_confidence").alias("match_confidence"),
+            pl.when(o & pl.col("_ov").is_null()).then(pl.lit("curated override: no ESPN athlete"))
+            .when(o).then(None).otherwise("unmatched_reason").alias("unmatched_reason"),
+            pl.when(o).then(pl.lit("curated/player_overrides.csv")).otherwise("evidence").alias("evidence"),
+        ).drop("_ov", "_o")  # fmt: skip
+
     drops: list[pl.DataFrame] = [rows.filter(pl.col("athlete_id").is_null())]
     rows = rows.filter(pl.col("athlete_id").is_not_null())
 
     def drop(mask: pl.Expr, reason: str) -> None:
         nonlocal rows
-        drops.append(
-            rows.filter(mask).with_columns(pl.lit(reason).alias("unmatched_reason"))
-        )
+        drops.append(rows.filter(mask).with_columns(pl.lit(reason).alias("unmatched_reason")))
         rows = rows.filter(~mask)
 
-    # 1. the team block: an ESPN team-season of the league, and the team the NCAA / provider team says
+    def in_hub() -> pl.Expr:
+        return pl.struct("season", "team_id").is_in(hub.to_struct().implode())
+
+    # 2. the team block: an ESPN team-season of the league, and the team the NCAA / provider team says
     drop(pl.col("team_id").is_null(), "no ESPN team")
-    in_hub = rows.join(
-        hub.with_columns(pl.lit(True).alias("_h")), on=["season", "team_id"], how="left"
-    )["_h"].is_not_null()
-    drop(~in_hub, f"team-season not in {league}_team_group_seasons (ESPN)")
+    drop(~in_hub(), f"team-season not in {league}_team_group_seasons (ESPN)")
     if (xw := _ncaa_teams(league)) is not None:
+        assert not xw.select("season", "source_team_id").is_duplicated().any(), f"{league}: an NCAA team on two ESPN teams"
         rows = rows.join(xw, on=["season", "source_team_id"], how="left")
         drop((pl.col("source") == "ncaa") & (pl.col("xw_team").is_null() | (pl.col("xw_team") != pl.col("team_id"))),
              f"the NCAA team's ESPN team disagrees with {league}_crosswalk ncaa_espn_team_crosswalk")  # fmt: skip
@@ -439,75 +464,36 @@ def build(
             "source", pl.col("source_id").alias("source_team_id"), pl.col("team_id").alias("ta_team"),
             pl.int_ranges("valid_from", pl.col("valid_to") + 1).alias("season")).explode("season").with_columns(
             pl.col("season").cast(pl.Int32))  # fmt: skip
+        assert not ta.select("source", "source_team_id", "season").is_duplicated().any(), "nfl: a provider team on two ESPN teams"
         rows = rows.join(ta, on=["source", "source_team_id", "season"], how="left")
         drop(pl.col("ta_team").is_null() | (pl.col("ta_team") != pl.col("team_id")),
              f"the provider team is not this ESPN team in {league}_team_aliases")  # fmt: skip
         rows = rows.drop("ta_team")
 
-    # 2. curated overrides: replace the athlete (or force unmatched) for a provider id
-    ov = _overrides(league)
-    if ov.height:
-        key = ["source", "source_player_id"]
-        cur = pl.concat([rows, *drops], how="diagonal_relaxed").join(
-            ov.select(*key), on=key, how="semi"
-        )
-        noop = ov.join(cur.group_by(key).agg(pl.col("athlete_id").drop_nulls().unique().alias("_a")), on=key, how="left").filter(
-            pl.col("_a").is_null() | ((pl.col("_a").list.len() == 1) & (pl.col("_a").list.first() == pl.col("athlete_id"))))  # fmt: skip
-        assert noop.height == 0, (
-            f"{league}: player overrides that change nothing: {noop.select(key).rows()}"
-        )
-        forced = ov.filter(pl.col("athlete_id").is_null()).select(*key)
-        drop(
-            pl.struct(key).is_in(forced.to_struct().implode()),
-            "curated override: no ESPN athlete",
-        )
-        repl = ov.filter(pl.col("athlete_id").is_not_null()).select(
-            *key, pl.col("athlete_id").alias("_ov")
-        )
-        rows = rows.join(repl, on=key, how="left").with_columns(
-            pl.coalesce("_ov", "athlete_id").alias("athlete_id"),
-            pl.when(pl.col("_ov").is_not_null()).then(pl.lit("override")).otherwise("match_method").alias("match_method"),
-            pl.when(pl.col("_ov").is_not_null()).then(pl.lit("curated/player_overrides.csv")).otherwise("evidence").alias("evidence"),
-        ).drop("_ov")  # fmt: skip
+    # 3. one athlete per provider id (every season), one id per (season, team, source, athlete); an override is never
+    # dropped here: if it breaks either rule, validate_player_aliases fails the build
+    def conflicted(df: pl.DataFrame) -> pl.DataFrame:
+        two_ath = df.group_by(pid).agg(pl.col("athlete_id").n_unique().alias("n")).filter(pl.col("n") > 1).select(pid)
+        two_ids = df.group_by("season", "team_id", "source", "athlete_id").agg(
+            pl.col("source_player_id").n_unique().alias("n")).filter(pl.col("n") > 1)  # fmt: skip
+        return pl.concat([two_ath, df.join(two_ids, on=["season", "team_id", "source", "athlete_id"], how="semi").select(pid)]).unique()
 
-    # 3. one athlete per provider id (every season), one id per (season, team, source, athlete)
-    pid = ["source", "source_player_id"]
-    two_ath = (
-        rows.group_by(pid)
-        .agg(pl.col("athlete_id").n_unique().alias("n"))
-        .filter(pl.col("n") > 1)
-        .select(pid)
-    )
-    two_ids = rows.group_by("season", "team_id", "source", "athlete_id").agg(
-        pl.col("source_player_id").n_unique().alias("n")).filter(pl.col("n") > 1)  # fmt: skip
-    bad = pl.concat(
-        [
-            two_ath,
-            rows.join(
-                two_ids, on=["season", "team_id", "source", "athlete_id"], how="semi"
-            ).select(pid),
-        ]
-    ).unique()
-    drop(pl.struct(pid).is_in(bad.to_struct().implode()),
-         "conflict: a provider id on two ESPN athletes, or one of two ids an athlete carries on a team in a season")  # fmt: skip
+    conflict = "conflict: a provider id on two ESPN athletes, or one of two ids an athlete carries on a team in a season"
+    drop(pl.struct(pid).is_in(conflicted(rows).to_struct().implode()) & (pl.col("match_method") != "override"), conflict)
     # carry an established pair to the same provider id's misses in other seasons
     pairs = rows.select(*pid, "athlete_id").unique()
-    misses = pl.concat(drops, how="diagonal_relaxed").filter(
-        pl.col("athlete_id").is_null() & pl.col("team_id").is_not_null()
-    )
+    misses = pl.concat(drops, how="diagonal_relaxed").filter(pl.col("athlete_id").is_null() & pl.col("team_id").is_not_null())
     carried = (
-        misses.drop("athlete_id").join(pairs, on=pid, how="inner").join(hub, on=["season", "team_id"], how="semi")
+        misses.drop("athlete_id").join(pairs, on=pid, how="inner").filter(in_hub())
         .join(rows.select("season", "source", "athlete_id"), on=["season", "source", "athlete_id"], how="anti")
         .with_columns(pl.lit("propagated").alias("match_method"), pl.lit(None, pl.Float64).alias("match_confidence"),
                       pl.lit(None, pl.Utf8).alias("unmatched_reason"))
         .select(list(LONG))
     )  # fmt: skip
+    # two carried ids landing on one athlete-team-season stay misses
+    carried = carried.join(conflicted(carried), on=pid, how="anti")
     rows = pl.concat([rows, carried])
-    left = (
-        pl.concat(drops, how="diagonal_relaxed")
-        .select(list(LONG))
-        .join(carried.select("season", *pid), on=["season", *pid], how="anti")
-    )
+    left = pl.concat(drops, how="diagonal_relaxed").select(list(LONG)).join(carried.select("season", *pid), on=["season", *pid], how="anti")
 
     keys = [
         "athlete_id",
@@ -516,10 +502,9 @@ def build(
         "team_id",
         "source_team_id",
         "match_method",
-        "evidence",
     ]
     aliases = (
-        _windows(rows, keys, pl.col("match_confidence").min().alias("match_confidence"))
+        _windows(rows, keys, pl.col("match_confidence").min().alias("match_confidence"), pl.col("evidence").min())
         .with_columns(pl.lit(league).alias("league"), pl.lit("espn").alias("athlete_id_source"))
         .select(list(PLAYER_ALIASES)).cast(PLAYER_ALIASES)
         .sort(["athlete_id", "source", "source_player_id", "valid_from", "team_id", "source_team_id"], nulls_last=True)
@@ -531,10 +516,9 @@ def build(
         "team_id",
         "athlete_id",
         "unmatched_reason",
-        "evidence",
     ]
     unmatched = (
-        _windows(left, ukeys)
+        _windows(left, ukeys, pl.col("evidence").min())
         .rename({"valid_from": "season_from", "valid_to": "season_to", "unmatched_reason": "reason"})
         .with_columns(pl.lit(league).alias("league"))
         .select(list(UNMATCHED)).cast(UNMATCHED)

@@ -190,17 +190,19 @@ removed from its block, the guarded step wrongly accepts a remaining unmatched a
 (0.098% at 0.88, 0.196% at 0.80), and any other athlete of the block for 0.27% (0.81% at 0.88, 4.9% at 0.80).
 
 On top of the legs, the build, in order:
-1. **Team block.** A row is kept only when its (season, ESPN team) is an ESPN team-season of `team_group_seasons`; an
+1. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)
+   sets a provider id's athlete (including a leg's miss), or (blank `athlete_id`) leaves it unmatched. Each row is
+   verified by hand, and the build fails on a row that no longer changes anything. An override still passes steps 2
+   and 3's checks; if it breaks step 3's rules the build fails rather than dropping it.
+2. **Team block.** A row is kept only when its (season, ESPN team) is an ESPN team-season of `team_group_seasons`; an
    NCAA basketball row only when its ESPN team is the one `ncaa_espn_team_crosswalk` gives its stats.ncaa.org team that
    season; an NFL row only when its provider team is that ESPN team in `nfl_team_aliases` that season.
-2. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)
-   sets a provider id's athlete, or (blank `athlete_id`) leaves it unmatched. Each row is verified by hand, and the build
-   fails on a row that no longer changes anything.
 3. **Cross-season stability.** A provider id is on one athlete in every season, and an athlete has at most one id of a
    source on a team in a season. An id that breaks either is dropped, every season (ESPN duplicate athletes and
    provider ids reassigned to another player both occur). A pair kept in one season is carried to the same provider
    id's unmatched rows in other seasons (`propagated`), on whatever ESPN team they show, which links a player across
-   transfers; the athlete links the NCAA leg's per-season ids the same way.
+   transfers; two carried ids landing on one athlete-team-season stay misses. The athlete links the NCAA leg's per-season
+   ids the same way.
 4. **Match-rate gate.** `{league}_player_aliases_rates.csv` (published) gives, per source and season, the leg's rows
    and how many reached the table (an ESPN-anchored leg counts every ESPN athlete row, so a missing provider id is a
    miss). The build fails when a season falls below its floor in `curated/player_match_floors.csv`, set era by era one
