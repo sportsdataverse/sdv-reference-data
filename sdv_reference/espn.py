@@ -40,6 +40,7 @@ LEAGUE_PATHS = {
     "cfb": ("football", "college-football"),
     "mbb": ("basketball", "mens-college-basketball"),
     "wbb": ("basketball", "womens-college-basketball"),
+    "ncaa_mhockey": ("hockey", "mens-college-hockey"),
     "nfl": ("football", "nfl"),
     "nba": ("basketball", "nba"),
     "wnba": ("basketball", "wnba"),

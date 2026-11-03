@@ -57,7 +57,7 @@ KEYS = {
     "team_group_seasons": ["league", "season", "team_id", "team_id_source", "source"],
 }
 LEVELS = {"league", "subdivision", "conference", "division"}
-ENDING_YEAR_LEAGUES = {"nba", "nhl", "mbb", "wbb"}
+ENDING_YEAR_LEAGUES = {"nba", "nhl", "mbb", "wbb", "ncaa_mhockey", "ncaa_whockey"}
 
 
 def conform(name: str, df: pl.DataFrame) -> pl.DataFrame:

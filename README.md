@@ -14,6 +14,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | WNBA | 1997–2026 | `wnba_groups` |
 | MLB | 1901–2026 | `mlb_groups` |
 | NHL | 1918–2026 | `nhl_groups` |
+| Men's / women's D-I college hockey | 1999–2027 | `ncaa_mhockey_groups`, `ncaa_whockey_groups` |
 | College baseball | 2010–2026 | `ncaa_baseball_groups` |
 | College softball | 1982–2025 | `ncaa_softball_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
@@ -35,7 +36,7 @@ ids are separate id systems; `ncaa_{baseball,softball}_team_group_seasons` repea
 id (`team_id_source` `espn`).
 
 [CONTRACT.md](CONTRACT.md) defines the columns, the SDV group ids (`{league}:{slug}`, one per lineage) and each league's
-season key. The ending year is used for NBA, NHL and college basketball.
+season key. The ending year is used for NBA, NHL, college basketball and college hockey.
 
 ## How it's built
 
