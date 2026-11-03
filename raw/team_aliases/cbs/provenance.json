@@ -1,0 +1,20 @@
+{
+ "mlb.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 69,
+  "url": "https://api.cbssports.com/napi/resource/league/teams/52"
+ },
+ "nba.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 42,
+  "url": "https://api.cbssports.com/napi/resource/league/teams/54"
+ },
+ "nhl.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 44,
+  "url": "https://api.cbssports.com/napi/resource/league/teams/60"
+ }
+}

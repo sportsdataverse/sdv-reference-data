@@ -1,0 +1,14 @@
+{
+ "basketball.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 370,
+  "url": "https://ipa.247sports.com/rdb/v1/teams/?sportKey=2"
+ },
+ "football.csv.gz": {
+  "captured": "2026-11-03",
+  "note": "one-off directory snapshot (owner decision 2026-11-03); not part of stage 10",
+  "rows": 269,
+  "url": "https://ipa.247sports.com/rdb/v1/teams/?sportKey=1"
+ }
+}

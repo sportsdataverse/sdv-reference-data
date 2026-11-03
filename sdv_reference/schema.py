@@ -82,8 +82,16 @@ TEAM_ALIASES_KEYS = [
 ]
 TEAM_ALIAS_SOURCES = {
     "fox", "yahoo", "cbs", "torvik", "kenpom", "ncaa", "nba_stats", "wnba_stats", "mlb", "nhl", "cfbd",
+    "sports247", "on3",
 }  # fmt: skip
-TEAM_ALIAS_METHODS = {"deterministic", "crosswalk", "curated"}
+TEAM_ALIAS_METHODS = {
+    "deterministic",
+    "crosswalk",
+    "curated",
+    "alias",
+    "exact_name",
+    "dict",
+}
 LEVELS = {"league", "subdivision", "conference", "division"}
 ENDING_YEAR_LEAGUES = {"nba", "nhl", "mbb", "wbb", "ncaa_mhockey", "ncaa_whockey"}
 
