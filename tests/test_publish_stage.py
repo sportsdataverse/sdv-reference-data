@@ -40,12 +40,12 @@ def _run(tmp_path: Path, listing: str | None, rc: int = 0, **fake: str) -> tuple
         (build / name).write_text(body)
     bin_ = tmp_path / "bin"
     bin_.mkdir()
-    (bin_ / "gh").write_text(FAKE_GH)
+    (bin_ / "gh").write_text(FAKE_GH, newline="\n")  # LF even on Windows: bash runs it
     (bin_ / "gh").chmod(0o755)
     log = tmp_path / "gh.log"
     env = {
         **os.environ,
-        "PATH": f"{bin_}:{os.environ['PATH']}",
+        "PATH": f"{bin_}{os.pathsep}{os.environ['PATH']}",
         "FAKE_LOG": str(log),
         "FAKE_LISTING": str(tmp_path / "listing"),
         "GH_RETRY_BACKOFF_S": "0",
@@ -60,7 +60,8 @@ def _run(tmp_path: Path, listing: str | None, rc: int = 0, **fake: str) -> tuple
         }
         (tmp_path / "listing").write_text(listing.format(**digests))
     proc = subprocess.run(
-        ["bash", str(root / "scripts/pipeline/30_publish_releases.sh"), "nba"],
+        # the PATH bash, not System32's WSL one (Windows looks there first), and a POSIX path
+        [shutil.which("bash"), (root / "scripts/pipeline/30_publish_releases.sh").as_posix(), "nba"],
         env=env,
         capture_output=True,
         text=True,
