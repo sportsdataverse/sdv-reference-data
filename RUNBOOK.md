@@ -129,6 +129,19 @@ the hour:
 
 Watch it with `tail -f /mnt/sdv_repos/sdv-reference-data/logs/pipeline.log`; each stage logs `STAGE=… DURATION=… EXIT=…`.
 
+A stage-10 failure (one league's source down or rate-limited, e.g. CFBD's 429 on 2026-11-09) no longer stops the run:
+stages 20-30 still build and publish every league whose `raw/` changed, and the run exits with stage 10's code so
+the cron alert fires.
+
+Proposed in-season line (not installed): the NCAA raw repos rewrite each season's `{lg}/xwalk/espn_athlete_id/` every
+night (03:00 / 03:30 droplet time), and the sdv-db nightly (10:00) re-ingests `{mbb,wbb}.ncaa_player_crosswalk` from
+`{mbb,wbb}_player_aliases`. A daily mbb/wbb run between them keeps the current season's player aliases a day behind
+the rosters instead of a week (~270 ESPN requests a day, the mbb/wbb trees). Monday is left to the weekly run:
+
+```
+47 8 * 1-4,11-12 0,2-6 cd /mnt/sdv_repos/sdv-reference-data && mkdir -p logs && ( git pull -q --ff-only && scripts/run_pipeline.sh mbb wbb; rc=$?; echo "EXIT=$rc"; exit $rc ) >> logs/pipeline.log 2>&1 || /mnt/sdv_repos/bin/cron_alert.sh sportsdataverse/sdv-reference-data ref-groups-hoops logs/pipeline.log
+```
+
 ### Landing `raw/` changes
 
 Raw snapshots are data, so they follow the org rule for data repos and land on `main` directly; code and `curated/`
