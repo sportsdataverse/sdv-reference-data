@@ -4,6 +4,7 @@ The 2026-11-09 weekly run fetched every league but cfb (CFBD 429), so stage 10 e
 committed or published: mbb/wbb player_aliases missed that week's 2026-27 NCAA crosswalk.
 """
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -77,3 +78,55 @@ def test_stage_flow(
     tmp_path: Path, rcs: dict[str, int], rc: int, ran: list[str]
 ) -> None:
     assert _run(tmp_path, rcs) == (rc, ran)
+
+
+FETCH = Path(__file__).resolve().parents[1] / "scripts/pipeline/10_fetch_sources.sh"
+
+# fake uv: `uv run python -c "...fetch('<league>')"` rewrites the league's snapshots, then cfb fails half way
+FAKE_UV = """#!/usr/bin/env bash
+l=$(echo "$*" | sed -n "s/.*fetch('\\([a-z_]*\\)').*/\\1/p")
+mkdir -p "raw/$l" "raw/player_aliases/$l"
+echo new > "raw/$l/groups.csv"
+[ "$l" = cfb ] && exit 1
+echo new > "raw/player_aliases/$l/ncaa_2027.csv"
+"""
+
+
+def test_failed_league_raw_reverted(tmp_path: Path) -> None:
+    """A league whose fetch failed part way keeps its committed raw/; the others keep their refresh."""
+    root = tmp_path / "repo"
+    (root / "scripts/pipeline").mkdir(parents=True)
+    shutil.copy(FETCH, root / "scripts/pipeline/10_fetch_sources.sh")
+    for lg in ("cfb", "mbb"):
+        (root / f"raw/{lg}").mkdir(parents=True)
+        (root / f"raw/{lg}/groups.csv").write_text("old\n")
+    git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run([*git, "add", "."], check=True)
+    subprocess.run([*git, "commit", "-qm", "init"], check=True)
+    bin_ = tmp_path / "bin"
+    bin_.mkdir()
+    (bin_ / "uv").write_text(FAKE_UV, newline="\n")
+    (bin_ / "uv").chmod(0o755)
+    env = {
+        **os.environ,
+        "PATH": f"{bin_}{os.pathsep}{os.environ['PATH']}",
+        "HOME": str(tmp_path),
+    }
+    proc = subprocess.run(
+        [
+            shutil.which("bash"),
+            (root / "scripts/pipeline/10_fetch_sources.sh").as_posix(),
+            "cfb",
+            "mbb",
+        ],
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 1, proc.stdout + proc.stderr
+    assert "fetch failed: cfb" in proc.stdout
+    assert (root / "raw/cfb/groups.csv").read_text() == "old\n"
+    assert not (root / "raw/player_aliases/cfb").exists()
+    assert (root / "raw/mbb/groups.csv").read_text() == "new\n"
+    assert (root / "raw/player_aliases/mbb/ncaa_2027.csv").read_text() == "new\n"

@@ -130,8 +130,9 @@ the hour:
 Watch it with `tail -f /mnt/sdv_repos/sdv-reference-data/logs/pipeline.log`; each stage logs `STAGE=… DURATION=… EXIT=…`.
 
 A stage-10 failure (one league's source down or rate-limited, e.g. CFBD's 429 on 2026-11-09) no longer stops the run:
-stages 20-30 still build and publish every league whose `raw/` changed, and the run exits with stage 10's code so
-the cron alert fires.
+stage 10 puts the failed league's `raw/` (and its `raw/{team,player}_aliases/` dirs) back to the committed state,
+stages 20-30 build and publish every league that did fetch in full, and the run exits with stage 10's code so the cron
+alert fires.
 
 Proposed in-season line (not installed): the NCAA raw repos rewrite each season's `{lg}/xwalk/espn_athlete_id/` every
 night (03:00 / 03:30 droplet time), and the sdv-db nightly (10:00) re-ingests `{mbb,wbb}.ncaa_player_crosswalk` from

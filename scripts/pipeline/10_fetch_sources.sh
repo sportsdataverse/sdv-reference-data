@@ -19,4 +19,15 @@ for l in "${leagues[@]}"; do
   echo "fetch $l"
   uv run python -c "from sdv_reference.build import fetch; fetch('$l')" || failed+=("$l")
 done
-[ ${#failed[@]} -eq 0 ] || { echo "fetch failed: ${failed[*]}"; exit 1; }
+[ ${#failed[@]} -eq 0 ] && exit 0
+# a failed league may have rewritten only some of its snapshots (groups but not player aliases): put its raw/ back to
+# the committed state, so the later stages build, commit and publish only the leagues that fetched in full
+for l in "${failed[@]}"; do
+  for p in "raw/$l" "raw/team_aliases/$l" "raw/player_aliases/$l"; do
+    [ -e "$p" ] || continue
+    git checkout -q HEAD -- "$p" 2>/dev/null || true  # a dir with nothing committed has nothing to restore
+    git clean -fdq -- "$p"
+  done
+done
+echo "fetch failed: ${failed[*]} (their raw/ reverted)"
+exit 1
