@@ -303,30 +303,51 @@ def _fetch_statlines(league: str) -> None:
         write_digests(digests, stem, published)
 
 
+def _torvik_get(season: int, proxy: str | None) -> requests.Response:
+    """One season's CSV, directly or through `proxy` (which carries credentials: never print it)."""
+    kw = {"proxies": {"http": proxy, "https": proxy}} if proxy else {}
+    r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120, **kw)
+    r.raise_for_status()
+    return r
+
+
 def _fetch_torvik(league: str, pause: float = 2.0) -> None:
     """raw/player_aliases/{league}/torvik_{season}.csv.gz (player_id, player_name, team, number), one public CSV per
     season, sequential and paced; the newest seasons are refetched (refresh.seasons_to_fetch).
 
-    barttorvik.com refuses datacenter IPs (403 to the droplet, 2026-11-25; 200 to a residential IP). A refused or
-    unreachable season (any HTTP error, connection error or timeout) ends the refresh with a warning and keeps the
-    committed torvik_{season} snapshots, so the leg builds from raw/ as it stands rather than failing the league's
-    stage 10. With no snapshot to keep, it raises. A changed layout always raises."""
+    barttorvik.com refuses datacenter IPs (403 to the droplet, 2026-11-25; 200 to a residential IP and to the droplet
+    through the decodo proxy). Each season is asked for directly first; once a direct request fails and
+    $SDV_API_PROXY is set, that season and the rest go through the proxy. A season that still fails (any HTTP error,
+    connection error or timeout) ends the refresh with a warning and keeps the committed torvik_{season} snapshots,
+    so the leg builds from raw/ as it stands rather than failing the league's stage 10. With no snapshot to keep, it
+    raises. A changed layout always raises."""
     have = [s for s, _ in _season_files(league, "torvik")]
     todo = seasons_to_fetch(range(TORVIK[league], current_season(ending_year=True) + 1), have)
+    proxy = os.environ.get("SDV_API_PROXY")
+    via_proxy = False
+    failed = (requests.HTTPError, requests.ConnectionError, requests.Timeout)
     for season in todo:
         try:
-            r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
-            r.raise_for_status()
-        except (requests.HTTPError, requests.ConnectionError, requests.Timeout) as e:
+            try:
+                r = _torvik_get(season, proxy if via_proxy else None)
+            except failed:
+                if via_proxy or not proxy:
+                    raise
+                via_proxy = True  # refused directly: this season and the rest through the proxy
+                print(f"torvik {league} {season}: direct request failed, retrying through $SDV_API_PROXY", flush=True)
+                r = _torvik_get(season, proxy)
+        except failed as e:
             if not have:
                 raise
             why = f"HTTP {e.response.status_code}" if isinstance(e, requests.HTTPError) else type(e).__name__
             # a season with no snapshot at all (a new season at rollover) stays absent: say so, it isn't gated
             never = [s for s in todo if s >= season and s not in have]
-            print(f"WARNING: torvik {league} {season}: barttorvik.com answered {why}; Torvik refresh skipped, keeping "
+            print(f"WARNING: torvik {league} {season}: barttorvik.com answered {why}"
+                  + (" through $SDV_API_PROXY" if via_proxy else "")
+                  + "; Torvik refresh skipped, keeping "
                   f"the committed raw/player_aliases/{league}/torvik_*.csv.gz ({min(have)}-{max(have)})"
                   + (f"; no Torvik snapshot at all for {never}" if never else "")
-                  + ". Refresh it from a residential IP (RUNBOOK.md).", flush=True)  # fmt: skip
+                  + ". Refresh it through $SDV_API_PROXY or from a residential IP (RUNBOOK.md).", flush=True)  # fmt: skip
             return
         time.sleep(pause)
         # UTF-8, not requests' per-response charset guess (a few names are already mojibake at the source: Mรถnninghoff)
