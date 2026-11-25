@@ -33,10 +33,14 @@ def test_every_aliases_window_lands_on_its_seasons():
             .select("team_id", "source_id", pl.int_ranges("valid_from", pl.col("valid_to") + 1, dtype=pl.Int32).alias("season"))
             .explode("season").unique().select("season", pl.col("team_id").alias("espn_team_id"), pl.col("source_id").alias(col))
         )  # fmt: skip
+        # an undated id (the curated CBS map) fills every season its team is in the hub
+        hub = df.select("season", "espn_team_id")
+        want = pl.concat([want, aliases.filter((pl.col("source") == source) & (pl.col("id_kind") == kind) & pl.col("valid_from").is_null())
+                          .select(pl.col("team_id").alias("espn_team_id"), pl.col("source_id").alias(col))
+                          .join(hub, on="espn_team_id").select(want.columns)]).unique()  # fmt: skip
         got = df.drop_nulls(col).select("season", "espn_team_id", col)
-        if source != "cbs":  # cbs is undated: it fills every hub season (test below)
-            assert want.join(got, on=list(want.columns), how="anti").height == 0, col
-            assert got.join(want, on=list(want.columns), how="anti").height == 0, col
+        assert want.join(got, on=list(want.columns), how="anti").height == 0, col
+        assert got.join(want, on=list(want.columns), how="anti").height == 0, col
 
 
 def _tgs(rows):
@@ -74,3 +78,13 @@ def test_an_id_on_two_teams_in_a_season_fails():
         schema_overrides={"valid_from": pl.Int32, "valid_to": pl.Int32},
     )
     assert cw.validate(cw.build(tgs, aliases), tgs) == ["fox_team_id on two ESPN teams in one season: [(2025, 'f1', 2)]"]
+
+
+def test_two_ids_for_a_team_season_fail_the_contract():
+    """team_aliases never emits this; if it did, the left join would duplicate the team-season and validate catches it."""
+    tgs = _tgs([(2025, "1")])
+    aliases = pl.DataFrame(
+        [_alias("1", "fox", "team", "f1", 2025, 2025), _alias("1", "fox", "team", "f2", 2025, 2025)],
+        schema_overrides={"valid_from": pl.Int32, "valid_to": pl.Int32},
+    )
+    assert cw.validate(cw.build(tgs, aliases), tgs) == ["2 rows for 1 ESPN team-seasons", "duplicate (season, espn_team_id)"]
