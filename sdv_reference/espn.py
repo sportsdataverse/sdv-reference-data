@@ -60,38 +60,46 @@ def cached_groups(league: str) -> list[dict]:
     return [json.loads(line) for line in path.open()]
 
 
-# set once the proxy refuses us (a lapsed account answers 407): the rest of the run's calls go direct
+# set once the proxy refuses this process (a lapsed account answers 407): its remaining calls go direct
 _PROXY_DOWN: list[bool] = []
 
 
 def get_json(url: str, session: requests.Session | None = None, pause: float = 1.0) -> dict:
     """One polite live call (about 1 request/second), through $SDV_API_PROXY when set. Retries rate limits,
-    server errors and dropped connections (the proxy occasionally drops a TLS handshake). An unreachable proxy
-    switches the run to direct calls: ESPN answers the droplet directly at this run's volume."""
+    server errors and dropped connections (the proxy occasionally drops a TLS handshake). A proxy that refuses
+    the account (407), or still fails after the retries, switches this process to direct calls: ESPN answers the
+    droplet directly at one league's volume."""
     s = session or requests
-    for attempt in range(4):
+    attempt = 0
+    while True:
         proxy = None if _PROXY_DOWN else os.environ.get("SDV_API_PROXY")
         try:
             r = s.get(url, headers=UA, timeout=60, proxies={"http": proxy, "https": proxy} if proxy else None)
         except requests.exceptions.ProxyError as e:
             if not proxy:
                 raise
-            # the Decodo account lapsed on 2026-11-02 and 2026-11-23 (407), failing every league's fetch
-            print(f"proxy unreachable ({type(e).__name__}); ESPN calls go direct for the rest of this run")
-            _PROXY_DOWN.append(True)
+            if "407" in str(e) or attempt == 3:
+                # the Decodo account lapsed on 2026-11-02 and 2026-11-23 (407), failing every league's fetch;
+                # the switch is not an attempt, so the direct call still gets its retries
+                print(f"proxy unreachable ({type(e).__name__}); ESPN calls go direct for the rest of this fetch")
+                _PROXY_DOWN.append(True)
+                continue
+            time.sleep(2 ** (attempt + 1))  # a passing proxy hiccup: retry through it
+            attempt += 1
             continue
         except (requests.ConnectionError, requests.Timeout):
             if attempt == 3:
                 raise
             time.sleep(2 ** (attempt + 1))
+            attempt += 1
             continue
         if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
             time.sleep(2 ** (attempt + 1))
+            attempt += 1
             continue
         r.raise_for_status()
         time.sleep(pause)
         return r.json()
-    raise RuntimeError(f"unreachable: {url}")
 
 
 def group_url(league: str, season: int, group_id: str, suffix: str = "") -> str:
