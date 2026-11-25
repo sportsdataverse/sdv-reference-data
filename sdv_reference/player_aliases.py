@@ -443,7 +443,7 @@ def _norm_name(c: str) -> pl.Expr:
 
 def _jersey(c: str) -> pl.Expr:
     """Torvik writes `01` where ESPN writes `1` (`0` and `00` stay apart); `--` is no jersey."""
-    s = pl.col(c).cast(pl.Utf8).str.strip_chars().str.replace(r"^0(\d)$", "$1")
+    s = pl.col(c).cast(pl.Utf8).str.strip_chars().str.replace(r"^0([1-9])$", "$1")
     return pl.when(s.str.contains(r"^\d+$")).then(s)
 
 

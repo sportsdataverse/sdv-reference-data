@@ -258,3 +258,9 @@ def test_torvik_tiers_on_a_synthetic_season(monkeypatch, tmp_path):
     # two Al Smiths with no Torvik jersey: a tie on every tier stays unmatched, never guessed
     assert got["2"][0] is None and got["3"][0] is None and got["2"][2].startswith("no unique name match")
     assert got["6"][0] is None and got["6"][2].startswith("no ESPN team")
+
+
+
+def test_jersey_drops_only_a_leading_zero_before_1_to_9():
+    df = pl.DataFrame({"j": ["01", "0", "00", "09", "10", "--", " 7 "]})
+    assert df.select(player_aliases._jersey("j"))["j"].to_list() == ["1", "0", "00", "9", "10", None, "7"]
