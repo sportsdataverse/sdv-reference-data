@@ -14,7 +14,9 @@ import pytest
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/run_pipeline.sh"
 
 
-def _run(tmp_path: Path, rcs: dict[str, int]) -> tuple[int, list[str]]:
+def _run(
+    tmp_path: Path, rcs: dict[str, int], out: list[str] | None = None
+) -> tuple[int, list[str]]:
     root = tmp_path / "repo"
     (root / "scripts/pipeline").mkdir(parents=True)
     shutil.copy(SCRIPT, root / "scripts/run_pipeline.sh")
@@ -32,6 +34,8 @@ def _run(tmp_path: Path, rcs: dict[str, int]) -> tuple[int, list[str]]:
         capture_output=True,
         text=True,
     )
+    if out is not None:
+        out.append(proc.stdout)
     return proc.returncode, log.read_text().split()
 
 
@@ -78,6 +82,20 @@ def test_stage_flow(
     tmp_path: Path, rcs: dict[str, int], rc: int, ran: list[str]
 ) -> None:
     assert _run(tmp_path, rcs) == (rc, ran)
+
+
+def test_nothing_to_publish_says_why_it_passed_or_failed(tmp_path: Path) -> None:
+    """sdv-reference-data#8: "nothing to publish" then EXIT=1 read as a false alarm; the failing stage was 10."""
+    out: list[str] = []
+    assert _run(tmp_path / "ok", {"25_commit_raw": 3}, out)[0] == 0
+    assert "nothing to publish: raw/ unchanged upstream, run succeeded" in out[0]
+    assert (
+        _run(tmp_path / "bad", {"10_fetch_sources": 1, "25_commit_raw": 3}, out)[0] == 1
+    )
+    assert (
+        "nothing to publish, but stage 10 (fetch) failed: run fails with EXIT=1"
+        in out[1]
+    )
 
 
 FETCH = Path(__file__).resolve().parents[1] / "scripts/pipeline/10_fetch_sources.sh"
