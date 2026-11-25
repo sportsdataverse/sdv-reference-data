@@ -35,9 +35,8 @@ import polars as pl
 import requests
 
 from sdv_reference import team_directories
-from sdv_reference.refresh import current_season, seasons_to_fetch
+from sdv_reference.refresh import read_digests, release_assets, release_seasons, seasons_changed, write_digests
 from sdv_reference.schema import (
-    ENDING_YEAR_LEAGUES,
     TEAM_ALIASES,
     validate_team_aliases,
 )
@@ -48,13 +47,13 @@ LEAGUES = ("nfl", "cfb", "nba", "wnba", "mbb", "wbb", "mlb", "nhl")
 RELEASES = "https://github.com/sportsdataverse/sportsdataverse-data/releases/download"
 NFL_RAW = Path(os.environ.get("SDV_NFL_RAW_CHECKOUT", "/mnt/sdv_repos/nfl-raw"))
 
-#: league -> (release tag, asset stem, first season published)
+#: league -> (release tag, asset stem); every season the release lists is snapshotted (refresh.release_seasons)
 XWALKS = {
-    "nba": ("nba_crosswalk", "nba_team_crosswalk", 2002),
-    "wnba": ("wnba_crosswalk", "wnba_team_crosswalk", 2002),
-    "mbb": ("mbb_crosswalk", "mbb_team_crosswalk", 2002),
-    "wbb": ("wbb_crosswalk", "wbb_team_crosswalk", 2002),
-    "cfb": ("cfb_crosswalk", "cfb_teams_crosswalk", 2014),
+    "nba": ("nba_crosswalk", "nba_team_crosswalk"),
+    "wnba": ("wnba_crosswalk", "wnba_team_crosswalk"),
+    "mbb": ("mbb_crosswalk", "mbb_team_crosswalk"),
+    "wbb": ("wbb_crosswalk", "wbb_team_crosswalk"),
+    "cfb": ("cfb_crosswalk", "cfb_teams_crosswalk"),
 }
 #: source -> (id column, {name_kind: column}); a column an asset lacks is skipped. Torvik has names only.
 XWALK_LEGS = {
@@ -143,18 +142,19 @@ def _snapshot(league: str, name: str, df: pl.DataFrame, source: str) -> None:
         return
     path.write_bytes(data)
     prov[name] = source
-    prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True) + "\n")
+    prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True) + "\n", newline="\n")
 
 
 def _fetch_crosswalk(league: str) -> None:
-    tag, stem, first = XWALKS[league]
+    """Every season the release lists, in one snapshot: a season is downloaded only when it is new or its digest
+    differs from raw/team_aliases/{league}/release_digests.json; the other seasons are kept from raw/."""
+    tag, stem = XWALKS[league]
     name = f"{stem}.csv.gz"
     path = RAW / league / name
+    digests = RAW / league / "release_digests.json"
     old = _read_gz_csv(path) if path.exists() else None
-    have = old["season"].unique().to_list() if old is not None else []
-    todo = seasons_to_fetch(
-        range(first, current_season(league in ENDING_YEAR_LEAGUES) + 1), have
-    )
+    published = release_seasons(release_assets(tag), stem)
+    todo = seasons_changed(published, read_digests(digests, stem))
     keep = [
         c
         for _, (i, names) in XWALK_LEGS.items()
@@ -163,8 +163,6 @@ def _fetch_crosswalk(league: str) -> None:
     parts, session = [], requests.Session()
     for season in todo:
         r = session.get(f"{RELEASES}/{tag}/{stem}_{season}.parquet", timeout=120)
-        if r.status_code == 404:  # not published (yet)
-            continue
         r.raise_for_status()
         df = pl.read_parquet(io.BytesIO(r.content))
         if "season" not in df.columns:  # cfb_teams_crosswalk has no season column
@@ -172,12 +170,12 @@ def _fetch_crosswalk(league: str) -> None:
         parts.append(
             df.select(
                 pl.lit(season).cast(pl.Int32).alias("season"),
-                pl.col("espn_team_id").cast(pl.Utf8),
+                pl.col("espn_team_id").cast(pl.Int64, strict=False).cast(pl.Utf8),
                 *[pl.col(c).cast(pl.Utf8) for c in keep if c in df.columns],
             )
         )
     if old is not None:
-        parts.insert(0, old.filter(~pl.col("season").is_in(todo)))
+        parts.insert(0, old.filter(pl.col("season").is_in(todo) == False))  # noqa: E712
     if not parts:
         raise ValueError(f"{league}: no {tag}/{stem}_*.parquet found")
     snap = pl.concat(parts, how="diagonal_relaxed")
@@ -194,6 +192,7 @@ def _fetch_crosswalk(league: str) -> None:
         snap,
         f"sportsdataverse-data release {tag}: {stem}_{{{lo}..{hi}}}.parquet",
     )
+    write_digests(digests, stem, published)
 
 
 def _fetch_nfl() -> None:
@@ -305,7 +304,7 @@ def _read_curated(name: str) -> pl.DataFrame:
 
 
 def _crosswalk_legs(league: str) -> list[pl.DataFrame]:
-    tag, stem, _ = XWALKS[league]
+    tag, stem = XWALKS[league]
     snap = _read_gz_csv(RAW / league / f"{stem}.csv.gz").rename(
         {"espn_team_id": "team_id"}
     )

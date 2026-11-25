@@ -30,6 +30,15 @@ Every `fetch()` sends its per-season sources through `sdv_reference/refresh.py`:
 - a season missing from `raw/` that is older than the window is a gap in the source (ESPN has no NHL groups for
   1974-92), so it is never re-probed.
 
+The published crosswalk releases (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, read by team and player aliases) don't use
+the window, because a release can be backfilled: the 2026-11-13 MBB 2004-24 and WBB 2007-13 / 2023-24 player
+crosswalks were older than the window and never reached `raw/`. Instead, one GitHub API call per tag lists every
+`{stem}_{season}.parquet` with its sha256 digest (`refresh.release_assets`), and a season is downloaded when it is
+new or its digest differs from `raw/{team,player}_aliases/{league}/release_digests.json`, at any age. A run where
+nothing was re-uploaded downloads nothing. The call is anonymous unless `$GITHUB_TOKEN` / `$GH_TOKEN` is set; a full
+stage 10 makes 11 of them (cfb has three stems), under the 60/hour anonymous limit. To re-download every season,
+delete the league's `release_digests.json`.
+
 Overrides:
 - `SDV_REF_REFRESH_SEASONS=1` halves the ESPN load, e.g. for an extra run on a season's opening week.
 - `SDV_REF_REFRESH_SEASONS=200` re-walks everything (about 11,300 ESPN requests; only through `$SDV_API_PROXY`).
@@ -89,8 +98,9 @@ of every season in `raw/` is about 11,300 requests.
   - MBB/WBB crosswalks: a new season needs its stats.ncaa.org team list in sdv-py's `ncaa_teamids_{league}.csv` and its
     schedule pages in ncaa-{league}-hoops-raw (the org ids); stage 10 snapshots both from the local checkouts, without
     a request to stats.ncaa.org. A new ESPN school goes into `curated/ncaa_espn_teams.csv` by hand
-  - Team aliases (`raw/team_aliases/{league}/`, run by stage 10 after each league's own fetch): the newest two seasons
-    of each published team crosswalk (`{nba,wnba,mbb,wbb,cfb}_crosswalk`, release downloads, not API calls) and
+  - Team aliases (`raw/team_aliases/{league}/`, run by stage 10 after each league's own fetch): the seasons
+    of each published team crosswalk (`{nba,wnba,mbb,wbb,cfb}_crosswalk`; every season the release lists, downloaded
+    again only when its digest changes: [Refresh window](#refresh-window)) and
     nfl-raw's `origin/main` player crosswalks ($SDV_NFL_RAW_CHECKOUT, default `/mnt/sdv_repos/nfl-raw`). Stage 25 counts
     a change there as the league's, so stage 30 republishes `{league}_groups`
   - Team directories (`raw/team_aliases/{sports247,on3,fox,yahoo,cbs}/`): **not stage 10**. A one-off capture, at most
@@ -99,8 +109,9 @@ of every season in `raw/` is about 11,300 requests.
     makes 11 requests, one at a time, `$SDV_REF_DIRECTORY_DELAY` seconds apart (default 2, never under 1), and appends
     the capture with its date. Then stage 20; resolve new misses in `curated/team_directory_names.csv` (a spelling ->
     ESPN id) or `curated/team_directory_aliases.csv` (an id; a blank ESPN id marks a non-ESPN school)
-  - Player aliases (`raw/player_aliases/{league}/`, run by stage 10 after team aliases): the newest two seasons of each
-    published player crosswalk (`{nba,wnba,mbb,wbb}_player_crosswalk`, `cfb_{players,rosters}_crosswalk`), nfl-raw's
+  - Player aliases (`raw/player_aliases/{league}/`, run by stage 10 after team aliases): every published season of
+    each player crosswalk (`{nba,wnba,mbb,wbb}_player_crosswalk`, `cfb_{players,rosters}_crosswalk`; new or
+    re-uploaded seasons only, by digest), nfl-raw's
     `players_*.json`, and every `{lg}/xwalk/espn_athlete_id/*.json` on `origin/main` of the NCAA raw repos
     ($SDV_NCAA_MBB_HOOPS_RAW, $SDV_NCAA_WBB_HOOPS_RAW, $SDV_NCAA_MFB_FOOTBALL_RAW; defaults `/mnt/sdv_repos/<repo>`).
     No stats.ncaa.org request. A build that fails the match-rate gate names the (league, source, season): find what
