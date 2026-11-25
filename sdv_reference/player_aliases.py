@@ -305,11 +305,25 @@ def _fetch_statlines(league: str) -> None:
 
 def _fetch_torvik(league: str, pause: float = 2.0) -> None:
     """raw/player_aliases/{league}/torvik_{season}.csv.gz (player_id, player_name, team, number), one public CSV per
-    season, sequential and paced; the newest seasons are refetched (refresh.seasons_to_fetch). A 403 / 429 raises."""
+    season, sequential and paced; the newest seasons are refetched (refresh.seasons_to_fetch).
+
+    barttorvik.com refuses datacenter IPs (403 to the droplet, 2026-11-25; 200 to a residential IP). A refused or
+    unreachable season (any HTTP error, connection error or timeout) ends the refresh with a warning and keeps the
+    committed torvik_{season} snapshots, so the leg builds from raw/ as it stands rather than failing the league's
+    stage 10. With no snapshot to keep, it raises. A changed layout always raises."""
     have = [s for s, _ in _season_files(league, "torvik")]
     for season in seasons_to_fetch(range(TORVIK[league], current_season(ending_year=True) + 1), have):
-        r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
-        r.raise_for_status()
+        try:
+            r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
+            r.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError, requests.Timeout) as e:
+            if not have:
+                raise
+            why = f"HTTP {e.response.status_code}" if isinstance(e, requests.HTTPError) else type(e).__name__
+            print(f"WARNING: torvik {league} {season}: barttorvik.com answered {why}; Torvik refresh skipped, keeping "
+                  f"the committed raw/player_aliases/{league}/torvik_*.csv.gz ({min(have)}-{max(have)}). Refresh it "
+                  f"from a residential IP (RUNBOOK.md).", flush=True)  # fmt: skip
+            return
         time.sleep(pause)
         # UTF-8, not requests' per-response charset guess (a few names are already mojibake at the source: Mรถnninghoff)
         rows = [row for row in csv.reader(io.StringIO(r.content.decode("utf-8"))) if any(c.strip() for c in row)]

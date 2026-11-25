@@ -5,6 +5,7 @@ from functools import cache
 
 import polars as pl
 import pytest
+import requests
 
 from sdv_reference import player_aliases, team_aliases
 from sdv_reference.schema import validate_player_aliases
@@ -216,6 +217,43 @@ def test_torvik_fetch_decodes_utf8_and_refuses_a_changed_layout(monkeypatch, tmp
     assert player_aliases._read(tmp_path / "mbb" / "torvik_2026.csv.gz")["player_name"].to_list() == ["Mathis Mönninghoff"]
     monkeypatch.setattr(player_aliases.requests, "get", lambda *a, **k: R(row("A", "7") + "\n" + row("B", "8", n=30)))
     with pytest.raises(ValueError, match="1 of 2 rows have under 33 fields"):
+        player_aliases._fetch_torvik("mbb", pause=0)
+
+
+def _refused(url, params=None, headers=None, timeout=None):
+    r = requests.Response()
+    r.status_code, r.reason, r.url = 403, "Forbidden", f"{url}?year={params['year']}&csv=1"
+    return r
+
+
+def _unreachable(*a, **k):
+    raise requests.ConnectionError("connection reset")
+
+
+@pytest.mark.parametrize(("get", "why"), [(_refused, "HTTP 403"), (_unreachable, "ConnectionError")])
+def test_torvik_refused_keeps_the_committed_snapshot(monkeypatch, tmp_path, capsys, get, why):
+    # 2026-11-25: barttorvik.com answered the droplet 403 and failed mbb's whole stage 10 (its raw/ reverted)
+    lg = tmp_path / "mbb"
+    lg.mkdir()
+    snap = team_aliases._gz_csv(pl.DataFrame({"player_id": ["7"], "player_name": ["A"], "team": ["Duke"], "number": ["1"]}))
+    (lg / "torvik_2025.csv.gz").write_bytes(snap)
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2025})
+    monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
+    monkeypatch.setattr(player_aliases.requests, "get", get)
+    player_aliases._fetch_torvik("mbb", pause=0)
+    assert (lg / "torvik_2025.csv.gz").read_bytes() == snap
+    assert sorted(p.name for p in lg.iterdir()) == ["torvik_2025.csv.gz"]
+    out = capsys.readouterr().out
+    assert f"WARNING: torvik mbb 2025: barttorvik.com answered {why}" in out and "(2025-2025)" in out
+
+
+def test_torvik_refused_with_no_snapshot_raises(monkeypatch, tmp_path):
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2026})
+    monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
+    monkeypatch.setattr(player_aliases.requests, "get", _refused)
+    with pytest.raises(requests.HTTPError, match="403"):
         player_aliases._fetch_torvik("mbb", pause=0)
 
 
