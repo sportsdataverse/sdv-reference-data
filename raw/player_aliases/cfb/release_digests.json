@@ -1,4 +1,16 @@
 {
+ "cfb_players_crosswalk_2016.parquet": "sha256:3e26b82e086c34aca452038ec8d822030d58bddc6e1c6ee48bf8e087c87ee42c",
+ "cfb_players_crosswalk_2017.parquet": "sha256:057133856ec9ce7837b6a603c5a33808a9bb6a7232c01590b2e4662815014401",
+ "cfb_players_crosswalk_2018.parquet": "sha256:f0b0754ac4ba263aba02631e0a7338113127b781fa25e429820e9fd7679cd831",
+ "cfb_players_crosswalk_2019.parquet": "sha256:10e20586aa2432c8a2343865e2adfb6a33b8be0390c40cc41e24131675b444c8",
+ "cfb_players_crosswalk_2020.parquet": "sha256:057295b8d0f42d076998a6916d7c8d33a4bbe088c43a087fc6399f1a59a97df9",
+ "cfb_players_crosswalk_2021.parquet": "sha256:cb101301cb6ad145b7d8efd664ef2b32fa065637c6b9ef6257db5e5c08971d6d",
+ "cfb_players_crosswalk_2022.parquet": "sha256:ba6c3048d071963259acc2d3d73ac4b3c6753a8a02b97ad8beb0f9fcc1a4ba15",
+ "cfb_players_crosswalk_2023.parquet": "sha256:96ab2b717f1168d0f8cd2203d1e3b16db61ab349fc82e01bff514ca200d2dbf0",
+ "cfb_players_crosswalk_2024.parquet": "sha256:f09fed20db610f6798d7b15070b1bf88728875c1f63d29381bab317ae7a9def5",
+ "cfb_players_crosswalk_2025.parquet": "sha256:abafec51b0e85a909779f078a5cc651b428a16eee1d26a1cb6bc64657af3adfa",
+ "cfb_players_crosswalk_2026.parquet": "sha256:f16a3418f3f9b7ff9283022de17983ceb4f8743025deff43d8e196fc442f69c8",
+ "cfb_rosters_crosswalk_2026.parquet": "sha256:2359c16ad5ad5bab23902e2840a833fa9de41d17dc773b6663e864c49e9ec2b0",
  "player_box_2016.parquet": "sha256:ece93c75db22400a6ba1d58388bee364fd78a778538fa87846d8902198eef87e",
  "player_box_2017.parquet": "sha256:983693593fc8b3307d6968527505b2c5d0803eb062dd4f047a7b86575c0c0acb",
  "player_box_2018.parquet": "sha256:ddc1b8f5cdb0b67e36db6c816b5057110fa2c0488195c235071da1e1fe0c568c",
@@ -9,5 +21,5 @@
  "player_box_2023.parquet": "sha256:f4cff89a296c1c55ec18af65d4dc6d8bd7bbeb48ceac4b7c4fd6f328727ff95a",
  "player_box_2024.parquet": "sha256:bb1a274fc97796555595a867b8827617e1d6d85118c591180d23a5e52cc1f187",
  "player_box_2025.parquet": "sha256:815293ae94f09864e08a2792fcbbe4ce01802dc7cb6f66d09ad8d52ac1f47d71",
- "player_box_2026.parquet": "sha256:6112f400f77646fad3c4707331c8c06b5a29b2fded393f433409b7fdbc9e2bf4"
+ "player_box_2026.parquet": "sha256:0cff3e87748feec18f21e4317df2c58379be149c44d13a63c2c48ffb0413317e"
 }
