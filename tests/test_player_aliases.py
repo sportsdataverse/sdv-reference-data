@@ -141,8 +141,8 @@ def test_windows_span_seasons(league):
     assert a.filter(pl.col("valid_to") > pl.col("valid_from")).height > 1000
 
 
-def _cbs_league(monkeypatch, tmp_path, rows, statline):
-    """A one-team cfb whose cbs leg is `rows` and whose ESPN stat-line athletes are `statline`."""
+def _cbs_league(monkeypatch, tmp_path, rows, statline, teams=("1",)):
+    """A cfb of `teams` (one by default) whose cbs leg is `rows` and whose ESPN stat-line athletes are `statline`."""
     monkeypatch.setattr(player_aliases, "legs", lambda league: pl.DataFrame(rows, schema=player_aliases.LONG))
     monkeypatch.setattr(player_aliases, "statlines", lambda league: pl.DataFrame(
         {"season": [2026] * len(statline), "athlete_id": statline}, schema={"season": pl.Int32, "athlete_id": pl.Utf8}))  # fmt: skip
@@ -151,13 +151,13 @@ def _cbs_league(monkeypatch, tmp_path, rows, statline):
         "league,source,season_from,season_to,floor_pct,note\ncfb,cbs,2026,2026,98.0,test\n"
     )
     monkeypatch.setattr(player_aliases, "CURATED", tmp_path)
-    hub = pl.DataFrame({"season": [2026], "team_id": ["1"], "team_id_source": ["espn"]},
+    hub = pl.DataFrame({"season": [2026] * len(teams), "team_id": list(teams), "team_id_source": ["espn"] * len(teams)},
                        schema_overrides={"season": pl.Int32})  # fmt: skip
     return player_aliases.build("cfb", hub, pl.DataFrame())[2]
 
 
-def _cbs(athlete, pid):
-    return {**_row(2026, "1", athlete, pid), "source": "cbs", "unmatched_reason": None}
+def _cbs(athlete, pid, team="1"):
+    return {**_row(2026, team, athlete, pid), "source": "cbs", "unmatched_reason": None}
 
 
 def test_cfb_cbs_gate_counts_only_athletes_with_an_espn_stat_line(monkeypatch, tmp_path):
@@ -176,6 +176,26 @@ def test_cfb_cbs_gate_fails_when_stat_line_athletes_lack_cbs_ids(monkeypatch, tm
     r = rates.row(0, named=True)
     assert (r["match_rate"], r["match_rate_statline"]) == (98.0, 96.0)
     assert player_aliases.gate("cfb", rates) == ["cfb cbs 2026: match rate 96.0 < floor 98.0"]
+
+
+def test_cfb_cbs_gate_leaves_out_a_team_season_cbs_never_covered(monkeypatch, tmp_path, capsys):
+    # 2018: 15 FCS team-seasons carry no CBS id on any row (CBS has no box scores for them); the 2026-11-25 Fox/Yahoo
+    # re-run added 84 of their stat-line athletes and took the gated rate from 96.25 to 94.1 with no CBS match lost
+    rows = ([_cbs(f"s{i}", f"c{i}") for i in range(98)] + [_cbs(f"m{i}", None) for i in range(2)]
+            + [_cbs(f"u{i}", None, team="2") for i in range(4)])  # fmt: skip
+    rates = _cbs_league(monkeypatch, tmp_path, rows, [r["athlete_id"] for r in rows], teams=("1", "2"))
+    r = rates.row(0, named=True)
+    assert (r["n_rows_statline"], r["n_matched_statline"], r["match_rate_statline"]) == (100, 98, 98.0)  # not 98 / 104
+    assert r["n_rows"] == 104  # the all-rows rate still counts them
+    assert "cfb cbs 2026: 1 team-seasons with no cbs id on any row (4 stat-line rows) left out" in capsys.readouterr().out
+    assert player_aliases.gate("cfb", rates) == []
+
+
+def test_cfb_cbs_gate_fails_when_uncovered_team_seasons_are_too_wide(monkeypatch, tmp_path):
+    # a fill that lost a whole team's CBS ids looks like no coverage: past 5% of the stat-line rows it fails, not hides
+    rows = [_cbs(f"s{i}", f"c{i}") for i in range(90)] + [_cbs(f"u{i}", None, team="2") for i in range(10)]
+    with pytest.raises(ValueError, match=r"over 5% of the stat-line rows for \[\('cbs', 2026\)\]"):
+        _cbs_league(monkeypatch, tmp_path, rows, [r["athlete_id"] for r in rows], teams=("1", "2"))
 
 
 @pytest.mark.parametrize("statline", [[], ["zzz"], ["s1"]])

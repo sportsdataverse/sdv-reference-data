@@ -825,9 +825,27 @@ def build(
         sl = statlines(league)
         assert sl.schema["athlete_id"] == rows.schema["athlete_id"] == total.schema["athlete_id"], "athlete_id dtype"
         assert sl.schema["season"] == rows.schema["season"], "season dtype"
-        on = ["season", "athlete_id"]
-        rates = rates.join(counts(total.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"),
-                                  rows.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"), "_statline"),
+        on, ts = ["season", "athlete_id"], ["source", "season", "team_id"]
+        # CBS has box scores only for the games it covered: a team-season with no CBS id on any of its leg rows
+        # (15 FCS team-seasons in 2018) is a coverage gap, not a match miss, so it leaves the gated denominator
+        g_total = total.filter(pl.col("source").is_in(gated))
+        uncovered = (g_total.filter(pl.col("team_id").is_not_null()).group_by(ts)
+                     .agg(pl.col("source_player_id").is_not_null().any().alias("_any")).filter(pl.col("_any") == False).drop("_any"))  # noqa: E712
+        g_stat = g_total.join(sl, on=on, how="semi")
+        left_out = g_stat.join(uncovered, on=ts, how="semi").group_by("source", "season").agg(
+            pl.col("team_id").n_unique().alias("teams"), pl.len().alias("rows"))
+        for src, season, teams, n in left_out.sort("source", "season").iter_rows():
+            print(f"{league} {src} {season}: {teams} team-seasons with no {src} id on any row ({n} stat-line rows) left out "
+                  "of the stat-line denominator")
+        # a matcher that lost a whole team-season must not hide behind this: past 5% of a season's stat-line rows, fail
+        seas = g_stat.group_by("source", "season").len()
+        wide = left_out.join(seas, on=["source", "season"]).filter(pl.col("rows") > 0.05 * pl.col("len"))
+        if wide.height:
+            raise ValueError(f"{league}: team-seasons with no id of their source hold over 5% of the stat-line rows for "
+                             f"{wide.select('source', 'season').rows()}: a coverage gap that wide is a fill failure")
+        rates = rates.join(counts(g_stat.join(uncovered, on=ts, how="anti"),
+                                  rows.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi")
+                                  .join(uncovered, on=ts, how="anti"), "_statline"),
                            on=["source", "season"], how="left")  # fmt: skip
         # a missing snapshot, or one sharing almost no athletes with the leg (an id-format drift; ESPN box scores cover
         # 59-100% of the leg rows in 2016-26), must fail rather
