@@ -117,6 +117,8 @@ PLAYER_ALIAS_SOURCES = {
     "cbs",
     "kenpom",
     "torvik",
+    "sports247",
+    "on3",
     "ncaa",
     "nba_stats",
     "wnba_stats",
