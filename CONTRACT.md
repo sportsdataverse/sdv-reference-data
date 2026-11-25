@@ -224,7 +224,9 @@ matches on normalized name + position, then the name alone, each only on a key u
 unmatched (`no unique name match`), and so does a match to a CFBD recruit with no `athleteId`. CFBD leaves `athleteId` (and
 often `committedTo`) empty for many recruits, most in the 2014-17 classes, so those classes match less. The row's
 season is the class year and its team the committed school. Only recruits committed to a school the On3 directory
-maps are candidates (the 2026-11-03 directory capture: 151 programs, FBS and some FCS), so the rate is over those.
+maps are candidates (the 2026-11-03 directory capture: 151 programs, FBS and some FCS), so the rate is over those;
+the `sports247` rate counts only the candidates whose On3 record carries a 247 link (On3 lists fewer of them from the
+2023 class on: 707 of 2,546 candidates in 2025).
 
 On top of the legs, the build, in order:
 1. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)

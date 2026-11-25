@@ -345,9 +345,13 @@ def _fetch_recruits(league: str, pause: float = 1.5) -> None:
     from sdv_reference.leagues.cfb import CFBD, _cfbd_key
 
     have = [s for s, _ in _season_files(league, "on3_recruits")]
+    todo = seasons_to_fetch(range(RECRUIT_CLASSES[league], current_season(ending_year=False) + 1), have)
+    if not todo:
+        return
     headers = {"Authorization": f"Bearer {_cfbd_key()}", "Accept": "application/json"}
-    for year in seasons_to_fetch(range(RECRUIT_CLASSES[league], current_season(ending_year=False) + 1), have):
-        r = requests.get(f"{CFBD}/recruiting/players", params={"year": year, "classification": "HighSchool"},
+    session = requests.Session()
+    for year in todo:
+        r = session.get(f"{CFBD}/recruiting/players", params={"year": year, "classification": "HighSchool"},
                          headers=headers, timeout=120)  # fmt: skip
         r.raise_for_status()
         cfbd = pl.DataFrame(
@@ -358,14 +362,17 @@ def _fetch_recruits(league: str, pause: float = 1.5) -> None:
         on3, page, pages = [], 1, 1
         while page <= pages:
             time.sleep(pause)
-            o = requests.get(ON3_LIST, params={"sportKey": 1, "year": year, "page": page, "limit": 250}, headers={**UA, "Accept": "application/json"},
-                             timeout=120)  # fmt: skip
+            o = session.get(ON3_LIST, params={"sportKey": 1, "year": year, "page": page, "limit": 250},
+                            headers={**UA, "Accept": "application/json"},
+                            timeout=120)  # fmt: skip
             o.raise_for_status()
             body = o.json()
             pages = body["pagination"]["pageCount"]
             on3 += [_on3_rows(x) for x in body["list"]]
             page += 1
-        on3_df = pl.DataFrame(on3, schema={k: pl.Utf8 for k in _on3_rows({})}).with_columns(pl.all().cast(pl.Utf8))
+        # the list is live: a shift between pages would skip or repeat recruits
+        assert len(on3) == body["pagination"]["count"], f"on3 {year}: {len(on3)} rows for {body['pagination']['count']}"
+        on3_df = pl.DataFrame(on3, schema={k: pl.Utf8 for k in _on3_rows({})})
         if not on3_df.height:  # a class On3 has no recruits for yet
             continue
         _snapshot(league, f"cfbd_recruits_{year}.csv.gz", cfbd.unique(),
@@ -382,12 +389,12 @@ def fetch(league: str) -> None:
         _fetch_statlines(league)
     if league in TORVIK:
         _fetch_torvik(league)
-    if league in RECRUIT_CLASSES:
+    if league in NCAA:
+        _fetch_ncaa(league)
+    if league in RECRUIT_CLASSES:  # last: it needs the CFBD key, which the other legs don't
         _fetch_recruits(league)
     if league == "nfl":
         _fetch_nfl()
-    if league in NCAA:
-        _fetch_ncaa(league)
 
 
 # ---------------------------------------------------------------- build (offline: raw/ + curated/)
@@ -569,7 +576,7 @@ def _cfbd_team_ids() -> pl.DataFrame:
     rows = json.loads(gzip.open(ROOT / "raw" / "cfb" / "cfbd_affiliations.json.gz").read())
     m = pl.DataFrame([(r["team"], str(r["teamId"])) for r in rows], schema={"committed_to": pl.Utf8, "team_id": pl.Utf8},
                      orient="row").unique()  # fmt: skip
-    return m.filter(~pl.col("committed_to").is_duplicated())
+    return m.filter(pl.col("committed_to").is_duplicated() == False)  # noqa: E712
 
 
 def _recruit_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
@@ -590,10 +597,11 @@ def _recruit_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]
             continue
         on3 = _read(path).join(orgs, on="on3_org_key", how="inner").with_columns(
             pl.lit(year, pl.Int32).alias("season"), _norm_name("name").alias("full"))  # fmt: skip
-        assert on3["on3_person_key"].is_unique().all(), f"on3 {year}: a person key twice"
+        assert on3["on3_person_key"].is_not_null().all() and on3["on3_person_key"].is_unique().all(), f"on3 {year}: person keys"
         cfbd = _read(cfbd_files[year]).join(cfbd_ids, on="committed_to", how="inner").select(
             pl.lit(year, pl.Int32).alias("season"), "team_id", _clean("athlete_id").alias("athlete_id"),
             "cfbd_recruit_id", _norm_name("name").alias("full"), "position")  # fmt: skip
+        assert cfbd["cfbd_recruit_id"].is_not_null().all() and cfbd["cfbd_recruit_id"].is_unique().all(), f"cfbd {year}: ids"
         for k in ("season", "team_id"):
             assert on3.schema[k] == cfbd.schema[k], f"{k}: {on3.schema[k]} != {cfbd.schema[k]}"
         todo, pool, matched = on3, cfbd, []
@@ -617,7 +625,7 @@ def _recruit_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]
                 both.filter(pl.col(col).is_not_null()), season=pl.col("season"), team_id=pl.col("team_id"),
                 athlete_id=pl.col("athlete_id"), source=pl.lit(source), source_player_id=_clean(col),
                 source_team_id=pl.col("on3_org_key") if source == "on3" else pl.lit(None), match_method=pl.col("match_method"),
-                match_confidence=pl.col("match_method").replace_strict(TIER_CONFIDENCE, default=None),
+                match_confidence=pl.col("match_method").replace_strict(TIER_CONFIDENCE, default=None, return_dtype=pl.Float64),
                 unmatched_reason=pl.col("why"), evidence=pl.lit(ev),
             ))  # fmt: skip
     return out

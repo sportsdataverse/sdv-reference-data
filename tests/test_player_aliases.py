@@ -320,6 +320,7 @@ def test_recruit_tiers_on_a_synthetic_class(monkeypatch, tmp_path):
         }
     )
     rows = pl.concat(player_aliases._recruit_legs("cfb", ta))
+    assert rows.select("source", "source_player_id").is_unique().all() and rows.height == 11  # 6 On3 + 5 with a 247 id
     got = {
         (r["source"], r["source_player_id"]): (
             r["athlete_id"],
