@@ -14,6 +14,9 @@ re-matches names:
   here, offline, the NCAA leg's way: blocked by (season, ESPN team) through mbb_team_aliases' Torvik team names, then
   normalized name + jersey, name, last name + jersey, each tier joining only on a key unique on both sides (no fuzzy
   step), against the ESPN athletes of mbb_player_crosswalk;
+- CFB recruits' 247Sports and On3 ids (On3's public industry-comparison list, which carries each recruit's 247
+  player id), tied to the ESPN athlete through CFBD's /recruiting/players (`athleteId` is the ESPN athlete id): both
+  snapshotted by fetch() and matched here, offline, by class + committed school (as an ESPN team) + normalized name;
 - the NCAA raw repos' stats.ncaa.org roster id -> ESPN athlete maps (`{lg}/xwalk/espn_athlete_id/{season}.json`,
   origin/main of ncaa-mbb-hoops-raw, ncaa-wbb-hoops-raw and ncaa-mfb-football-raw), built there by sdv-py's
   `scrape/ncaa/espn_player_xwalk.py`: blocked by (season, ESPN team) through the NCAA team crosswalk, then normalized
@@ -39,6 +42,7 @@ import gzip
 import io
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -108,12 +112,18 @@ TORVIK = {"mbb": 2008}
 TORVIK_URL = "https://barttorvik.com/getadvstats.php"
 TORVIK_FIELDS = {0: "player_name", 1: "team", 27: "number", 31: "year", 32: "player_id"}
 UA = {"User-Agent": "sdv-reference-data/0.1 (+https://github.com/sportsdataverse/sdv-reference-data)"}
+
+
+#: CFB recruiting classes snapshotted for the 247 / On3 leg (CFBD /recruiting/players + On3's industry list)
+RECRUIT_CLASSES = {"cfb": 2014}
+ON3_LIST = "https://api.on3.com/public/rdb/v1/players/industry-comparision-list"  # sic: On3's spelling
 #: an ordinal tier score for legs that give no confidence of their own (sdv-py espn_player_xwalk tiers)
 TIER_CONFIDENCE = {
     "name_jersey": 1.0,
     "name": 0.95,
     "last_jersey": 0.9,
     "jaro_winkler": 0.85,
+    "name_position": 1.0,
 }
 
 LONG = {
@@ -315,6 +325,56 @@ def _fetch_torvik(league: str, pause: float = 2.0) -> None:
                   f"barttorvik.com getadvstats.php?year={season}&csv=1")  # fmt: skip
 
 
+def _on3_rows(item: dict) -> dict:
+    """One On3 industry-list recruit -> its ids, name, position and commitment; the 247 id is the number in its
+    247 rating's link (https://247sports.com/player/{id}/)."""
+    person, status = item.get("person") or {}, item.get("status") or {}
+    link = next((r.get("link") for r in item.get("ratings") or [] if r.get("type") == "247" and r.get("link")), None)
+    m = re.search(r"247sports\.com/player/(?:[^/]*-)?(\d+)", link or "")
+    org = status.get("committedAsset") or {}
+    return {"on3_person_key": person.get("key"), "sports247_player_id": m[1] if m else None,
+            "name": person.get("fullName"), "position": (person.get("position") or {}).get("abbr"),
+            "status": status.get("type"), "on3_org_key": org.get("key") if org.get("orgType") == "College" else None,
+            "on3_org_name": org.get("fullName") if org.get("orgType") == "College" else None}  # fmt: skip
+
+
+def _fetch_recruits(league: str, pause: float = 1.5) -> None:
+    """raw/player_aliases/{league}/cfbd_recruits_{class}.csv.gz and on3_recruits_{class}.csv.gz: per recruiting class,
+    one CFBD call (the key from leagues.cfb._cfbd_key, never echoed) and On3's industry list in pages of 250, sequential
+    and paced. A non-200 (403 / 429 included) raises and stops the fetch; the newest classes are refetched."""
+    from sdv_reference.leagues.cfb import CFBD, _cfbd_key
+
+    have = [s for s, _ in _season_files(league, "on3_recruits")]
+    headers = {"Authorization": f"Bearer {_cfbd_key()}", "Accept": "application/json"}
+    for year in seasons_to_fetch(range(RECRUIT_CLASSES[league], current_season(ending_year=False) + 1), have):
+        r = requests.get(f"{CFBD}/recruiting/players", params={"year": year, "classification": "HighSchool"},
+                         headers=headers, timeout=120)  # fmt: skip
+        r.raise_for_status()
+        cfbd = pl.DataFrame(
+            [{"cfbd_recruit_id": x.get("id"), "athlete_id": x.get("athleteId"), "name": x.get("name"),
+              "committed_to": x.get("committedTo"), "position": x.get("position")} for x in r.json()],
+            schema={"cfbd_recruit_id": pl.Utf8, "athlete_id": pl.Utf8, "name": pl.Utf8, "committed_to": pl.Utf8, "position": pl.Utf8},
+        )  # fmt: skip
+        on3, page, pages = [], 1, 1
+        while page <= pages:
+            time.sleep(pause)
+            o = requests.get(ON3_LIST, params={"sportKey": 1, "year": year, "page": page, "limit": 250}, headers={**UA, "Accept": "application/json"},
+                             timeout=120)  # fmt: skip
+            o.raise_for_status()
+            body = o.json()
+            pages = body["pagination"]["pageCount"]
+            on3 += [_on3_rows(x) for x in body["list"]]
+            page += 1
+        on3_df = pl.DataFrame(on3, schema={k: pl.Utf8 for k in _on3_rows({})}).with_columns(pl.all().cast(pl.Utf8))
+        if not on3_df.height:  # a class On3 has no recruits for yet
+            continue
+        _snapshot(league, f"cfbd_recruits_{year}.csv.gz", cfbd.unique(),
+                  f"CFBD /recruiting/players?year={year}&classification=HighSchool")  # fmt: skip
+        _snapshot(league, f"on3_recruits_{year}.csv.gz", on3_df.unique(),
+                  f"On3 {ON3_LIST}?sportKey=1&year={year} (every page)")  # fmt: skip
+        time.sleep(pause)
+
+
 def fetch(league: str) -> None:
     if league in XWALKS:
         _fetch_crosswalks(league)
@@ -322,6 +382,8 @@ def fetch(league: str) -> None:
         _fetch_statlines(league)
     if league in TORVIK:
         _fetch_torvik(league)
+    if league in RECRUIT_CLASSES:
+        _fetch_recruits(league)
     if league == "nfl":
         _fetch_nfl()
     if league in NCAA:
@@ -501,6 +563,66 @@ def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
     return out
 
 
+def _cfbd_team_ids() -> pl.DataFrame:
+    """CFBD school name -> CFBD team id (the ESPN id), from the committed affiliations snapshot; a name on two ids is
+    left out."""
+    rows = json.loads(gzip.open(ROOT / "raw" / "cfb" / "cfbd_affiliations.json.gz").read())
+    m = pl.DataFrame([(r["team"], str(r["teamId"])) for r in rows], schema={"committed_to": pl.Utf8, "team_id": pl.Utf8},
+                     orient="row").unique()  # fmt: skip
+    return m.filter(~pl.col("committed_to").is_duplicated())
+
+
+def _recruit_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
+    """On3 recruits (with their 247 ids) -> ESPN athletes through CFBD's recruit list, per (class, ESPN team) block:
+    On3's commitment through team_aliases' On3 school keys, CFBD's through its own team names (CFBD ids are ESPN ids);
+    then normalized name + position, then the name alone, each only on a key unique on both sides. A tie stays
+    unmatched, and so does a match to a CFBD recruit with no athleteId (one who never played in CFBD's data). Only
+    recruits committed to a school the On3 directory maps to an ESPN team are candidates."""
+    orgs = (
+        team_aliases.filter((pl.col("source") == "on3") & (pl.col("id_kind") == "school") & pl.col("source_id").is_not_null())
+        .select(pl.col("source_id").alias("on3_org_key"), "team_id").unique()
+    )  # fmt: skip
+    assert not orgs["on3_org_key"].is_duplicated().any(), f"{league}: an On3 school key on two ESPN teams"
+    cfbd_ids, out = _cfbd_team_ids(), []
+    cfbd_files = dict(_season_files(league, "cfbd_recruits"))
+    for year, path in _season_files(league, "on3_recruits"):
+        if year not in cfbd_files:
+            continue
+        on3 = _read(path).join(orgs, on="on3_org_key", how="inner").with_columns(
+            pl.lit(year, pl.Int32).alias("season"), _norm_name("name").alias("full"))  # fmt: skip
+        assert on3["on3_person_key"].is_unique().all(), f"on3 {year}: a person key twice"
+        cfbd = _read(cfbd_files[year]).join(cfbd_ids, on="committed_to", how="inner").select(
+            pl.lit(year, pl.Int32).alias("season"), "team_id", _clean("athlete_id").alias("athlete_id"),
+            "cfbd_recruit_id", _norm_name("name").alias("full"), "position")  # fmt: skip
+        for k in ("season", "team_id"):
+            assert on3.schema[k] == cfbd.schema[k], f"{k}: {on3.schema[k]} != {cfbd.schema[k]}"
+        todo, pool, matched = on3, cfbd, []
+        for tier, keys in (("name_position", ["full", "position"]), ("name", ["full"])):
+            k = ["season", "team_id", *keys]
+            a = todo.drop_nulls(keys).filter(pl.struct(k).is_unique())
+            b = pool.drop_nulls(keys).filter(pl.struct(k).is_unique()).select(*k, "athlete_id", "cfbd_recruit_id")
+            m = a.join(b, on=k).with_columns(pl.lit(tier).alias("match_method"))
+            matched.append(m)
+            todo = todo.join(m.select("on3_person_key"), on="on3_person_key", how="anti")
+            pool = pool.join(m.select("cfbd_recruit_id"), on="cfbd_recruit_id", how="anti")
+        both = pl.concat([
+            *[m.with_columns(pl.when(pl.col("athlete_id").is_null())
+                             .then(pl.lit("the matched CFBD recruit has no ESPN athlete (athleteId)")).alias("why")) for m in matched],
+            todo.with_columns(pl.lit("no unique name match in the (class, ESPN team) block").alias("why")),
+        ], how="diagonal_relaxed")  # fmt: skip
+        ev = (f"On3 industry-comparision-list sportKey=1 year={year} + CFBD /recruiting/players year={year} "
+              f"(raw/player_aliases/{league}/{{on3,cfbd}}_recruits_{year}.csv.gz)")  # fmt: skip
+        for source, col in (("on3", "on3_person_key"), ("sports247", "sports247_player_id")):
+            out.append(_rows(
+                both.filter(pl.col(col).is_not_null()), season=pl.col("season"), team_id=pl.col("team_id"),
+                athlete_id=pl.col("athlete_id"), source=pl.lit(source), source_player_id=_clean(col),
+                source_team_id=pl.col("on3_org_key") if source == "on3" else pl.lit(None), match_method=pl.col("match_method"),
+                match_confidence=pl.col("match_method").replace_strict(TIER_CONFIDENCE, default=None),
+                unmatched_reason=pl.col("why"), evidence=pl.lit(ev),
+            ))  # fmt: skip
+    return out
+
+
 def legs(league: str) -> pl.DataFrame:
     """Every candidate row: matched (athlete_id set) and the legs' own misses (unmatched_reason set)."""
     parts = _crosswalk_legs(league)
@@ -545,6 +667,8 @@ def build(
     rows = legs(league)
     if league in TORVIK and team_aliases.height:  # the Torvik leg's team block is team_aliases' Torvik names
         rows = pl.concat([rows, *_torvik_legs(league, team_aliases)])
+    if league in RECRUIT_CLASSES and team_aliases.height:  # the recruit leg's On3 block is team_aliases' On3 keys
+        rows = pl.concat([rows, *_recruit_legs(league, team_aliases)])
     for k in ("season", "team_id"):
         assert rows.schema[k] == hub.schema[k], (
             f"{k}: {rows.schema[k]} != {hub.schema[k]}"

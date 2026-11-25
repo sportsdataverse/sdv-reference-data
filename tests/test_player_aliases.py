@@ -264,3 +264,115 @@ def test_torvik_tiers_on_a_synthetic_season(monkeypatch, tmp_path):
 def test_jersey_drops_only_a_leading_zero_before_1_to_9():
     df = pl.DataFrame({"j": ["01", "0", "00", "09", "10", "--", " 7 "]})
     assert df.select(player_aliases._jersey("j"))["j"].to_list() == ["1", "0", "00", "9", "10", None, "7"]
+
+
+def test_recruit_tiers_on_a_synthetic_class(monkeypatch, tmp_path):
+    """On3 (with its 247 id) -> CFBD recruit -> ESPN athlete, in the (class, ESPN team) block; ties stay unmatched."""
+    lg = tmp_path / "cfb"
+    lg.mkdir()
+    on3 = pl.DataFrame(
+        {
+            "on3_person_key": ["o1", "o2", "o3", "o4", "o5", "o6", "o7"],
+            "sports247_player_id": ["s1", None, "s3", "s4", "s5", "s6", "s7"],
+            "name": [
+                "Arch Manning",
+                "Bo Jones Jr.",
+                "Al Smith",
+                "Al Smith",
+                "Cy Young",
+                "Di Lee",
+                "Ed Ray",
+            ],
+            "position": ["QB", "RB", "WR", "CB", "TE", "OT", "LB"],
+            "status": ["Enrolled"] * 7,
+            "on3_org_key": ["23628"] * 5 + ["999", "23628"],
+            "on3_org_name": ["Texas Longhorns"] * 5 + ["Nowhere", "Texas Longhorns"],
+        }
+    )
+    cfbd = pl.DataFrame(
+        {
+            "cfbd_recruit_id": ["c1", "c2", "c3", "c4", "c5", "c7", "c8"],
+            "athlete_id": ["a1", "a2", "a3", "a4", None, "a7", "a8"],
+            "name": [
+                "Arch Manning",
+                "Bo Jones",
+                "Al Smith",
+                "Al Smith",
+                "Cy Young",
+                "Ed Ray",
+                "Ed Ray",
+            ],
+            "committed_to": ["Texas"] * 7,
+            "position": ["PRO", "RB", "WR", "S", "TE", "OLB", "ILB"],
+        }
+    )
+    (lg / "on3_recruits_2023.csv.gz").write_bytes(team_aliases._gz_csv(on3))
+    (lg / "cfbd_recruits_2023.csv.gz").write_bytes(team_aliases._gz_csv(cfbd))
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    teams = pl.DataFrame({"committed_to": ["Texas"], "team_id": ["251"]})
+    monkeypatch.setattr(player_aliases, "_cfbd_team_ids", lambda: teams)
+    ta = pl.DataFrame(
+        {
+            "source": ["on3"],
+            "id_kind": ["school"],
+            "source_id": ["23628"],
+            "team_id": ["251"],
+        }
+    )
+    rows = pl.concat(player_aliases._recruit_legs("cfb", ta))
+    got = {
+        (r["source"], r["source_player_id"]): (
+            r["athlete_id"],
+            r["match_method"],
+            r["unmatched_reason"],
+        )
+        for r in rows.to_dicts()
+    }
+    assert got[("on3", "o1")] == ("a1", "name", None)  # QB vs CFBD's PRO: the name tier
+    assert got[("sports247", "s1")] == ("a1", "name", None)
+    assert got[("on3", "o2")] == (
+        "a2",
+        "name_position",
+        None,
+    )  # Jr. dropped; no 247 id, so no sports247 row
+    assert ("sports247", None) not in got
+    # two Al Smiths at Texas: the WR matches on name + position, which leaves the other unique by name alone
+    assert got[("on3", "o3")] == ("a3", "name_position", None)
+    assert got[("on3", "o4")] == ("a4", "name", None)
+    # two CFBD Ed Rays and neither position agrees: a tie on every tier stays unmatched, never guessed
+    assert got[("on3", "o7")][0] is None
+    assert got[("on3", "o7")][2].startswith("no unique name match")
+    assert (
+        got[("on3", "o5")][0] is None and "no ESPN athlete" in got[("on3", "o5")][2]
+    )  # no CFBD athleteId
+    assert (
+        "on3",
+        "o6",
+    ) not in got  # committed to a school the On3 directory doesn't map: not a candidate
+    assert rows.schema["season"] == pl.Int32 and rows.schema["athlete_id"] == pl.Utf8
+
+
+def test_on3_rows_take_the_247_id_from_its_rating_link():
+    item = {
+        "person": {"key": 7353, "fullName": "Arch Manning", "position": {"abbr": "QB"}},
+        "ratings": [
+            {"type": "On3", "link": None},
+            {"type": "247", "link": "https://247sports.com/player/46080533/"},
+        ],
+        "status": {
+            "type": "Enrolled",
+            "committedAsset": {
+                "key": 23628,
+                "fullName": "Texas Longhorns",
+                "orgType": "College",
+            },
+        },
+    }
+    r = player_aliases._on3_rows(item)
+    assert (r["on3_person_key"], r["sports247_player_id"], r["on3_org_key"]) == (
+        7353,
+        "46080533",
+        23628,
+    )
+    item["status"]["committedAsset"]["orgType"] = "HighSchool"
+    assert player_aliases._on3_rows(item)["on3_org_key"] is None

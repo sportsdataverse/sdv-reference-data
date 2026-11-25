@@ -173,10 +173,10 @@ season, with provenance.
 | column | type | |
 |---|---|---|
 | league, athlete_id, athlete_id_source | Utf8 | the ESPN athlete id (`athlete_id_source` = `espn`) |
-| source | Utf8 | `fox`, `yahoo`, `cbs`, `kenpom`, `torvik`, `ncaa`, `nba_stats`, `wnba_stats` |
+| source | Utf8 | `fox`, `yahoo`, `cbs`, `kenpom`, `torvik`, `sports247`, `on3`, `ncaa`, `nba_stats`, `wnba_stats` |
 | source_player_id | Utf8 | the source's own player id (`nba.p.5637`, `76284`); stats.ncaa.org roster ids are new every season |
 | team_id | Utf8 | the ESPN team the athlete was on (an ESPN team-season of `team_group_seasons`) |
-| source_team_id | Utf8 | the source's own team id when the leg gives one (the season's stats.ncaa.org team id; Fox / Yahoo / CBS NFL), else null |
+| source_team_id | Utf8 | the source's own team id when the leg gives one (the season's stats.ncaa.org team id; Fox / Yahoo / CBS NFL; the On3 school key of an On3 recruit's commitment), else null |
 | valid_from, valid_to | Int32 | the seasons (inclusive, the league's season key) the id is on that team; a gap or a method change splits the window |
 | match_method | Utf8 | the leg's own method (`exact_name`, `fuzzy_jw`, NCAA `name_jersey` / `name` / `last_jersey` / `jaro_winkler`, Torvik `name_jersey` / `name` / `last_jersey`, CFB rosters `name`), `crosswalk` (a leg that names none), `propagated` (step 3 below), `override` |
 | match_confidence | Float64 | the leg's own confidence where it gives one (the lowest in the window); the NCAA tiers' ordinal scores 1.0 / 0.95 / 0.9 / 0.85; else null |
@@ -187,7 +187,7 @@ Sources by league:
 | League | Sources (leg) |
 |---|---|
 | nfl | fox, yahoo, cbs (nfl-raw `players_{fox,yahoo,cbs}.json`, matched rows only) |
-| cfb | cbs, yahoo (`cfb_players_crosswalk`, 2016-26; Fox and most Yahoo are null there: sportsdataverse-py#1019), fox, yahoo (`cfb_rosters_crosswalk`, 2026), ncaa (ncaa-mfb-football-raw; its academic-year key is shifted to the fall season) |
+| cfb | cbs, yahoo (`cfb_players_crosswalk`, 2016-26; Fox and most Yahoo are null there: sportsdataverse-py#1019), fox, yahoo (`cfb_rosters_crosswalk`, 2026), ncaa (ncaa-mfb-football-raw; its academic-year key is shifted to the fall season), sports247, on3 (recruits, classes 2014 on: matched here, see below) |
 | nba, wnba | nba_stats / wnba_stats, fox, yahoo (`{lg}_player_crosswalk`; `match_method` describes the Stats leg) |
 | mbb | fox, yahoo, kenpom (`mbb_player_crosswalk`, 2004-27; `match_method` describes the Fox leg), torvik (barttorvik.com `getadvstats.php`, 2008-27, matched here: see below), ncaa (ncaa-mbb-hoops-raw, 2010-26) |
 | wbb | fox, yahoo (`wbb_player_crosswalk`, 2014-22, 2025-26), ncaa (ncaa-wbb-hoops-raw, 2010-27) |
@@ -212,6 +212,19 @@ name + jersey, then the name alone, then last name + jersey. Each tier joins onl
 there is no fuzzy step: a tie or no candidate stays unmatched. Its rate counts Torvik players (a Torvik team with no
 ESPN team is a miss). Step 3 below then drops a Torvik id that lands on two ESPN athletes: Torvik's early seasons
 reuse one id for same-named players, and ESPN has duplicate athletes.
+
+The CFB recruit legs (`sports247`, `on3`) are matched here, because no producer publishes them. `fetch('cfb')` snapshots,
+per recruiting class, CFBD's `/recruiting/players` (`raw/player_aliases/cfb/cfbd_recruits_{class}.csv.gz`: CFBD's
+recruit id, `athleteId` (the ESPN athlete id), name, `committedTo`, position) and On3's public industry-comparison list
+(`on3_recruits_{class}.csv.gz`: the On3 person key, the 247 player id read from the 247 rating's link, name, position
+and the college On3 records the recruit committed to). CFBD's recruit id is its own, not 247's, so the 247 id comes
+from On3's record. The build blocks each On3 recruit by (class, ESPN team): the commitment's On3 school key through
+`cfb_team_aliases`' On3 rows, and CFBD's `committedTo` through CFBD's team names (CFBD ids are ESPN ids). Then it
+matches on normalized name + position, then the name alone, each only on a key unique on both sides; a tie stays
+unmatched (`no unique name match`), and so does a match to a CFBD recruit with no `athleteId`. CFBD leaves `athleteId` (and
+often `committedTo`) empty for many recruits, most in the 2014-17 classes, so those classes match less. The row's
+season is the class year and its team the committed school. Only recruits committed to a school the On3 directory
+maps are candidates (the 2026-11-03 directory capture: 151 programs, FBS and some FCS), so the rate is over those.
 
 On top of the legs, the build, in order:
 1. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)
