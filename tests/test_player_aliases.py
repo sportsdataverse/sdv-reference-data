@@ -246,6 +246,7 @@ def test_torvik_refused_keeps_the_committed_snapshot(monkeypatch, tmp_path, caps
     assert sorted(p.name for p in lg.iterdir()) == ["torvik_2025.csv.gz"]
     out = capsys.readouterr().out
     assert f"WARNING: torvik mbb 2025: barttorvik.com answered {why}" in out and "(2025-2025)" in out
+    assert "no Torvik snapshot at all for [2026]" in out  # the new season stays absent, and the log says so
 
 
 def test_torvik_refused_with_no_snapshot_raises(monkeypatch, tmp_path):

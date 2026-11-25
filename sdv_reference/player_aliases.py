@@ -312,7 +312,8 @@ def _fetch_torvik(league: str, pause: float = 2.0) -> None:
     committed torvik_{season} snapshots, so the leg builds from raw/ as it stands rather than failing the league's
     stage 10. With no snapshot to keep, it raises. A changed layout always raises."""
     have = [s for s, _ in _season_files(league, "torvik")]
-    for season in seasons_to_fetch(range(TORVIK[league], current_season(ending_year=True) + 1), have):
+    todo = seasons_to_fetch(range(TORVIK[league], current_season(ending_year=True) + 1), have)
+    for season in todo:
         try:
             r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
             r.raise_for_status()
@@ -320,9 +321,12 @@ def _fetch_torvik(league: str, pause: float = 2.0) -> None:
             if not have:
                 raise
             why = f"HTTP {e.response.status_code}" if isinstance(e, requests.HTTPError) else type(e).__name__
+            # a season with no snapshot at all (a new season at rollover) stays absent: say so, it isn't gated
+            never = [s for s in todo if s >= season and s not in have]
             print(f"WARNING: torvik {league} {season}: barttorvik.com answered {why}; Torvik refresh skipped, keeping "
-                  f"the committed raw/player_aliases/{league}/torvik_*.csv.gz ({min(have)}-{max(have)}). Refresh it "
-                  f"from a residential IP (RUNBOOK.md).", flush=True)  # fmt: skip
+                  f"the committed raw/player_aliases/{league}/torvik_*.csv.gz ({min(have)}-{max(have)})"
+                  + (f"; no Torvik snapshot at all for {never}" if never else "")
+                  + ". Refresh it from a residential IP (RUNBOOK.md).", flush=True)  # fmt: skip
             return
         time.sleep(pause)
         # UTF-8, not requests' per-response charset guess (a few names are already mojibake at the source: Mรถnninghoff)
