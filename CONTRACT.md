@@ -173,12 +173,12 @@ season, with provenance.
 | column | type | |
 |---|---|---|
 | league, athlete_id, athlete_id_source | Utf8 | the ESPN athlete id (`athlete_id_source` = `espn`) |
-| source | Utf8 | `fox`, `yahoo`, `cbs`, `kenpom`, `ncaa`, `nba_stats`, `wnba_stats` |
+| source | Utf8 | `fox`, `yahoo`, `cbs`, `kenpom`, `torvik`, `ncaa`, `nba_stats`, `wnba_stats` |
 | source_player_id | Utf8 | the source's own player id (`nba.p.5637`, `76284`); stats.ncaa.org roster ids are new every season |
 | team_id | Utf8 | the ESPN team the athlete was on (an ESPN team-season of `team_group_seasons`) |
 | source_team_id | Utf8 | the source's own team id when the leg gives one (the season's stats.ncaa.org team id; Fox / Yahoo / CBS NFL), else null |
 | valid_from, valid_to | Int32 | the seasons (inclusive, the league's season key) the id is on that team; a gap or a method change splits the window |
-| match_method | Utf8 | the leg's own method (`exact_name`, `fuzzy_jw`, NCAA `name_jersey` / `name` / `last_jersey` / `jaro_winkler`, CFB rosters `name`), `crosswalk` (a leg that names none), `propagated` (step 3 below), `override` |
+| match_method | Utf8 | the leg's own method (`exact_name`, `fuzzy_jw`, NCAA `name_jersey` / `name` / `last_jersey` / `jaro_winkler`, Torvik `name_jersey` / `name` / `last_jersey`, CFB rosters `name`), `crosswalk` (a leg that names none), `propagated` (step 3 below), `override` |
 | match_confidence | Float64 | the leg's own confidence where it gives one (the lowest in the window); the NCAA tiers' ordinal scores 1.0 / 0.95 / 0.9 / 0.85; else null |
 | evidence | Utf8 | the asset or file the row came from |
 
@@ -189,7 +189,7 @@ Sources by league:
 | nfl | fox, yahoo, cbs (nfl-raw `players_{fox,yahoo,cbs}.json`, matched rows only) |
 | cfb | cbs, yahoo (`cfb_players_crosswalk`, 2016-26; Fox and most Yahoo are null there: sportsdataverse-py#1019), fox, yahoo (`cfb_rosters_crosswalk`, 2026), ncaa (ncaa-mfb-football-raw; its academic-year key is shifted to the fall season) |
 | nba, wnba | nba_stats / wnba_stats, fox, yahoo (`{lg}_player_crosswalk`; `match_method` describes the Stats leg) |
-| mbb | fox, yahoo, kenpom (`mbb_player_crosswalk`, 2025-26; `match_method` describes the Fox leg), ncaa (ncaa-mbb-hoops-raw, 2010-26) |
+| mbb | fox, yahoo, kenpom (`mbb_player_crosswalk`, 2004-27; `match_method` describes the Fox leg), torvik (barttorvik.com `getadvstats.php`, 2008-27, matched here: see below), ncaa (ncaa-mbb-hoops-raw, 2010-26) |
 | wbb | fox, yahoo (`wbb_player_crosswalk`, 2014-22, 2025-26), ncaa (ncaa-wbb-hoops-raw, 2010-27) |
 
 The NCAA leg is the raw repos' stage-07 map (sdv-py `scrape/ncaa/espn_player_xwalk.py`): each stats.ncaa.org roster
@@ -202,6 +202,16 @@ checked on a labelled sample (2026-11-03: 35,682 NCAA players matched at a deter
 2020-22 / 2025-26; ClaudeCowork `notes/2026-11-03-player-aliases-jw-threshold.md`): with each player's true athlete
 removed from its block, the guarded step wrongly accepts a remaining unmatched athlete for 0.076% of players at 0.92
 (0.098% at 0.88, 0.196% at 0.80), and any other athlete of the block for 0.27% (0.81% at 0.88, 4.9% at 0.80).
+
+The Torvik leg is the one leg this repo matches itself, because no producer publishes one. `fetch('mbb')` snapshots
+Torvik's public per-season player table (`raw/player_aliases/mbb/torvik_{season}.csv.gz`: `player_id`, `player_name`,
+`team`, `number`; one request per season, paced, newest seasons refetched). The build blocks each Torvik player by
+(season, ESPN team), resolving the team through `mbb_team_aliases`' Torvik team names that season, and compares it only
+with the ESPN athletes of that season's `mbb_player_crosswalk`, using the NCAA leg's normalized name. The tiers are
+name + jersey, then the name alone, then last name + jersey. Each tier joins only on a key unique on both sides, and
+there is no fuzzy step: a tie or no candidate stays unmatched. Its rate counts Torvik players (a Torvik team with no
+ESPN team is a miss). Step 3 below then drops a Torvik id that lands on two ESPN athletes: Torvik's early seasons
+reuse one id for same-named players, and ESPN has duplicate athletes.
 
 On top of the legs, the build, in order:
 1. **Overrides.** `curated/player_overrides.csv` (`league, source, source_player_id, athlete_id, verified_by, note`)
