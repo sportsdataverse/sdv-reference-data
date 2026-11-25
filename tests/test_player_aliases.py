@@ -138,3 +138,50 @@ def test_rules_on_a_synthetic_league(monkeypatch, tmp_path):
 def test_windows_span_seasons(league):
     a = built(league)[0].filter(pl.col("source") != "ncaa")
     assert a.filter(pl.col("valid_to") > pl.col("valid_from")).height > 1000
+
+
+def _cbs_league(monkeypatch, tmp_path, rows, statline):
+    """A one-team cfb whose cbs leg is `rows` and whose ESPN stat-line athletes are `statline`."""
+    monkeypatch.setattr(player_aliases, "legs", lambda league: pl.DataFrame(rows, schema=player_aliases.LONG))
+    monkeypatch.setattr(player_aliases, "statlines", lambda league: pl.DataFrame(
+        {"season": [2026] * len(statline), "athlete_id": statline}, schema={"season": pl.Int32, "athlete_id": pl.Utf8}))  # fmt: skip
+    (tmp_path / "player_overrides.csv").write_text("league,source,source_player_id,athlete_id,verified_by,note\n")
+    (tmp_path / "player_match_floors.csv").write_text(
+        "league,source,season_from,season_to,floor_pct,note\ncfb,cbs,2026,2026,98.0,test\n"
+    )
+    monkeypatch.setattr(player_aliases, "CURATED", tmp_path)
+    hub = pl.DataFrame({"season": [2026], "team_id": ["1"], "team_id_source": ["espn"]},
+                       schema_overrides={"season": pl.Int32})  # fmt: skip
+    return player_aliases.build("cfb", hub, pl.DataFrame())[2]
+
+
+def _cbs(athlete, pid):
+    return {**_row(2026, "1", athlete, pid), "source": "cbs", "unmatched_reason": None}
+
+
+def test_cfb_cbs_gate_counts_only_athletes_with_an_espn_stat_line(monkeypatch, tmp_path):
+    # 10 ESPN athletes with a stat line, all with a CBS id; 10 linemen with none and no CBS id (CBS never lists them)
+    rows = [_cbs(f"s{i}", f"c{i}") for i in range(10)] + [_cbs(f"ol{i}", None) for i in range(10)]
+    rates = _cbs_league(monkeypatch, tmp_path, rows, [f"s{i}" for i in range(10)])
+    r = rates.row(0, named=True)
+    assert (r["match_rate"], r["match_rate_statline"], r["n_rows_statline"]) == (50.0, 100.0, 10)
+    assert player_aliases.gate("cfb", rates) == []
+
+
+def test_cfb_cbs_gate_fails_when_stat_line_athletes_lack_cbs_ids(monkeypatch, tmp_path):
+    rows = [_cbs(f"s{i}", f"c{i}" if i < 8 else None) for i in range(10)]
+    rates = _cbs_league(monkeypatch, tmp_path, rows, [f"s{i}" for i in range(10)])
+    assert player_aliases.gate("cfb", rates) == ["cfb cbs 2026: match rate 80.0 < floor 98.0"]
+
+
+def test_cfb_cbs_gate_needs_the_stat_line_snapshot(monkeypatch, tmp_path):
+    with pytest.raises(ValueError, match="no espn_statline snapshot"):
+        _cbs_league(monkeypatch, tmp_path, [_cbs("s1", "c1")], [])
+
+
+def test_other_legs_keep_the_all_rows_gate():
+    rates = built("cfb")[2]
+    assert rates.filter(pl.col("source") != "cbs")["match_rate_statline"].null_count() == rates.filter(
+        pl.col("source") != "cbs"
+    ).height
+    assert rates.filter(pl.col("source") == "cbs")["match_rate_statline"].null_count() == 0

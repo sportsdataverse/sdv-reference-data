@@ -222,6 +222,13 @@ On top of the legs, the build, in order:
    miss). The build fails when a season falls below its floor in `curated/player_match_floors.csv`, set era by era one
    point (rounded down) under the rate measured when the floor was added. Floors are never lowered. A season with no
    row is not gated: the ending-year 2027 seasons (NBA, MBB, WBB) just began, so their rates are still filling.
+   CFB's CBS leg is gated on a narrower denominator: only the ESPN athletes with an ESPN box-score stat line that season
+   (`espn_cfb_player_box`, snapshotted as `raw/player_aliases/cfb/espn_statline_{season}.csv.gz` since 2016). CBS box
+   scores list only players with a stat line, and on 2026-11-13 `cfb_players_crosswalk` gained Fox/Yahoo-only rows that
+   are mostly linemen, kickers and long snappers, so the all-rows rate fell (2026: 87.06%) with no CBS matcher change.
+   The rates file carries both: `n_rows` / `n_matched` / `match_rate` over every row, and `n_rows_statline` /
+   `n_matched_statline` / `match_rate_statline` over the stat-line athletes (null for every other leg). The gate reads
+   `match_rate_statline` where it is set, and the build fails when a gated season has no stat-line snapshot.
 
 Invariants (checked by `validate_player_aliases`): columns and dtypes as above; no nulls except `source_team_id` and
 `match_confidence`; every season a window covers is an ESPN team-season of `team_group_seasons`; step 3's two rules.
