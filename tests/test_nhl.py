@@ -1,10 +1,15 @@
 """NHL groups: offline, from raw/nhl/ + curated/. Team ids are ESPN's (franchise-level) where ESPN has the team."""
 
+import re
+import shutil
 from functools import cache
+from types import SimpleNamespace
 
 import polars as pl
+import pytest
 
 from sdv_reference.leagues import nhl
+from sdv_reference.leagues.mlb import read_json_gz, write_json_gz
 from sdv_reference.refresh import current_season
 from sdv_reference.schema import validate
 
@@ -230,3 +235,52 @@ def test_espn_cross_check():
     assert row("17", 1995)["sources_agree"] is False
     notes = tables()["groups"].filter(pl.col("group_id") == "nhl:nhl")["notes"][0]
     assert f"ESPN cross-check 1993-{last_season()}" in notes
+
+
+class _CappedStatsApi:
+    """The stats REST API as of 2026-11-25: at most 100 rows a page whatever `limit` asks for, plus the true total."""
+
+    def __init__(self, n: int, cap: int = 100, stop_after: int | None = None):
+        self.rows = [{"seasonId": 19171918 + 10001 * (i // 4), "teamId": i, "teamFullName": f"T{i}"} for i in range(n)]
+        self.cap, self.stop_after, self.calls = cap, stop_after, 0
+
+    def get(self, url, headers=None, timeout=None):
+        self.calls += 1
+        start = int(re.search(r"[?&]start=(\d+)", url)[1])
+        data = [] if self.stop_after is not None and start >= self.stop_after else self.rows[start : start + self.cap]
+        body = {"data": data, "total": len(self.rows)}
+        return SimpleNamespace(status_code=200, raise_for_status=lambda: None, json=lambda: body)
+
+
+def test_stats_listing_pages_past_the_100_row_cap(monkeypatch):
+    # 2026-11-25: limit=-1 came back with 100 of 1791 team-seasons, and the build failed on 1917-18 Montreal
+    monkeypatch.setattr(nhl.time, "sleep", lambda s: None)
+    api = _CappedStatsApi(1791)
+    rows = nhl._get_rest_all("team/summary", "cayenneExp=gameTypeId=2", ["seasonId", "teamId"], api)
+    assert len(rows) == 1791 and len({r["teamId"] for r in rows}) == 1791
+    assert api.calls == 18
+
+
+def test_stats_listing_short_of_its_total_raises(monkeypatch):
+    monkeypatch.setattr(nhl.time, "sleep", lambda s: None)
+    with pytest.raises(ValueError, match="returned 100 rows, the API reports 1791"):
+        nhl._get_rest_all("team/summary", "", ["seasonId"], _CappedStatsApi(1791, stop_after=100))
+
+
+def test_stats_listing_that_repeats_a_page_raises(monkeypatch):
+    # an API ignoring `start` serves page one again: the count can still reach the total, the keys can't be unique
+    monkeypatch.setattr(nhl.time, "sleep", lambda s: None)
+    api = _CappedStatsApi(300)
+    api.get = lambda url, headers=None, timeout=None, _g=api.get: _g(re.sub(r"start=\d+", "start=0", url))
+    with pytest.raises(ValueError, match="repeated a"):
+        nhl._get_rest_all("team/summary", "", ["seasonId", "teamId"], api)
+
+
+def test_truncated_stats_snapshot_fails_with_a_reason(tmp_path, monkeypatch):
+    for f in nhl.RAW.iterdir():
+        shutil.copy(f, tmp_path / f.name)
+    full = read_json_gz(tmp_path / "stats_team_seasons.json.gz")
+    write_json_gz(tmp_path / "stats_team_seasons.json.gz", full[-100:])
+    monkeypatch.setattr(nhl, "RAW", tmp_path)
+    with pytest.raises(ValueError, match=r"standings team-seasons have no row among the 100 .*truncated"):
+        nhl.build()

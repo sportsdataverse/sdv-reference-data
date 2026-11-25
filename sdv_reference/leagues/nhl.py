@@ -11,9 +11,11 @@ so every group id is minted here; curated/nhl_groups.csv maps the API's (level, 
 from __future__ import annotations
 
 import datetime as dt
+import json
 import re
 import sys
 import time
+import urllib.parse
 from pathlib import Path
 
 import polars as pl
@@ -62,12 +64,35 @@ def _get(url: str, session: requests.Session) -> dict:
     return r.json()
 
 
+REST_PAGE = 100  # the stats REST API caps a page at 100 rows and ignores limit=-1 (seen 2026-11-25)
+
+
+def _get_rest_all(path: str, query: str, sort: list[str], session: requests.Session) -> list[dict]:
+    """Every row of a stats REST listing, paged REST_PAGE at a time in a stable sort order.
+
+    Raises if the rows gathered don't add up to the API's own `total`, or repeat a sort key (a page served twice, or a
+    row shifting between pages), so a truncated listing never lands in raw/."""
+    order = urllib.parse.quote(json.dumps([{"property": p, "direction": "ASC"} for p in sort]))
+    rows: list[dict] = []
+    while True:
+        page = _get(f"{REST}/{path}?{query + '&' if query else ''}sort={order}&limit={REST_PAGE}&start={len(rows)}", session)
+        rows += page["data"]
+        if not page["data"] or len(rows) >= page["total"]:
+            break
+    if len(rows) != page["total"]:
+        raise ValueError(f"nhl: stats {path} returned {len(rows)} rows, the API reports {page['total']}")
+    if len({tuple(r[p] for p in sort) for r in rows}) != len(rows):
+        raise ValueError(f"nhl: stats {path} repeated a {sort} key across its pages")
+    return rows
+
+
 def fetch() -> None:
     """Snapshot raw/nhl/: season list, standings per season, stats team-season ids, then ESPN's walk.
 
     Standings are requested only for refresh.seasons_to_fetch() seasons, as of the season's end or today if it is
     still running; a season with no standings yet (before opening night) stays absent. The season list and the two
-    stats calls cover every season in one request each, so they stay full."""
+    stats listings cover every season, so they stay full; the stats listings are paged and checked against the
+    API's row total, and all three are fetched before any is written."""
     s = requests.Session()
     today = dt.datetime.now(dt.UTC).date().isoformat()
     seasons = [
@@ -90,19 +115,17 @@ def fetch() -> None:
         if rows:
             standings[str(x["id"])] = keep(rows)
         print(f"standings {x['id']}: {len(rows)} teams", flush=True)
+    summary = _get_rest_all("team/summary", "isAggregate=false&isGame=false&cayenneExp=gameTypeId=2", ["seasonId", "teamId"], s)
+    teams = _get_rest_all("team", "", ["id"], s)
     write_json_gz(path, {"seasons": seasons, "standings": standings})
-    summary = _get(
-        f"{REST}/team/summary?isAggregate=false&isGame=false&limit=-1&start=0&cayenneExp=gameTypeId=2",
-        s,
-    )
     write_json_gz(
         RAW / "stats_team_seasons.json.gz",
         sorted(
-            ({k: r[k] for k in ("seasonId", "teamId", "teamFullName")} for r in summary["data"]),
+            ({k: r[k] for k in ("seasonId", "teamId", "teamFullName")} for r in summary),
             key=lambda r: (r["seasonId"], r["teamId"]),
         ),
     )
-    write_json_gz(RAW / "stats_teams.json.gz", sorted(_get(f"{REST}/team", s)["data"], key=lambda t: t["id"]))
+    write_json_gz(RAW / "stats_teams.json.gz", sorted(teams, key=lambda t: t["id"]))
     last = max(int(k) for k in standings) % 10000
     espn_walk(LEAGUE, list(range(1918, last + 1)), RAW / "espn_groups.json.gz")
 
@@ -120,6 +143,17 @@ def _team_seasons(eras: pl.DataFrame) -> pl.DataFrame:
         (r["seasonId"], r["teamFullName"]): r["teamId"]
         for r in read_json_gz(RAW / "stats_team_seasons.json.gz")
     }
+    missing = sorted(
+        (int(sid), t["teamName"]["default"])
+        for sid, teams in standings.items()
+        for t in teams
+        if (int(sid), t["teamName"]["default"]) not in ids
+    )
+    if missing:
+        raise ValueError(
+            f"nhl: {len(missing)} standings team-seasons have no row among the {len(ids)} in "
+            f"raw/nhl/stats_team_seasons.json.gz (a truncated stats fetch?), e.g. {missing[:3]}"
+        )
     rows = []
     for sid, teams in standings.items():
         for t in teams:
@@ -127,9 +161,7 @@ def _team_seasons(eras: pl.DataFrame) -> pl.DataFrame:
             rows.append(
                 {
                     "season": int(sid) % 10000,
-                    "nhl_team_id": str(
-                        ids[(int(sid), name)]
-                    ),  # KeyError = a standings team the stats API lacks
+                    "nhl_team_id": str(ids[(int(sid), name)]),
                     "team_name": re.sub(
                         r" \(\d{4}\)$", "", name
                     ),  # "Ottawa Senators (1917)" is today's disambiguator
