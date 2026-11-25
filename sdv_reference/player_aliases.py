@@ -301,12 +301,16 @@ def _fetch_torvik(league: str, pause: float = 2.0) -> None:
         r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
         r.raise_for_status()
         time.sleep(pause)
-        rows = [row for row in csv.reader(io.StringIO(r.text)) if len(row) > max(TORVIK_FIELDS)]
+        # UTF-8, not requests' per-response charset guess (a few names are already mojibake at the source: Mรถnninghoff)
+        rows = [row for row in csv.reader(io.StringIO(r.content.decode("utf-8"))) if any(c.strip() for c in row)]
         if not rows:  # a season Torvik has no players for yet
             continue
+        if short := sum(len(row) <= max(TORVIK_FIELDS) for row in rows):
+            raise ValueError(f"torvik {season}: {short} of {len(rows)} rows have under {max(TORVIK_FIELDS) + 1} fields")
         df = pl.DataFrame([[row[i].strip() for i in TORVIK_FIELDS] for row in rows], schema=list(TORVIK_FIELDS.values()),
                           orient="row")  # fmt: skip
         assert (df["year"] == str(season)).all(), f"torvik {season}: rows for {df['year'].unique().to_list()}"
+        assert df["player_id"].str.contains(r"^\d+$").all(), f"torvik {season}: a player_id that is not a number"
         _snapshot(league, f"torvik_{season}.csv.gz", df.drop("year").unique(),
                   f"barttorvik.com getadvstats.php?year={season}&csv=1")  # fmt: skip
 
@@ -438,7 +442,9 @@ def _norm_name(c: str) -> pl.Expr:
 
 
 def _jersey(c: str) -> pl.Expr:
-    return pl.col(c).cast(pl.Utf8).str.strip_chars().replace("", None)
+    """Torvik writes `01` where ESPN writes `1` (`0` and `00` stay apart); `--` is no jersey."""
+    s = pl.col(c).cast(pl.Utf8).str.strip_chars().str.replace(r"^0(\d)$", "$1")
+    return pl.when(s.str.contains(r"^\d+$")).then(s)
 
 
 def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
@@ -451,7 +457,7 @@ def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
         team_aliases.filter((pl.col("source") == "torvik") & (pl.col("name_kind") == "name"))
         .select(pl.col("value").alias("team"), "team_id",
                 pl.int_ranges("valid_from", pl.col("valid_to") + 1, dtype=pl.Int32).alias("season"))
-        .explode("season").unique()
+        .explode("season").drop_nulls("season").unique()
     )  # fmt: skip
     assert not names.select("season", "team").is_duplicated().any(), f"{league}: a Torvik team name on two ESPN teams"
     out = []
@@ -459,6 +465,7 @@ def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
         if season not in espn_files:
             continue
         tv = _read(path).with_columns(pl.lit(season, pl.Int32).alias("season"))
+        assert tv["player_id"].is_unique().all(), f"torvik {season}: a player_id twice"
         tv = tv.join(names, on=["season", "team"], how="left").with_columns(
             _norm_name("player_name").alias("full"), _jersey("number").alias("jersey"))  # fmt: skip
         espn = _read(espn_files[season]).select(
@@ -472,8 +479,8 @@ def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
         todo, pool, matched = tv.filter(pl.col("team_id").is_not_null()), espn, []
         for tier, keys in (("name_jersey", ["full", "jersey"]), ("name", ["full"]), ("last_jersey", ["last", "jersey"])):
             k = ["season", "team_id", *keys]
-            a = todo.drop_nulls(keys).filter(~pl.struct(k).is_duplicated())
-            b = pool.drop_nulls(keys).filter(~pl.struct(k).is_duplicated()).select(*k, "athlete_id")
+            a = todo.drop_nulls(keys).filter(pl.struct(k).is_unique())
+            b = pool.drop_nulls(keys).filter(pl.struct(k).is_unique()).select(*k, "athlete_id")
             m = a.join(b, on=k).with_columns(pl.lit(tier).alias("match_method"))
             matched.append(m)
             todo = todo.join(m.select("player_id"), on="player_id", how="anti")

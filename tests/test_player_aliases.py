@@ -193,6 +193,32 @@ def test_other_legs_keep_the_all_rows_gate():
     assert rates.filter(pl.col("source") == "cbs")["match_rate_statline"].null_count() == 0
 
 
+def test_torvik_fetch_decodes_utf8_and_refuses_a_changed_layout(monkeypatch, tmp_path):
+    def row(name, pid, n=67):
+        f = ["x"] * n
+        for i, v in ((0, name), (1, "Duke"), (27, "1"), (31, "2026"), (32, pid)):
+            if i < n:
+                f[i] = v
+        return ",".join(f'"{v}"' for v in f)
+
+    class R:
+        def __init__(self, body):
+            self.content = body.encode("utf-8")
+
+        def raise_for_status(self):
+            pass
+
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2026})
+    monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
+    monkeypatch.setattr(player_aliases.requests, "get", lambda *a, **k: R(row("Mathis Mönninghoff", "7") + "\n"))
+    player_aliases._fetch_torvik("mbb", pause=0)
+    assert player_aliases._read(tmp_path / "mbb" / "torvik_2026.csv.gz")["player_name"].to_list() == ["Mathis Mönninghoff"]
+    monkeypatch.setattr(player_aliases.requests, "get", lambda *a, **k: R(row("A", "7") + "\n" + row("B", "8", n=30)))
+    with pytest.raises(ValueError, match="1 of 2 rows have under 33 fields"):
+        player_aliases._fetch_torvik("mbb", pause=0)
+
+
 def test_torvik_leg_is_published():
     a = built("mbb")[0].filter(pl.col("source") == "torvik")
     assert a.height > 50_000
@@ -204,15 +230,16 @@ def test_torvik_tiers_on_a_synthetic_season(monkeypatch, tmp_path):
     lg = tmp_path / "mbb"
     lg.mkdir()
     torvik = pl.DataFrame({
-        "player_id": ["1", "2", "3", "4", "5", "6"],
-        "player_name": ["José Núñez", "Al Smith", "Al Smith", "Bo Jones Jr.", "Cy Young", "Di Lee"],
-        "team": ["Duke", "Duke", "Duke", "Duke", "Duke", "Nowhere St."],
-        "number": ["1", "", "", "9", "4", "2"],
+        "player_id": ["1", "2", "3", "4", "5", "6", "7", "8"],
+        "player_name": ["José Núñez", "Al Smith", "Al Smith", "Bo Jones Jr.", "Cy Young", "Di Lee", "Ed Ray", "Ed Ray"],
+        "team": ["Duke", "Duke", "Duke", "Duke", "Duke", "Nowhere St.", "Duke", "Duke"],
+        "number": ["01", "", "", "9", "4", "2", "12", "--"],
     })  # fmt: skip
     espn = pl.DataFrame({
-        "season": ["2026"] * 5, "espn_team_id": ["150"] * 5, "espn_athlete_id": ["a1", "a2", "a3", "a4", "a5"],
-        "espn_full_name": ["Jose Nunez", "Al Smith", "Al Smith", "Bo Jones", "Cyrus Young"],
-        "espn_jersey": ["1", "3", "5", "9", "4"],
+        "season": ["2026"] * 7, "espn_team_id": ["150"] * 7,
+        "espn_athlete_id": ["a1", "a2", "a3", "a4", "a5", "a7", "a8"],
+        "espn_full_name": ["Jose Nunez", "Al Smith", "Al Smith", "Bo Jones", "Cyrus Young", "Ed Ray", "Ed Ray"],
+        "espn_jersey": ["1", "3", "5", "9", "4", "12", "20"],
     })  # fmt: skip
     (lg / "torvik_2026.csv.gz").write_bytes(team_aliases._gz_csv(torvik))
     (lg / "mbb_player_crosswalk_2026.csv.gz").write_bytes(team_aliases._gz_csv(espn))
@@ -223,7 +250,9 @@ def test_torvik_tiers_on_a_synthetic_season(monkeypatch, tmp_path):
         r["source_player_id"]: (r["athlete_id"], r["match_method"], r["unmatched_reason"])
         for r in pl.concat(player_aliases._torvik_legs("mbb", ta)).to_dicts()
     }
-    assert got["1"] == ("a1", "name_jersey", None)  # accents folded
+    assert got["1"] == ("a1", "name_jersey", None)  # accents folded, Torvik's "01" is ESPN's "1"
+    # two Ed Rays: #12 matches on name + jersey, which leaves the other one unique by name alone
+    assert got["7"] == ("a7", "name_jersey", None) and got["8"] == ("a8", "name", None)
     assert got["4"] == ("a4", "name_jersey", None)  # Jr. dropped
     assert got["5"] == ("a5", "last_jersey", None)  # Cy / Cyrus: last name + jersey
     # two Al Smiths with no Torvik jersey: a tie on every tier stays unmatched, never guessed
