@@ -153,11 +153,13 @@ that refuses the run (a lapsed account answers `407 Proxy Authentication Require
 longer fails every ESPN fetch: the first `ProxyError` switches that league's ESPN calls to direct, and the log says
 `proxy unreachable (...)`. Renew the account when you see that line.
 
-barttorvik.com refuses the droplet (`403 Forbidden`, 2026-11-25; the same request from a residential IP gets 200), so
-mbb's Torvik player leg doesn't refresh there. That no longer fails mbb's stage 10: the log says
-`WARNING: torvik mbb {season}: barttorvik.com answered HTTP 403; Torvik refresh skipped, keeping the committed ...`
-and the leg builds from the committed `raw/player_aliases/mbb/torvik_*.csv.gz`. To refresh it, run from a residential
-box, then commit the changed `torvik_*.csv.gz` and `provenance.json`:
+barttorvik.com refuses the droplet directly (`403 Forbidden`, 2026-11-25) but answers it through the decodo proxy and
+answers a residential IP. So once a direct request fails, mbb's Torvik leg retries that season, and asks for the rest,
+through `$SDV_API_PROXY` (the log says `direct request failed, retrying through $SDV_API_PROXY`). If that fails too, or
+no proxy is set, it doesn't fail mbb's stage 10: the log says
+`WARNING: torvik mbb {season}: barttorvik.com answered HTTP 403 [through $SDV_API_PROXY]; Torvik refresh skipped, keeping the committed ...`
+and the leg builds from the committed `raw/player_aliases/mbb/torvik_*.csv.gz`. To refresh it by hand, run this with
+`SDV_API_PROXY` set or from a residential box, then commit the changed `torvik_*.csv.gz` and `provenance.json`:
 
 ```bash
 uv run python -c "from sdv_reference.player_aliases import _fetch_torvik; _fetch_torvik('mbb')"

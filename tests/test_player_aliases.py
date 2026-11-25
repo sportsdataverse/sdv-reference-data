@@ -240,7 +240,7 @@ def test_torvik_fetch_decodes_utf8_and_refuses_a_changed_layout(monkeypatch, tmp
         player_aliases._fetch_torvik("mbb", pause=0)
 
 
-def _refused(url, params=None, headers=None, timeout=None):
+def _refused(url, params=None, headers=None, timeout=None, **k):
     r = requests.Response()
     r.status_code, r.reason, r.url = 403, "Forbidden", f"{url}?year={params['year']}&csv=1"
     return r
@@ -257,6 +257,7 @@ def test_torvik_refused_keeps_the_committed_snapshot(monkeypatch, tmp_path, caps
     lg.mkdir()
     snap = team_aliases._gz_csv(pl.DataFrame({"player_id": ["7"], "player_name": ["A"], "team": ["Duke"], "number": ["1"]}))
     (lg / "torvik_2025.csv.gz").write_bytes(snap)
+    monkeypatch.delenv("SDV_API_PROXY", raising=False)
     monkeypatch.setattr(player_aliases, "RAW", tmp_path)
     monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2025})
     monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
@@ -270,12 +271,70 @@ def test_torvik_refused_keeps_the_committed_snapshot(monkeypatch, tmp_path, caps
 
 
 def test_torvik_refused_with_no_snapshot_raises(monkeypatch, tmp_path):
+    monkeypatch.delenv("SDV_API_PROXY", raising=False)
     monkeypatch.setattr(player_aliases, "RAW", tmp_path)
     monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2026})
     monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
     monkeypatch.setattr(player_aliases.requests, "get", _refused)
     with pytest.raises(requests.HTTPError, match="403"):
         player_aliases._fetch_torvik("mbb", pause=0)
+
+
+def _torvik_row(season, pid):
+    f = ["x"] * 33
+    for i, v in ((0, f"P{pid}"), (1, "Duke"), (27, "1"), (31, str(season)), (32, pid)):
+        f[i] = v
+    return ",".join(f'"{v}"' for v in f) + "\n"
+
+
+def test_torvik_refused_directly_goes_through_the_proxy(monkeypatch, tmp_path, capsys):
+    # 2026-11-25: the droplet gets 403 directly and 200 through the decodo proxy
+    calls = []
+
+    class R:
+        def __init__(self, body):
+            self.content = body.encode("utf-8")
+
+        def raise_for_status(self):
+            pass
+
+    def get(url, params=None, headers=None, timeout=None, proxies=None):
+        calls.append((params["year"], proxies))
+        if proxies is None:
+            return _refused(url, params)
+        assert proxies == {"http": "http://u:p@proxy:7000", "https": "http://u:p@proxy:7000"}
+        return R(_torvik_row(params["year"], str(params["year"])))
+
+    monkeypatch.setenv("SDV_API_PROXY", "http://u:p@proxy:7000")
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2025})
+    monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
+    monkeypatch.setattr(player_aliases.requests, "get", get)
+    player_aliases._fetch_torvik("mbb", pause=0)
+    # one direct try, then that season and the next straight through the proxy
+    assert [(s, p is not None) for s, p in calls] == [(2025, False), (2025, True), (2026, True)]
+    for s in (2025, 2026):
+        assert player_aliases._read(tmp_path / "mbb" / f"torvik_{s}.csv.gz")["player_id"].to_list() == [str(s)]
+    out = capsys.readouterr().out
+    assert "retrying through $SDV_API_PROXY" in out and "WARNING" not in out
+    assert "u:p@" not in out  # the proxy URL carries credentials
+
+
+def test_torvik_refused_through_the_proxy_keeps_the_committed_snapshot(monkeypatch, tmp_path, capsys):
+    lg = tmp_path / "mbb"
+    lg.mkdir()
+    snap = team_aliases._gz_csv(pl.DataFrame({"player_id": ["7"], "player_name": ["A"], "team": ["Duke"], "number": ["1"]}))
+    (lg / "torvik_2025.csv.gz").write_bytes(snap)
+    monkeypatch.setenv("SDV_API_PROXY", "http://u:p@proxy:7000")
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    monkeypatch.setattr(player_aliases, "TORVIK", {"mbb": 2025})
+    monkeypatch.setattr(player_aliases, "current_season", lambda ending_year: 2026)
+    monkeypatch.setattr(player_aliases.requests, "get", _refused)
+    player_aliases._fetch_torvik("mbb", pause=0)
+    assert (lg / "torvik_2025.csv.gz").read_bytes() == snap
+    out = capsys.readouterr().out
+    assert "WARNING: torvik mbb 2025: barttorvik.com answered HTTP 403 through $SDV_API_PROXY" in out
+    assert "u:p@" not in out
 
 
 def test_torvik_leg_is_published():
