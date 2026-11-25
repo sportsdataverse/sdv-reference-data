@@ -40,9 +40,8 @@ from pathlib import Path
 import polars as pl
 import requests
 
-from sdv_reference.refresh import current_season, seasons_to_fetch
+from sdv_reference.refresh import read_digests, release_assets, release_seasons, seasons_changed, write_digests
 from sdv_reference.schema import (
-    ENDING_YEAR_LEAGUES,
     PLAYER_ALIASES,
     validate_player_aliases,
 )
@@ -52,15 +51,16 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW, CURATED = ROOT / "raw" / "player_aliases", ROOT / "curated"
 LEAGUES = ("nfl", "cfb", "nba", "wnba", "mbb", "wbb")
 
-#: league -> [(release tag, asset stem, first season)] of the published ESPN-anchored player crosswalks
+#: league -> [(release tag, asset stem)] of the published ESPN-anchored player crosswalks; every season the release
+#: lists is snapshotted (refresh.release_seasons)
 XWALKS = {
-    "nba": [("nba_crosswalk", "nba_player_crosswalk", 2002)],
-    "wnba": [("wnba_crosswalk", "wnba_player_crosswalk", 2002)],
-    "mbb": [("mbb_crosswalk", "mbb_player_crosswalk", 2002)],
-    "wbb": [("wbb_crosswalk", "wbb_player_crosswalk", 2002)],
+    "nba": [("nba_crosswalk", "nba_player_crosswalk")],
+    "wnba": [("wnba_crosswalk", "wnba_player_crosswalk")],
+    "mbb": [("mbb_crosswalk", "mbb_player_crosswalk")],
+    "wbb": [("wbb_crosswalk", "wbb_player_crosswalk")],
     "cfb": [
-        ("cfb_crosswalk", "cfb_players_crosswalk", 2014),
-        ("cfb_crosswalk", "cfb_rosters_crosswalk", 2014),
+        ("cfb_crosswalk", "cfb_players_crosswalk"),
+        ("cfb_crosswalk", "cfb_rosters_crosswalk"),
     ],
 }
 #: asset stem -> {source: (id column, name column)}; a column an asset lacks is skipped
@@ -154,31 +154,22 @@ def _snapshot(league: str, name: str, df: pl.DataFrame, source: str) -> None:
         return
     path.write_bytes(data)
     prov[name] = source
-    prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True) + "\n")
-
-
-def _have(league: str, prefix: str) -> list[int]:
-    return [
-        int(p.name.removesuffix(".csv.gz").rsplit("_", 1)[1])
-        for p in (RAW / league).glob(f"{prefix}_*.csv.gz")
-    ]
+    prov_path.write_text(json.dumps(prov, indent=1, sort_keys=True) + "\n", newline="\n")
 
 
 def _fetch_crosswalks(league: str) -> None:
-    """One file per season: a published season that changes rewrites only its own snapshot."""
+    """One file per season, for every season the release lists: a season is downloaded only when it is new or its
+    digest differs from raw/player_aliases/{league}/release_digests.json, and a changed one rewrites only its own
+    snapshot."""
     session = requests.Session()
-    for tag, stem, first in XWALKS[league]:
+    for tag, stem in XWALKS[league]:
         legs = LEGS["player_crosswalk" if stem.endswith("_player_crosswalk") else stem]
         keep = ["espn_full_name", "espn_player_name", "name", "espn_jersey", "fox_team_id", "match_method",
                 "match_confidence", "match_keys"] + [c for i, n in legs.values() for c in (i, n) if c]  # fmt: skip
-        todo = seasons_to_fetch(
-            range(first, current_season(league in ENDING_YEAR_LEAGUES) + 1),
-            _have(league, stem),
-        )
-        for season in todo:
+        digests = RAW / league / "release_digests.json"
+        published = release_seasons(release_assets(tag), stem)
+        for season in seasons_changed(published, read_digests(digests, stem)):
             r = session.get(f"{RELEASES}/{tag}/{stem}_{season}.parquet", timeout=120)
-            if r.status_code == 404:  # not published (yet)
-                continue
             r.raise_for_status()
             df = pl.read_parquet(io.BytesIO(r.content))
             snap = df.select(
@@ -193,6 +184,7 @@ def _fetch_crosswalks(league: str) -> None:
                 snap,
                 f"sportsdataverse-data release {tag}: {stem}_{season}.parquet",
             )
+        write_digests(digests, stem, published)
 
 
 def _fetch_nfl() -> None:
@@ -298,7 +290,7 @@ def _season_files(league: str, prefix: str) -> list[tuple[int, Path]]:
 
 def _crosswalk_legs(league: str) -> list[pl.DataFrame]:
     out = []
-    for tag, stem, _ in XWALKS.get(league, []):
+    for tag, stem in XWALKS.get(league, []):
         legs = LEGS["player_crosswalk" if stem.endswith("_player_crosswalk") else stem]
         for season, path in _season_files(league, stem):
             df = _read(path)

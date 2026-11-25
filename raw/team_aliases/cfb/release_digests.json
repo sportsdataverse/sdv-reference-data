@@ -1,0 +1,23 @@
+{
+ "cfb_teams_crosswalk_2004.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2006.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2007.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2008.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2009.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2010.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2012.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2013.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2014.parquet": "sha256:85906c6a084b3fcf30d7b4ea1a1af369fcca1c7ecf2585d791713f9729d9ebdd",
+ "cfb_teams_crosswalk_2015.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2016.parquet": "sha256:5f6d21be11bf872cc53268d144737a090e082dc5b52cdc4c1ea76488565fde58",
+ "cfb_teams_crosswalk_2017.parquet": "sha256:0ab41d7ced5c8a5dce588bb67ef6b52988cf2d79e0932742d821779b16b98388",
+ "cfb_teams_crosswalk_2018.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2019.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2020.parquet": "sha256:e06a6426382b6aca67e6322f0b60a81ca9f4e5569042fe9a299f9f481278869a",
+ "cfb_teams_crosswalk_2021.parquet": "sha256:bfd9b2ff07f8046ad494514559abb6645a491850ca28eab50aa927314f348771",
+ "cfb_teams_crosswalk_2022.parquet": "sha256:624e0fd44ea98107616a4b297f65f01ce1a610b9ce791ba4aea992f7bd773f18",
+ "cfb_teams_crosswalk_2023.parquet": "sha256:61b3d2e6cc7121b24372f0def94f1a5d3eb5bf5774c12178b8dd6121d61e14ec",
+ "cfb_teams_crosswalk_2024.parquet": "sha256:07fb35f7e80c76676c8d33a02f7103a96577ce8dc3b9768dc4ccac058293a5de",
+ "cfb_teams_crosswalk_2025.parquet": "sha256:09f879f4f6b4eb5db97f5944a965c79d6d3cfae3fa04403896426da0690515a4",
+ "cfb_teams_crosswalk_2026.parquet": "sha256:2c31e262f0cffac848446b9c8fa4ec8d429b1e4ad85df8d92eb2b3c178016eab"
+}

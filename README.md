@@ -55,7 +55,9 @@ season key. The ending year is used for NBA, NHL, college basketball and college
   and `sdv_reference/player_aliases.py` into `raw/player_aliases/{league}/`, from the published player crosswalks and the
   local nfl-raw and ncaa-{mbb,wbb}-hoops-raw / ncaa-mfb-football-raw checkouts).
   The snapshots are committed for provenance. A re-fetch keeps the seasons already there and refreshes only the newest
-  two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly.
+  two plus any new one (RUNBOOK.md, Refresh window), so it is cheap enough to run weekly. The published
+  crosswalk releases are the exception: every season a release lists is kept, and a season is downloaded again
+  only when its digest changes.
 - Its `build()` reads only `raw/` and hand-curated, cited rows in `curated/`, so builds are offline and reproducible.
 - Current names are never applied to past seasons. ESPN, stats.ncaa.org and CFBD all show today's labels for every
   season, so historical names come from dated curated rows.

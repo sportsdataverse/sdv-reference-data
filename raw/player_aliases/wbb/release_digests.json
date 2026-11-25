@@ -1,0 +1,23 @@
+{
+ "wbb_player_crosswalk_2007.parquet": "sha256:a576fc215c63563eef37632c624732230e22592984bbac54b7bb3087d688dc48",
+ "wbb_player_crosswalk_2008.parquet": "sha256:77da7cf3ee2a06a34328c84926a37637807254ed03772886ebf6cb38da4d6ee5",
+ "wbb_player_crosswalk_2009.parquet": "sha256:bc675cb7279f279982603808dc927e266d63ddeca9e204c711ac7cd2da33c416",
+ "wbb_player_crosswalk_2010.parquet": "sha256:0c4b312b4fcc6e7754f6e344250bb54e0f6910f99b2ff19b7e3ea88a9f2b3481",
+ "wbb_player_crosswalk_2011.parquet": "sha256:f36189d7debf97fde96667b43591560bc1d84bb8f24e45589508488f857b4ed2",
+ "wbb_player_crosswalk_2012.parquet": "sha256:3a72d66bcb5ebb07221d4dd47431b6a706126514b0031be8459bb6b8df4d3dc7",
+ "wbb_player_crosswalk_2013.parquet": "sha256:ec14702d6fc1fec5e6bfa3dccbc725a75dfbfcdca947e8d358b84657f5c86dac",
+ "wbb_player_crosswalk_2014.parquet": "sha256:3b660a5219413bfc2a9d5c4854ef50b4afed4a90ef74933ff505cca44ada712a",
+ "wbb_player_crosswalk_2015.parquet": "sha256:ba55677e35f3fe7cfdcbd38532dbeb79fdb3b20679c7e8cbcee76d989097bf45",
+ "wbb_player_crosswalk_2016.parquet": "sha256:480140284694411fb97dfa9402fa94cf27fc9f0de7d15deb1e73f377133a41b5",
+ "wbb_player_crosswalk_2017.parquet": "sha256:da5b5553648f171791604baf3b6e007b232103cdb95ac3d6681853ac7007b75d",
+ "wbb_player_crosswalk_2018.parquet": "sha256:a86790e9686fa77524df539522ccb0d027347ec84927ad3a65edc6eab9ce65b6",
+ "wbb_player_crosswalk_2019.parquet": "sha256:a57b7559186632bd003266b6801d3716d20d0868a3400ee9c04fffb61be03364",
+ "wbb_player_crosswalk_2020.parquet": "sha256:2079d3a543535a1bf42e6de6f426a2b35445df3b0837fba6b679de3588b8611b",
+ "wbb_player_crosswalk_2021.parquet": "sha256:22985ffd0f914958a795ed70625c3156694197a5c9c7de328adf71550eb0d3c0",
+ "wbb_player_crosswalk_2022.parquet": "sha256:baf3ece9d2f6ceffeca0d35058a468188d614fe778d2d619e45c7f735df634a9",
+ "wbb_player_crosswalk_2023.parquet": "sha256:8f41a87759211400c9930215e4dc6a85e99c50ec383c784f6584f1fb8751b4b1",
+ "wbb_player_crosswalk_2024.parquet": "sha256:60f5847765f76488ab900bbce7425a13cb102ede0fba7bf4ccbb03c7ce1cd3f2",
+ "wbb_player_crosswalk_2025.parquet": "sha256:7e879fc8dd182cd58eab694f999fbc12be4c0655181653153805c4085b671cfb",
+ "wbb_player_crosswalk_2026.parquet": "sha256:a3d4939d0aaf27002671b9d8b253c465a6b5b3dea05e1e4252b92e7b96299acb",
+ "wbb_player_crosswalk_2027.parquet": "sha256:511cd0c33e4c76359748ba1c9017615e1644eecfdf270988e0fb4e32e8f5401e"
+}
