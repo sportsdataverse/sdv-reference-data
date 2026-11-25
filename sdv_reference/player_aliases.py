@@ -567,13 +567,17 @@ def build(
         sl = statlines(league)
         assert sl.schema["athlete_id"] == rows.schema["athlete_id"] == total.schema["athlete_id"], "athlete_id dtype"
         assert sl.schema["season"] == rows.schema["season"], "season dtype"
-        have = set(sl["season"].unique())
-        if lost := sorted(set(total.filter(pl.col("source").is_in(gated))["season"].unique()) - have):
-            raise ValueError(f"{league}: no espn_statline snapshot for {lost}; run fetch('{league}')")
         on = ["season", "athlete_id"]
         rates = rates.join(counts(total.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"),
                                   rows.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"), "_statline"),
                            on=["source", "season"], how="left")  # fmt: skip
+        # a missing snapshot, or one sharing almost no athletes with the leg (an id-format drift; ESPN box scores cover
+        # 59-100% of the leg rows in 2016-26), must fail rather
+        # than fall back to the all-rows rate or gate a handful of rows
+        thin = rates.filter(pl.col("source").is_in(gated) & ~(pl.col("n_rows_statline") >= 0.25 * pl.col("n_rows")).fill_null(False))
+        if thin.height:
+            raise ValueError(f"{league}: no espn_statline snapshot, or one covering under a quarter of the leg's rows, for "
+                             f"{thin.select('source', 'season').rows()}; run fetch('{league}')")  # fmt: skip
     rates = (
         rates.with_columns(pl.lit(league).alias("league"))
         .select([pl.col(c) if c in rates.columns or c == "league" else pl.lit(None).alias(c) for c in RATES])

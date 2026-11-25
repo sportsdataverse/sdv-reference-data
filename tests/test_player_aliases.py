@@ -169,14 +169,20 @@ def test_cfb_cbs_gate_counts_only_athletes_with_an_espn_stat_line(monkeypatch, t
 
 
 def test_cfb_cbs_gate_fails_when_stat_line_athletes_lack_cbs_ids(monkeypatch, tmp_path):
-    rows = [_cbs(f"s{i}", f"c{i}" if i < 8 else None) for i in range(10)]
-    rates = _cbs_league(monkeypatch, tmp_path, rows, [f"s{i}" for i in range(10)])
-    assert player_aliases.gate("cfb", rates) == ["cfb cbs 2026: match rate 80.0 < floor 98.0"]
+    # 98% of all rows match, but 2 of the 50 stat-line athletes have no CBS id (96%): only the stat-line gate catches it
+    rows = [_cbs(f"s{i}", f"c{i}" if i < 8 else None) for i in range(10)] + [_cbs(f"x{i}", f"d{i}") for i in range(90)]
+    rates = _cbs_league(monkeypatch, tmp_path, rows, [f"s{i}" for i in range(10)] + [f"x{i}" for i in range(40)])
+    r = rates.row(0, named=True)
+    assert (r["match_rate"], r["match_rate_statline"]) == (98.0, 96.0)
+    assert player_aliases.gate("cfb", rates) == ["cfb cbs 2026: match rate 96.0 < floor 98.0"]
 
 
-def test_cfb_cbs_gate_needs_the_stat_line_snapshot(monkeypatch, tmp_path):
+@pytest.mark.parametrize("statline", [[], ["zzz"], ["s1"]])
+def test_cfb_cbs_gate_never_falls_back_to_all_rows(monkeypatch, tmp_path, statline):
+    """No snapshot, one sharing no athlete with the leg (id drift), or one covering under a quarter of it: the build fails."""
+    rows = [_cbs(f"s{i}", f"c{i}") for i in range(5)]
     with pytest.raises(ValueError, match="no espn_statline snapshot"):
-        _cbs_league(monkeypatch, tmp_path, [_cbs("s1", "c1")], [])
+        _cbs_league(monkeypatch, tmp_path, rows, statline)
 
 
 def test_other_legs_keep_the_all_rows_gate():
