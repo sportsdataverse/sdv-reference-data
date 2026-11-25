@@ -145,6 +145,13 @@ stage 10 puts the failed league's `raw/` (and its `raw/{team,player}_aliases/` d
 stages 20-30 build and publish every league that did fetch in full, and the run exits with stage 10's code so the cron
 alert fires.
 
+The run's last lines say which way it went. `nothing to publish: raw/ unchanged upstream, run succeeded` is a quiet week
+(`EXIT=0`). `nothing to publish, but stage 10 (fetch) failed: run fails with EXIT=1` is a real failure: the failed
+leagues' `raw/` was reverted, which is why nothing changed, so read the `fetch failed:` line above it. A Decodo proxy
+that refuses the run (a lapsed account answers `407 Proxy Authentication Required`, 2026-11-02 and 2026-11-23) no
+longer fails every ESPN fetch: the first `ProxyError` switches that league's ESPN calls to direct, and the log says
+`proxy unreachable (...)`. Renew the account when you see that line.
+
 Proposed in-season line (not installed): the NCAA raw repos rewrite each season's `{lg}/xwalk/espn_athlete_id/` every
 night (03:00 / 03:30 droplet time), and the sdv-db nightly (10:00) re-ingests `{mbb,wbb}.ncaa_player_crosswalk` from
 `{mbb,wbb}_player_aliases`. A daily mbb/wbb run between them keeps the current season's player aliases a day behind
