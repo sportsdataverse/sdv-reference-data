@@ -245,7 +245,9 @@ On top of the legs, the build, in order:
 4. **Match-rate gate.** `{league}_player_aliases_rates.csv` (published) gives, per source and season, the leg's rows
    and how many reached the table (an ESPN-anchored leg counts every ESPN athlete row, so a missing provider id is a
    miss). The build fails when a season falls below its floor in `curated/player_match_floors.csv`, set era by era one
-   point (rounded down) under the rate measured when the floor was added. Floors are never lowered. A season with no
+   point (rounded down) under the rate measured when the floor was added. Floors are never lowered to absorb a matcher
+   regression; they are re-measured only when the leg's denominator changes under them with no match lost (CFB CBS on
+   2026-11-25, twice: below). A season with no
    row is not gated: the ending-year 2027 seasons (NBA, MBB, WBB) just began, so their rates are still filling.
    CFB's CBS leg is gated on a narrower denominator: only the ESPN athletes with an ESPN box-score stat line that season
    (`espn_cfb_player_box`, snapshotted as `raw/player_aliases/cfb/espn_statline_{season}.csv.gz` since 2016). CBS box
@@ -254,6 +256,11 @@ On top of the legs, the build, in order:
    The rates file carries both: `n_rows` / `n_matched` / `match_rate` over every row, and `n_rows_statline` /
    `n_matched_statline` / `match_rate_statline` over the stat-line athletes (null for every other leg). The gate reads
    `match_rate_statline` where it is set, and the build fails when a gated season has no stat-line snapshot.
+   A team-season with no CBS id on any of its rows is one CBS has no box scores for (15 FCS team-seasons in 2018), so its
+   athletes leave the stat-line counts (they stay in `n_rows`) and the build logs them. Such team-seasons may hold at
+   most 5% of a season's stat-line rows: wider than that, it is a CBS fill that lost whole teams, and the build fails.
+   The 2026-11-25 Fox/Yahoo re-run of 2017-25 added stat-line athletes CBS never matched (mostly one-game receivers,
+   rushers, returners and defenders) and lost no CBS match, so the CBS floors were re-measured on it.
 
 Invariants (checked by `validate_player_aliases`): columns and dtypes as above; no nulls except `source_team_id` and
 `match_confidence`; every season a window covers is an ESPN team-season of `team_group_seasons`; step 3's two rules.
