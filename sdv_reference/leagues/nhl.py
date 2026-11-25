@@ -70,16 +70,19 @@ REST_PAGE = 100  # the stats REST API caps a page at 100 rows and ignores limit=
 def _get_rest_all(path: str, query: str, sort: list[str], session: requests.Session) -> list[dict]:
     """Every row of a stats REST listing, paged REST_PAGE at a time in a stable sort order.
 
-    Raises if the rows gathered don't add up to the API's own `total`, so a truncated listing never lands in raw/."""
+    Raises if the rows gathered don't add up to the API's own `total`, or repeat a sort key (a page served twice, or a
+    row shifting between pages), so a truncated listing never lands in raw/."""
     order = urllib.parse.quote(json.dumps([{"property": p, "direction": "ASC"} for p in sort]))
     rows: list[dict] = []
     while True:
-        page = _get(f"{REST}/{path}?{query}&sort={order}&limit={REST_PAGE}&start={len(rows)}", session)
+        page = _get(f"{REST}/{path}?{query + '&' if query else ''}sort={order}&limit={REST_PAGE}&start={len(rows)}", session)
         rows += page["data"]
         if not page["data"] or len(rows) >= page["total"]:
             break
     if len(rows) != page["total"]:
         raise ValueError(f"nhl: stats {path} returned {len(rows)} rows, the API reports {page['total']}")
+    if len({tuple(r[p] for p in sort) for r in rows}) != len(rows):
+        raise ValueError(f"nhl: stats {path} repeated a {sort} key across its pages")
     return rows
 
 

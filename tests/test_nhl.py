@@ -267,6 +267,15 @@ def test_stats_listing_short_of_its_total_raises(monkeypatch):
         nhl._get_rest_all("team/summary", "", ["seasonId"], _CappedStatsApi(1791, stop_after=100))
 
 
+def test_stats_listing_that_repeats_a_page_raises(monkeypatch):
+    # an API ignoring `start` serves page one again: the count can still reach the total, the keys can't be unique
+    monkeypatch.setattr(nhl.time, "sleep", lambda s: None)
+    api = _CappedStatsApi(300)
+    api.get = lambda url, headers=None, timeout=None, _g=api.get: _g(re.sub(r"start=\d+", "start=0", url))
+    with pytest.raises(ValueError, match="repeated a"):
+        nhl._get_rest_all("team/summary", "", ["seasonId", "teamId"], api)
+
+
 def test_truncated_stats_snapshot_fails_with_a_reason(tmp_path, monkeypatch):
     for f in nhl.RAW.iterdir():
         shutil.copy(f, tmp_path / f.name)
