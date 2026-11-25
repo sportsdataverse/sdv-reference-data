@@ -32,7 +32,7 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 - `{league}_team_group_seasons`, plus one file per season
 - `{league}_team_aliases` (nfl, cfb, nba, wnba, mbb, wbb, mlb, nhl): each provider's id and name for each team, with
   season windows, plus `{league}_team_aliases_unmatched.csv`
-- `{league}_player_aliases` (nfl, cfb, nba, wnba, mbb, wbb): each provider's player id (Fox, Yahoo, CBS, KenPom,
+- `{league}_player_aliases` (nfl, cfb, nba, wnba, mbb, wbb): each provider's player id (Fox, Yahoo, CBS, KenPom, Torvik,
   stats.ncaa.org, NBA / WNBA Stats) for each ESPN athlete, with the ESPN team and season window, plus
   `{league}_player_aliases_unmatched.csv` and the per-season match rates `{league}_player_aliases_rates.csv`
 

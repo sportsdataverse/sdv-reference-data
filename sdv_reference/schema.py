@@ -116,6 +116,7 @@ PLAYER_ALIAS_SOURCES = {
     "yahoo",
     "cbs",
     "kenpom",
+    "torvik",
     "ncaa",
     "nba_stats",
     "wnba_stats",

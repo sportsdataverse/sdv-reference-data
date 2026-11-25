@@ -10,6 +10,10 @@ re-matches names:
 - the published ESPN-anchored player crosswalks ({nba,wnba,mbb,wbb}_player_crosswalk, cfb_players_crosswalk,
   cfb_rosters_crosswalk), snapshotted into raw/player_aliases/{league}/ by fetch();
 - nfl-raw's Fox / Yahoo / CBS player crosswalks (`players_{fox,yahoo,cbs}.json`, origin/main);
+- Torvik's player ids (barttorvik.com `getadvstats.php?year=&csv=1`, MBB 2008 on), snapshotted by fetch() and matched
+  here, offline, the NCAA leg's way: blocked by (season, ESPN team) through mbb_team_aliases' Torvik team names, then
+  normalized name + jersey, name, last name + jersey, each tier joining only on a key unique on both sides (no fuzzy
+  step), against the ESPN athletes of mbb_player_crosswalk;
 - the NCAA raw repos' stats.ncaa.org roster id -> ESPN athlete maps (`{lg}/xwalk/espn_athlete_id/{season}.json`,
   origin/main of ncaa-mbb-hoops-raw, ncaa-wbb-hoops-raw and ncaa-mfb-football-raw), built there by sdv-py's
   `scrape/ncaa/espn_player_xwalk.py`: blocked by (season, ESPN team) through the NCAA team crosswalk, then normalized
@@ -30,17 +34,20 @@ Everything dropped goes to {league}_player_aliases_unmatched.csv with its reason
 
 from __future__ import annotations
 
+import csv
 import gzip
 import io
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
 
 import polars as pl
 import requests
 
-from sdv_reference.refresh import read_digests, release_assets, release_seasons, seasons_changed, write_digests
+from sdv_reference.refresh import (current_season, read_digests, release_assets, release_seasons, seasons_changed,
+                                   seasons_to_fetch, write_digests)  # fmt: skip
 from sdv_reference.schema import (
     PLAYER_ALIASES,
     validate_player_aliases,
@@ -96,6 +103,11 @@ NCAA = {
     "wbb": ("SDV_NCAA_WBB_HOOPS_RAW", "/mnt/sdv_repos/ncaa-wbb-hoops-raw", "wbb"),
     "cfb": ("SDV_NCAA_MFB_FOOTBALL_RAW", "/mnt/sdv_repos/ncaa-mfb-football-raw", "mfb"),
 }
+#: Torvik's public player table: league -> first season; getadvstats.php's positional fields this leg keeps
+TORVIK = {"mbb": 2008}
+TORVIK_URL = "https://barttorvik.com/getadvstats.php"
+TORVIK_FIELDS = {0: "player_name", 1: "team", 27: "number", 31: "year", 32: "player_id"}
+UA = {"User-Agent": "sdv-reference-data/0.1 (+https://github.com/sportsdataverse/sdv-reference-data)"}
 #: an ordinal tier score for legs that give no confidence of their own (sdv-py espn_player_xwalk tiers)
 TIER_CONFIDENCE = {
     "name_jersey": 1.0,
@@ -281,11 +293,31 @@ def _fetch_statlines(league: str) -> None:
         write_digests(digests, stem, published)
 
 
+def _fetch_torvik(league: str, pause: float = 2.0) -> None:
+    """raw/player_aliases/{league}/torvik_{season}.csv.gz (player_id, player_name, team, number), one public CSV per
+    season, sequential and paced; the newest seasons are refetched (refresh.seasons_to_fetch). A 403 / 429 raises."""
+    have = [s for s, _ in _season_files(league, "torvik")]
+    for season in seasons_to_fetch(range(TORVIK[league], current_season(ending_year=True) + 1), have):
+        r = requests.get(TORVIK_URL, params={"year": season, "csv": 1}, headers=UA, timeout=120)
+        r.raise_for_status()
+        time.sleep(pause)
+        rows = [row for row in csv.reader(io.StringIO(r.text)) if len(row) > max(TORVIK_FIELDS)]
+        if not rows:  # a season Torvik has no players for yet
+            continue
+        df = pl.DataFrame([[row[i].strip() for i in TORVIK_FIELDS] for row in rows], schema=list(TORVIK_FIELDS.values()),
+                          orient="row")  # fmt: skip
+        assert (df["year"] == str(season)).all(), f"torvik {season}: rows for {df['year'].unique().to_list()}"
+        _snapshot(league, f"torvik_{season}.csv.gz", df.drop("year").unique(),
+                  f"barttorvik.com getadvstats.php?year={season}&csv=1")  # fmt: skip
+
+
 def fetch(league: str) -> None:
     if league in XWALKS:
         _fetch_crosswalks(league)
     if any(lg == league for lg, _ in STATLINE):
         _fetch_statlines(league)
+    if league in TORVIK:
+        _fetch_torvik(league)
     if league == "nfl":
         _fetch_nfl()
     if league in NCAA:
@@ -395,6 +427,73 @@ def statlines(league: str) -> pl.DataFrame:
     return pl.concat(parts) if parts else pl.DataFrame(schema={"season": pl.Int32, "athlete_id": pl.Utf8})
 
 
+_SUFFIX = r"\b(jr|sr|ii|iii|iv|v)\b"
+
+
+def _norm_name(c: str) -> pl.Expr:
+    """ASCII-folded, lower-cased, apostrophes and periods dropped, other punctuation a space, Jr./Sr./II-V dropped."""
+    s = pl.col(c).str.normalize("NFKD").str.replace_all(r"[^\x00-\x7f]", "").str.to_lowercase()
+    s = s.str.replace_all(r"['.`]", "").str.replace_all(r"[^a-z0-9]+", " ").str.replace_all(_SUFFIX, " ")
+    return s.str.replace_all(r"\s+", " ").str.strip_chars().replace("", None)
+
+
+def _jersey(c: str) -> pl.Expr:
+    return pl.col(c).cast(pl.Utf8).str.strip_chars().replace("", None)
+
+
+def _torvik_legs(league: str, team_aliases: pl.DataFrame) -> list[pl.DataFrame]:
+    """Torvik players -> ESPN athletes, per (season, ESPN team) block: the team through team_aliases' Torvik names,
+    then name + jersey, name, last name + jersey, each tier only on a key unique on both sides; a tie or no candidate
+    stays unmatched. Only seasons with both a Torvik snapshot and an ESPN roster (mbb_player_crosswalk) count."""
+    stem = XWALKS[league][0][1]
+    espn_files = dict(_season_files(league, stem))
+    names = (
+        team_aliases.filter((pl.col("source") == "torvik") & (pl.col("name_kind") == "name"))
+        .select(pl.col("value").alias("team"), "team_id",
+                pl.int_ranges("valid_from", pl.col("valid_to") + 1, dtype=pl.Int32).alias("season"))
+        .explode("season").unique()
+    )  # fmt: skip
+    assert not names.select("season", "team").is_duplicated().any(), f"{league}: a Torvik team name on two ESPN teams"
+    out = []
+    for season, path in _season_files(league, "torvik"):
+        if season not in espn_files:
+            continue
+        tv = _read(path).with_columns(pl.lit(season, pl.Int32).alias("season"))
+        tv = tv.join(names, on=["season", "team"], how="left").with_columns(
+            _norm_name("player_name").alias("full"), _jersey("number").alias("jersey"))  # fmt: skip
+        espn = _read(espn_files[season]).select(
+            pl.lit(season, pl.Int32).alias("season"), _clean("espn_team_id").alias("team_id"),
+            _clean("espn_athlete_id").alias("athlete_id"), _norm_name("espn_full_name").alias("full"),
+            _jersey("espn_jersey").alias("jersey"),
+        ).drop_nulls(["team_id", "athlete_id"]).unique(["season", "team_id", "athlete_id"])  # fmt: skip
+        for k in ("season", "team_id"):
+            assert tv.schema[k] == espn.schema[k], f"{k}: {tv.schema[k]} != {espn.schema[k]}"
+        tv, espn = (d.with_columns(pl.col("full").str.split(" ").list.last().alias("last")) for d in (tv, espn))
+        todo, pool, matched = tv.filter(pl.col("team_id").is_not_null()), espn, []
+        for tier, keys in (("name_jersey", ["full", "jersey"]), ("name", ["full"]), ("last_jersey", ["last", "jersey"])):
+            k = ["season", "team_id", *keys]
+            a = todo.drop_nulls(keys).filter(~pl.struct(k).is_duplicated())
+            b = pool.drop_nulls(keys).filter(~pl.struct(k).is_duplicated()).select(*k, "athlete_id")
+            m = a.join(b, on=k).with_columns(pl.lit(tier).alias("match_method"))
+            matched.append(m)
+            todo = todo.join(m.select("player_id"), on="player_id", how="anti")
+            pool = pool.join(m.select("athlete_id"), on="athlete_id", how="anti")
+        ev = f"barttorvik.com getadvstats.php?year={season} (raw/player_aliases/{league}/torvik_{season}.csv.gz)"
+        miss = pl.concat([
+            todo.with_columns(pl.lit("no unique name match in the (season, ESPN team) block").alias("why")),
+            tv.filter(pl.col("team_id").is_null()).with_columns(
+                pl.lit("no ESPN team: the Torvik team name is not in mbb_team_aliases that season").alias("why")),
+        ], how="diagonal_relaxed")  # fmt: skip
+        both = pl.concat([*matched, miss], how="diagonal_relaxed")
+        out.append(_rows(
+            both, season=pl.col("season"), team_id=pl.col("team_id"), athlete_id=pl.col("athlete_id"), source=pl.lit("torvik"),
+            source_player_id=_clean("player_id"), match_method=pl.col("match_method"),
+            match_confidence=pl.col("match_method").replace_strict(TIER_CONFIDENCE, default=None),
+            unmatched_reason=pl.col("why"), evidence=pl.lit(ev),
+        ))  # fmt: skip
+    return out
+
+
 def legs(league: str) -> pl.DataFrame:
     """Every candidate row: matched (athlete_id set) and the legs' own misses (unmatched_reason set)."""
     parts = _crosswalk_legs(league)
@@ -437,6 +536,8 @@ def build(
         .unique()
     )
     rows = legs(league)
+    if league in TORVIK and team_aliases.height:  # the Torvik leg's team block is team_aliases' Torvik names
+        rows = pl.concat([rows, *_torvik_legs(league, team_aliases)])
     for k in ("season", "team_id"):
         assert rows.schema[k] == hub.schema[k], (
             f"{k}: {rows.schema[k]} != {hub.schema[k]}"

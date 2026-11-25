@@ -26,6 +26,9 @@ wnba,yahoo,2026,2026,99.0,measured min 100.0 on 2026-11-03
 mbb,fox,2025,2025,11.0,measured min 12.08 on 2026-11-03; relabeled-roster issue (plan gap 2)
 mbb,fox,2026,2026,97.0,measured min 98.77 on 2026-11-03
 mbb,kenpom,2025,2026,71.0,measured min 72.33 on 2026-11-03
+mbb,torvik,2008,2009,96.0,measured min 97.23 on 2026-11-25; ESPN rosters carry no jerseys: name tier only
+mbb,torvik,2010,2023,94.0,measured min 95.8 on 2026-11-25
+mbb,torvik,2024,2026,95.0,measured min 96.78 on 2026-11-25
 mbb,ncaa,2010,2013,87.0,measured min 88.91 on 2026-11-03; ESPN box thin before 2013-14
 mbb,ncaa,2014,2021,94.0,measured min 95.6 on 2026-11-03
 mbb,ncaa,2022,2026,98.0,measured min 99.52 on 2026-11-03

@@ -191,3 +191,41 @@ def test_other_legs_keep_the_all_rows_gate():
         pl.col("source") != "cbs"
     ).height
     assert rates.filter(pl.col("source") == "cbs")["match_rate_statline"].null_count() == 0
+
+
+def test_torvik_leg_is_published():
+    a = built("mbb")[0].filter(pl.col("source") == "torvik")
+    assert a.height > 50_000
+    assert set(a["match_method"]) <= {"name_jersey", "name", "last_jersey", "propagated"}
+
+
+def test_torvik_tiers_on_a_synthetic_season(monkeypatch, tmp_path):
+    """Name + jersey, then name, then last name + jersey, each only on a key unique on both sides of the block."""
+    lg = tmp_path / "mbb"
+    lg.mkdir()
+    torvik = pl.DataFrame({
+        "player_id": ["1", "2", "3", "4", "5", "6"],
+        "player_name": ["José Núñez", "Al Smith", "Al Smith", "Bo Jones Jr.", "Cy Young", "Di Lee"],
+        "team": ["Duke", "Duke", "Duke", "Duke", "Duke", "Nowhere St."],
+        "number": ["1", "", "", "9", "4", "2"],
+    })  # fmt: skip
+    espn = pl.DataFrame({
+        "season": ["2026"] * 5, "espn_team_id": ["150"] * 5, "espn_athlete_id": ["a1", "a2", "a3", "a4", "a5"],
+        "espn_full_name": ["Jose Nunez", "Al Smith", "Al Smith", "Bo Jones", "Cyrus Young"],
+        "espn_jersey": ["1", "3", "5", "9", "4"],
+    })  # fmt: skip
+    (lg / "torvik_2026.csv.gz").write_bytes(team_aliases._gz_csv(torvik))
+    (lg / "mbb_player_crosswalk_2026.csv.gz").write_bytes(team_aliases._gz_csv(espn))
+    monkeypatch.setattr(player_aliases, "RAW", tmp_path)
+    ta = pl.DataFrame({"source": ["torvik"], "name_kind": ["name"], "value": ["Duke"], "team_id": ["150"],
+                       "valid_from": [2026], "valid_to": [2026]}, schema_overrides={"valid_from": pl.Int32, "valid_to": pl.Int32})  # fmt: skip
+    got = {
+        r["source_player_id"]: (r["athlete_id"], r["match_method"], r["unmatched_reason"])
+        for r in pl.concat(player_aliases._torvik_legs("mbb", ta)).to_dicts()
+    }
+    assert got["1"] == ("a1", "name_jersey", None)  # accents folded
+    assert got["4"] == ("a4", "name_jersey", None)  # Jr. dropped
+    assert got["5"] == ("a5", "last_jersey", None)  # Cy / Cyrus: last name + jersey
+    # two Al Smiths with no Torvik jersey: a tie on every tier stays unmatched, never guessed
+    assert got["2"][0] is None and got["3"][0] is None and got["2"][2].startswith("no unique name match")
+    assert got["6"][0] is None and got["6"][2].startswith("no ESPN team")
