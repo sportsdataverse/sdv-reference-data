@@ -153,6 +153,16 @@ that refuses the run (a lapsed account answers `407 Proxy Authentication Require
 longer fails every ESPN fetch: the first `ProxyError` switches that league's ESPN calls to direct, and the log says
 `proxy unreachable (...)`. Renew the account when you see that line.
 
+barttorvik.com refuses the droplet (`403 Forbidden`, 2026-11-25; the same request from a residential IP gets 200), so
+mbb's Torvik player leg doesn't refresh there. That no longer fails mbb's stage 10: the log says
+`WARNING: torvik mbb {season}: barttorvik.com answered HTTP 403; Torvik refresh skipped, keeping the committed ...`
+and the leg builds from the committed `raw/player_aliases/mbb/torvik_*.csv.gz`. To refresh it, run from a residential
+box, then commit the changed `torvik_*.csv.gz` and `provenance.json`:
+
+```bash
+uv run python -c "from sdv_reference.player_aliases import _fetch_torvik; _fetch_torvik('mbb')"
+```
+
 Proposed in-season line (not installed): the NCAA raw repos rewrite each season's `{lg}/xwalk/espn_athlete_id/` every
 night (03:00 / 03:30 droplet time), and the sdv-db nightly (10:00) re-ingests `{mbb,wbb}.ncaa_player_crosswalk` from
 `{mbb,wbb}_player_aliases`. A daily mbb/wbb run between them keeps the current season's player aliases a day behind
