@@ -20,6 +20,7 @@ Season-by-season reference data for SportsDataverse leagues. For each league it 
 | Provider team ids and names (Fox, Yahoo, CBS, 247Sports, On3, KenPom, Torvik, NCAA, NBA / WNBA Stats, MLB, NHL, CFBD) keyed on the ESPN team id, NFL / CFB / NBA / WNBA / MBB / WBB / MLB / NHL | by source (CONTRACT.md) | `{league}_team_aliases` in `{league}_groups` |
 | MLB park dimensions (venue × season) | 2001–2026 | `mlb_parks` |
 | NCAA school ↔ ESPN team, men's / women's college basketball | 2009-10–2025-26 | `mbb_crosswalk`, `wbb_crosswalk` |
+| ESPN team-season ↔ provider team ids (CFBD, Fox, Yahoo, CBS, 247Sports, On3), college football | 1869–2026 | `cfb_crosswalk` (`cfb_espn_team_crosswalk`) |
 | NCAA school ↔ ESPN team, D-I college baseball | 2010–2026 | `ncaa_baseball_crosswalk` |
 | NCAA school ↔ ESPN team, D-I college softball | 1982–2025 | `ncaa_softball_crosswalk` |
 
@@ -37,6 +38,8 @@ Tags are releases of [sportsdataverse-data](https://github.com/sportsdataverse/s
 
 `mlb_parks` holds `mlb_park_dimensions`: each MLB venue's fence distances, capacity, turf, roof and location by season.
 `{mbb,wbb}_crosswalk` hold the stats.ncaa.org ↔ ESPN team crosswalk, keyed on the NCAA school (CONTRACT.md).
+`cfb_crosswalk` gets `cfb_espn_team_crosswalk`: one row per ESPN team-season with each provider's team id that season, read
+off `cfb_team_aliases`' season windows.
 `ncaa_baseball_crosswalk` and `ncaa_softball_crosswalk` are the same for college baseball and softball, whose ESPN team
 ids are separate id systems; `ncaa_{baseball,softball}_team_group_seasons` repeat each school they map under the ESPN
 id (`team_id_source` `espn`).
