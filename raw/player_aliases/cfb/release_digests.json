@@ -1,0 +1,13 @@
+{
+ "player_box_2016.parquet": "sha256:ece93c75db22400a6ba1d58388bee364fd78a778538fa87846d8902198eef87e",
+ "player_box_2017.parquet": "sha256:983693593fc8b3307d6968527505b2c5d0803eb062dd4f047a7b86575c0c0acb",
+ "player_box_2018.parquet": "sha256:ddc1b8f5cdb0b67e36db6c816b5057110fa2c0488195c235071da1e1fe0c568c",
+ "player_box_2019.parquet": "sha256:b6c12447d44b4b96a9a1c12ef4238696f3c66bd7a567b6a70b5114ddc2776d2d",
+ "player_box_2020.parquet": "sha256:a9b9bd1d7a703a4487be0e3d4cb0ade0f0f003214beb3bc57ba0e17ac425ef72",
+ "player_box_2021.parquet": "sha256:6273461ffc8d0fc90cd4ad5325312aff1518e1dda6b83272f15ec677317bdab5",
+ "player_box_2022.parquet": "sha256:7594aa4bd9741d382fcfd74d4bf440666709109109f75b82f8626372ff5a3313",
+ "player_box_2023.parquet": "sha256:f4cff89a296c1c55ec18af65d4dc6d8bd7bbeb48ceac4b7c4fd6f328727ff95a",
+ "player_box_2024.parquet": "sha256:bb1a274fc97796555595a867b8827617e1d6d85118c591180d23a5e52cc1f187",
+ "player_box_2025.parquet": "sha256:815293ae94f09864e08a2792fcbbe4ce01802dc7cb6f66d09ad8d52ac1f47d71",
+ "player_box_2026.parquet": "sha256:6112f400f77646fad3c4707331c8c06b5a29b2fded393f433409b7fdbc9e2bf4"
+}

@@ -82,6 +82,10 @@ LEGS = {
         "yahoo": ("yahoo_athlete_id", None),
     },
 }
+#: (league, source) -> (release tag, asset stem, first season) of the ESPN player box scores whose (season, athlete)
+#: set is that leg's gated denominator: CBS box scores list only players with a stat line, and cfb_players_crosswalk
+#: gained Fox/Yahoo-only rows (mostly linemen, kickers, long snappers) on 2026-11-13 that CBS can never match
+STATLINE = {("cfb", "cbs"): ("espn_cfb_player_box", "player_box", 2016)}
 #: the source whose match an asset's match_method / match_confidence describe (sdv-py _common_crosswalk_basketball)
 METHOD_LEG = {"nba": "nba_stats", "wnba": "wnba_stats", "mbb": "fox", "wbb": "fox"}
 NFL_LEGS = ("fox", "yahoo", "cbs")
@@ -131,6 +135,11 @@ RATES = {
     "n_rows": pl.UInt32,
     "n_matched": pl.UInt32,
     "match_rate": pl.Float64,
+    # STATLINE legs only (else null): the same counts over the athletes with an ESPN box-score stat line that
+    # season; the gate checks this rate for them
+    "n_rows_statline": pl.UInt32,
+    "n_matched_statline": pl.UInt32,
+    "match_rate_statline": pl.Float64,
 }
 
 
@@ -253,9 +262,30 @@ def _fetch_ncaa(league: str) -> None:
         )
 
 
+def _fetch_statlines(league: str) -> None:
+    """raw/player_aliases/{league}/espn_statline_{season}.csv.gz: the athletes with an ESPN box-score row that
+    season, for each of the league's STATLINE legs from its first season; refetched by release digest, like
+    _fetch_crosswalks()."""
+    session = requests.Session()
+    for tag, stem, first in {v for (lg, _), v in STATLINE.items() if lg == league}:
+        digests = RAW / league / "release_digests.json"
+        published = {s: d for s, d in release_seasons(release_assets(tag), stem).items() if s >= first}
+        for season in seasons_changed(published, read_digests(digests, stem)):
+            r = session.get(f"{RELEASES}/{tag}/{stem}_{season}.parquet", timeout=120)
+            r.raise_for_status()
+            df = pl.read_parquet(io.BytesIO(r.content), columns=["athlete_id"])
+            # Int64 -> Utf8, the cast _fetch_crosswalks gives espn_athlete_id
+            snap = df.select(pl.col("athlete_id").cast(pl.Int64, strict=False).cast(pl.Utf8)).drop_nulls().unique()
+            _snapshot(league, f"espn_statline_{season}.csv.gz", snap,
+                      f"sportsdataverse-data release {tag}: {stem}_{season}.parquet (athlete_id)")  # fmt: skip
+        write_digests(digests, stem, published)
+
+
 def fetch(league: str) -> None:
     if league in XWALKS:
         _fetch_crosswalks(league)
+    if any(lg == league for lg, _ in STATLINE):
+        _fetch_statlines(league)
     if league == "nfl":
         _fetch_nfl()
     if league in NCAA:
@@ -356,6 +386,13 @@ def _ncaa_legs(league: str) -> list[pl.DataFrame]:
             unmatched_reason=pl.col("unmatched_reason"), evidence=pl.lit(ev),
         ))  # fmt: skip
     return out
+
+
+def statlines(league: str) -> pl.DataFrame:
+    """(season, athlete_id): the athletes with an ESPN box-score stat line, from the espn_statline snapshots."""
+    parts = [_read(p).select(pl.lit(s).cast(pl.Int32).alias("season"), "athlete_id")
+             for s, p in _season_files(league, "espn_statline")]  # fmt: skip
+    return pl.concat(parts) if parts else pl.DataFrame(schema={"season": pl.Int32, "athlete_id": pl.Utf8})
 
 
 def legs(league: str) -> pl.DataFrame:
@@ -516,12 +553,35 @@ def build(
         .select(list(UNMATCHED)).cast(UNMATCHED)
         .sort(list(UNMATCHED), nulls_last=True)
     )  # fmt: skip
-    matched = rows.group_by("source", "season").agg(pl.len().alias("n_matched"))
+    def counts(total: pl.DataFrame, matched: pl.DataFrame, sfx: str = "") -> pl.DataFrame:
+        k = ["source", "season"]
+        return (
+            total.group_by(k).agg(pl.len().alias(f"n_rows{sfx}"))
+            .join(matched.group_by(k).agg(pl.len().alias(f"n_matched{sfx}")), on=k, how="left").fill_null(0)
+            .with_columns((100 * pl.col(f"n_matched{sfx}") / pl.col(f"n_rows{sfx}")).round(2).alias(f"match_rate{sfx}"))
+        )  # fmt: skip
+
+    rates = counts(total, rows)
+    gated = [s for lg, s in STATLINE if lg == league]
+    if gated:
+        sl = statlines(league)
+        assert sl.schema["athlete_id"] == rows.schema["athlete_id"] == total.schema["athlete_id"], "athlete_id dtype"
+        assert sl.schema["season"] == rows.schema["season"], "season dtype"
+        on = ["season", "athlete_id"]
+        rates = rates.join(counts(total.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"),
+                                  rows.filter(pl.col("source").is_in(gated)).join(sl, on=on, how="semi"), "_statline"),
+                           on=["source", "season"], how="left")  # fmt: skip
+        # a missing snapshot, or one sharing almost no athletes with the leg (an id-format drift; ESPN box scores cover
+        # 59-100% of the leg rows in 2016-26), must fail rather
+        # than fall back to the all-rows rate or gate a handful of rows
+        thin = rates.filter(pl.col("source").is_in(gated) & ~(pl.col("n_rows_statline") >= 0.25 * pl.col("n_rows")).fill_null(False))
+        if thin.height:
+            raise ValueError(f"{league}: no espn_statline snapshot, or one covering under a quarter of the leg's rows, for "
+                             f"{thin.select('source', 'season').rows()}; run fetch('{league}')")  # fmt: skip
     rates = (
-        total.group_by("source", "season").agg(pl.len().alias("n_rows"))
-        .join(matched, on=["source", "season"], how="left").fill_null(0)
-        .with_columns(pl.lit(league).alias("league"), (100 * pl.col("n_matched") / pl.col("n_rows")).round(2).alias("match_rate"))
-        .select(list(RATES)).cast(RATES).sort("source", "season")
+        rates.with_columns(pl.lit(league).alias("league"))
+        .select([pl.col(c) if c in rates.columns or c == "league" else pl.lit(None).alias(c) for c in RATES])
+        .cast(RATES).sort("source", "season")
     )  # fmt: skip
     return aliases, unmatched, rates
 
@@ -544,10 +604,11 @@ def _windows(df: pl.DataFrame, keys: list[str], *aggs: pl.Expr) -> pl.DataFrame:
 
 
 def gate(league: str, rates: pl.DataFrame) -> list[str]:
-    """Seasons whose match rate sits below its curated floor."""
+    """Seasons whose match rate sits below its curated floor; a STATLINE leg's floor applies to its stat-line rate."""
     floors = pl.read_csv(CURATED / "player_match_floors.csv", schema_overrides={
         "season_from": pl.Int32, "season_to": pl.Int32, "floor_pct": pl.Float64}).filter(pl.col("league") == league)  # fmt: skip
-    low = rates.join(floors, on=["league", "source"]).filter(
+    rate = pl.coalesce("match_rate_statline", "match_rate").alias("match_rate")
+    low = rates.select("league", "source", "season", rate).join(floors, on=["league", "source"]).filter(
         pl.col("season").is_between("season_from", "season_to") & (pl.col("match_rate") < pl.col("floor_pct")))  # fmt: skip
     return [
         f"{league} {s} {y}: match rate {r} < floor {f}"
@@ -561,6 +622,9 @@ def write(
     league: str, tgs: pl.DataFrame, team_aliases: pl.DataFrame, out_dir: Path
 ) -> tuple[list[Path], pl.DataFrame, pl.DataFrame]:
     aliases, unmatched, rates = build(league, tgs, team_aliases)
+    for s, y, a, b in rates.filter(pl.col("match_rate_statline").is_not_null()).select(
+            "source", "season", "match_rate", "match_rate_statline").iter_rows():  # fmt: skip
+        print(f"{league} {s} {y}: {a}% of all rows, {b}% of athletes with an ESPN stat line (gated)")
     problems = validate_player_aliases(league, aliases, tgs) + gate(league, rates)
     if problems:
         raise ValueError(

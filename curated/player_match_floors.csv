@@ -2,7 +2,11 @@ league,source,season_from,season_to,floor_pct,note
 nfl,cbs,2016,2026,98.0,measured min 99.94 on 2026-11-03
 nfl,fox,2018,2026,99.0,measured min 100.0 on 2026-11-03
 nfl,yahoo,2013,2025,94.0,measured min 95.97 on 2026-11-03
-cfb,cbs,2016,2026,94.0,measured min 95.72 on 2026-11-03
+cfb,cbs,2016,2016,98.0,ESPN stat-line rate (STATLINE) 99.59 on 2026-11-25; no Fox/Yahoo-only rows (all rows 99.48)
+cfb,cbs,2017,2017,98.0,ESPN stat-line rate 99.09 on 2026-11-25 (all rows 98.15)
+cfb,cbs,2018,2018,95.0,ESPN stat-line rate 96.25 on 2026-11-25 (all rows 96.19)
+cfb,cbs,2019,2020,97.0,ESPN stat-line rate min 98.38 on 2026-11-25 (all rows min 95.72)
+cfb,cbs,2021,2026,98.0,ESPN stat-line rate min 99.13 on 2026-11-25; 2026 99.23 with the 2026-11-13 Fox/Yahoo-only rows (all rows 87.06)
 cfb,fox,2026,2026,55.0,measured min 56.09 on 2026-11-03; cfb_rosters_crosswalk only; Fox players 0 elsewhere (sportsdataverse-py#1019)
 cfb,yahoo,2017,2019,27.0,measured min 28.51 on 2026-11-03; cfb_players_crosswalk; #1019
 cfb,yahoo,2020,2020,43.0,measured min 44.91 on 2026-11-03; #1019
