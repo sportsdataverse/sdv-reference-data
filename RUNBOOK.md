@@ -3,7 +3,8 @@
 `scripts/run_pipeline.sh [league ...]` runs every stage in order (all leagues when none are named).
 A "league" here is any name `sdv_reference.build.available()` lists: the ten leagues, plus `mlb_parks`
 (`sdv_reference/parks/mlb.py`, published to its own tag `mlb_parks`, not `{league}_groups`) and `mbb_crosswalk` /
-`wbb_crosswalk` (`sdv_reference/crosswalks/`, tags of the same names; stage 30 also republishes one whenever its league
+`wbb_crosswalk` / `cfb_crosswalk` (`sdv_reference/crosswalks/`, tags of the same names; `cfb_crosswalk` uploads only its
+own `cfb_espn_team_crosswalk.*` beside cfbfastR-cfb-data's assets; stage 30 also republishes one whenever its league
 changed, since its conference columns come from the league's groups).
 
 | Stage | Script | Frequency | Idempotency | Typical duration |

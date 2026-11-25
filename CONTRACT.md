@@ -313,6 +313,28 @@ otherwise). There is no fuzzy matching: a new name is resolved by `curated/ncaa_
 hand) or by its school's id from other seasons. Coverage ends where the NCAA team list does
 (`raw/{league}_crosswalk/ncaa_teamids.csv.gz`, from sdv-py's bundled `ncaa_teamids_{league}.csv`): 2009-10 to 2025-26.
 
+# Contract: the ESPN team-season crosswalk for college football (tag `cfb_crosswalk`)
+
+`cfb_espn_team_crosswalk`: one row per ESPN team-season of `cfb_team_group_seasons` (every division), with that
+season's subdivision and conference and each provider's team id valid that season. Built by
+`sdv_reference/crosswalks/cfb.py` from `cfb_team_aliases` (above); `validate()` enforces this contract. It shares the
+`cfb_crosswalk` tag with cfbfastR-cfb-data's `cfb_teams_crosswalk_{season}`, which is a name outer-join (`norm_key`)
+copied into every season, and is meant to replace it as the season-aware source of truth. Nothing is matched here: every
+id is a `cfb_team_aliases` row that already passed that contract.
+
+| column | type | |
+|---|---|---|
+| season | Int32 | the fall year |
+| espn_team_id | Utf8 | the hub |
+| subdivision_id, conference_id | Utf8 | SDV group ids that season (`cfb:fbs`, `cfb:big-ten`), from `cfb_team_group_seasons` |
+| cfbd_team_id | Utf8 | CFBD's id (the ESPN id) for team-seasons whose membership came from CFBD |
+| fox_team_id, yahoo_team_id | Utf8 | from `cfb_teams_crosswalk_{season}`, so only the seasons cfb-data published (2004-26 except 2005 and 2011) |
+| cbs_team_id | Utf8 | `curated/cfb_cbs_teams.csv`; that map is undated in `cfb_team_aliases`, so it fills every season the team is in the hub |
+| sports247_team_id, sports247_school_id, on3_school_id | Utf8 | the team directories (`sdv_reference/team_directories.py`), for the seasons they were captured in |
+
+Invariants: one row per ESPN team-season, none dropped; each id on at most one ESPN team per season; a provider id
+`cfb_team_aliases` carries that has no column here fails the build.
+
 # Contract: the NCAA <-> ESPN college-baseball crosswalk (tag `ncaa_baseball_crosswalk`)
 
 Keyed on the **NCAA school** (`ncaa_team_id` = stats.ncaa.org's org id, the `team_id` of `ncaa_baseball_groups`). ESPN's

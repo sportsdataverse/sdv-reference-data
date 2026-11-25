@@ -132,3 +132,12 @@ def test_basketball_crosswalk_change_republishes_baseball_and_softball(tmp_path)
     )
     created = [c.split()[2] for c in calls if c.startswith("release create")]
     assert created == [*cw, "ncaa_baseball_groups", "ncaa_softball_groups"]
+
+
+def test_cfb_change_republishes_the_cfb_crosswalk(tmp_path):
+    # its conference columns and ids come from cfb's groups and team_aliases
+    calls, _ = _run(tmp_path, None, args=("cfb",), builds=("cfb", "cfb_crosswalk"))
+    created = [c.split()[2] for c in calls if c.startswith("release create")]
+    assert created == ["cfb_groups", "cfb_crosswalk"]
+    notes = next(c for c in calls if c.startswith("release create cfb_crosswalk"))
+    assert "cfb_espn_team_crosswalk" in notes and "NCAA school" not in notes
